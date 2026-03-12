@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"hrms_go/models"
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
@@ -32,9 +32,6 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 		return utils.Error(ctx, 401, "email not found")
 	}
 
-
-	fmt.Println(user.Password, req.Password)
-
 	if !utils.CheckPassword(user.Password, req.Password) {
 		return utils.Error(ctx, 401, "wrong password")
 	}
@@ -44,7 +41,13 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 		return utils.Error(ctx, 500, "failed generate token")
 	}
 
-	return utils.Success(ctx, fiber.Map{
-		"token": token,
-	})
+	response := struct {
+		*models.User
+		Token string `json:"token"`
+	}{
+		User:  user,
+		Token: token,
+	}
+
+	return utils.Success(ctx, response)
 }

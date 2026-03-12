@@ -33,7 +33,3 @@ func (c *UserController) Create(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, user)
 }
 
-func (c *UserController) GetAll(ctx *fiber.Ctx) error {
-	users, _ := c.repo.FindAll()
-	return utils.Success(ctx, users)
-}
