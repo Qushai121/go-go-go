@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"fmt"
-	"strings"
 	"hrms_go/models"
 	"hrms_go/repositories"
 	"hrms_go/utils"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )

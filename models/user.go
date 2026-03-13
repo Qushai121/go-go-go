@@ -11,7 +11,7 @@ type User struct {
 	EmployeeNIK string    `json:"employee_nik"`
 	FullName    string    `json:"fullname"`
 	Email       string    `json:"email"`
-	Password    string    `json:"-"`
+	Password    string    `json:"password"`
 	Role        string    `json:"role"`
 
 	CreatedAt time.Time `json:"created_at"`

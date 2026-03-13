@@ -17,6 +17,27 @@ type userRepository struct {
 	db *gorm.DB
 }
 
+// Count implements [UserRepository].
+func (r *userRepository) Count() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.User{}).Count(&count).Error
+	return count, err
+}
+
+// FindAll implements [UserRepository].
+func (r *userRepository) FindAll() ([]models.User, error) {
+	var users []models.User
+	err := r.db.Find(&users).Error
+	return users, err
+}
+
+// FindByEmail implements [UserRepository].
+func (r *userRepository) FindByEmail(email string) (*models.User, error) {
+	var user models.User
+	err := r.db.Where("email = ?", email).First(&user).Error
+	return &user, err
+}
+
 func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db}
 }
@@ -24,4 +45,3 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 func (r *userRepository) Create(user *models.User) error {
 	return r.db.Create(user).Error
 }
-
