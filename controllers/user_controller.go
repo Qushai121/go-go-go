@@ -19,7 +19,7 @@ func NewUserController(repo repositories.UserRepository) *UserController {
 func (c *UserController) Create(ctx *fiber.Ctx) error {
 	var user models.User
 	if err := ctx.BodyParser(&user); err != nil {
-		return utils.Error(ctx, 400, "invalid request")
+		return utils.Error(ctx, 400, err.Error())
 	}
 
 	hashed, _ := utils.HashPassword(user.Password)
@@ -27,7 +27,7 @@ func (c *UserController) Create(ctx *fiber.Ctx) error {
 	user.CreatedBy = ctx.Locals("employee_nik").(string)
 
 	if err := c.repo.Create(&user); err != nil {
-		return utils.Error(ctx, 500, "failed create user")
+		return utils.Error(ctx, 500, err.Error())
 	}
 
 	return utils.Success(ctx, user)
@@ -36,7 +36,26 @@ func (c *UserController) Create(ctx *fiber.Ctx) error {
 func (c *UserController) FindAll(ctx *fiber.Ctx) error {
 	users, err := c.repo.FindAll()
 	if err != nil {
-		return utils.Error(ctx, 500, "failed get users")
+		return utils.Error(ctx, 500, err.Error())
 	}	
 	return utils.Success(ctx, users)
+}
+
+func (c *UserController) UpdateUserShift(ctx *fiber.Ctx) error {
+	var data models.User
+	realData := models.User{};
+	if err := ctx.BodyParser(&data); err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+	data.UpdatedBy = ctx.Locals("user_id").(string)
+
+	realData.UpdatedBy = ctx.Locals("user_id").(string)
+	realData.ShiftId = data.ShiftId
+	realData.UserId = data.UserId
+
+	if err := c.repo.UpdateUserShift(&realData);err != nil {
+		return utils.Error(ctx, 500, err.Error())
+	}
+
+	return utils.Success(ctx, data);
 }

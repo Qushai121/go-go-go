@@ -14,27 +14,29 @@ type ShiftController struct {
 }
 
 func (c *ShiftController) Create(ctx *fiber.Ctx) error {
-	var shift models.Shift
-	if err := ctx.BodyParser(&shift); err != nil {
-		return utils.Error(ctx, 400, "invalid request")
+	var data models.Shift
+	if err := ctx.BodyParser(&data); err != nil {
+		return utils.Error(ctx, 400, err.Error())
 	}
-	if err := c.repo.Create(&shift);err != nil {
-		return utils.Error(ctx, 500, "failed to create shift")
+	data.CreatedBy = ctx.Locals("user_id").(string)
+
+	if err := c.repo.Create(&data);err != nil {
+		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, shift);
+	return utils.Success(ctx, data);
 }
 
 func (c *ShiftController) FindAll(ctx *fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
 	if err := ctx.QueryParser(&queryParams); err != nil {
-		return utils.Error(ctx, 400, "invalid request")
+		return utils.Error(ctx, 400, err.Error())
 	}
 
 	shift, err := c.repo.FindAll(&queryParams)
 	if err != nil {
-		return utils.Error(ctx, 500, "failed to fetch shift")
+		return utils.Error(ctx, 500, err.Error())
 	}
 	return utils.Success(ctx, shift)
 }
@@ -43,13 +45,13 @@ func (c *ShiftController) Update(ctx *fiber.Ctx) error {
 	data := models.Shift{}
 	
 	if err := ctx.BodyParser(&data); err != nil {
-		return utils.Error(ctx, 400, "invalid request")
+		return utils.Error(ctx, 400, err.Error())
 	}
 	userId := ctx.Locals("user_id").(string)
 	data.UpdatedBy = &userId
 
 	if err := c.repo.Update(&data);err != nil {
-		return utils.Error(ctx, 500, "failed to update company")
+		return utils.Error(ctx, 500, err.Error())
 	}
 
 	return utils.Success(ctx, data);
@@ -58,7 +60,7 @@ func (c *ShiftController) Update(ctx *fiber.Ctx) error {
 func (c *ShiftController) Delete(ctx *fiber.Ctx) error  {
 	id := ctx.Params("id")
 	if err := c.repo.Delete(id); err != nil {
-		return utils.Error(ctx, 500, "failed to delete company")
+		return utils.Error(ctx, 500, err.Error())
 	}
 	return utils.Success(ctx,nil)
 }

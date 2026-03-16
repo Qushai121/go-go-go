@@ -30,6 +30,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	users := api.Group("/users", middlewares.JWTProtected())
 	users.Post("/", user.Create)
 	users.Get("/", user.FindAll)
+	users.Post("/update-shift", user.UpdateUserShift)
 
 	customerRoute := api.Group("/customer", middlewares.JWTProtected())
 	customerRoute.Post("/", customer.Create)

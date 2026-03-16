@@ -11,6 +11,7 @@ type UserRepository interface {
 	FindAll() ([]models.User, error)
 	FindByEmail(email string) (*models.User, error)
 	Count() (int64, error)
+	UpdateUserShift(body *models.User) error
 }
 
 type userRepository struct {
@@ -27,7 +28,7 @@ func (r *userRepository) Count() (int64, error) {
 // FindAll implements [UserRepository].
 func (r *userRepository) FindAll() ([]models.User, error) {
 	var users []models.User
-	err := r.db.Find(&users).Error
+	err := r.db.Joins("Shift").Find(&users).Error
 	return users, err
 }
 
@@ -36,6 +37,10 @@ func (r *userRepository) FindByEmail(email string) (*models.User, error) {
 	var user models.User
 	err := r.db.Where("email = ?", email).First(&user).Error
 	return &user, err
+}
+
+func (r *userRepository) UpdateUserShift(body *models.User) error  {
+	return r.db.Model(&models.User{}).Where("user_id = ?",body.UserId).Updates(body).Error
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {

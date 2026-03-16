@@ -26,7 +26,7 @@ func (c *SetupController) InitAdmin(ctx *fiber.Ctx) error {
 
 	var user models.User
 	if err := ctx.BodyParser(&user); err != nil {
-		return utils.Error(ctx, 400, "invalid request")
+		return utils.Error(ctx, 400, err.Error())
 	}
 
 	user.Password = strings.TrimSpace(user.Password)
@@ -40,7 +40,7 @@ func (c *SetupController) InitAdmin(ctx *fiber.Ctx) error {
 	user.CreatedBy = "SYSTEM"
 
 	if err := c.repo.Create(&user); err != nil {
-		return utils.Error(ctx, 500, "failed create admin")
+		return utils.Error(ctx, 500, err.Error())
 	}
 
 	return utils.Success(ctx, fiber.Map{
