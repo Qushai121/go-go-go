@@ -17,6 +17,8 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	paramRepo := repositories.NewParamRepository(db)
 	paramGroupRepo := repositories.NewParamGroupRepository(db)
 	settingRepo := repositories.NewSettingRepository(db)
+	attendanceRepo := repositories.NewAttendanceRepository(db)
+	officeRepo := repositories.NewOfficeRepository(db)
 
 	auth := controllers.NewAuthController(repo)
 	user := controllers.NewUserController(repo)
@@ -27,8 +29,8 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	paramController := controllers.NewParamController(paramRepo)	
 	paramGroupController := controllers.NewParamGroupController(paramGroupRepo)
 	settingController := controllers.NewSettingController(settingRepo)
-
-
+	attendanceController := controllers.NewAttendanceController(attendanceRepo)
+	officeController := controllers.NewOfficeController(officeRepo)
 
 	api := app.Group("/api")
 	
@@ -76,4 +78,15 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	setting.Get("/", settingController.FindAll)
 	setting.Put("/", settingController.Update)
 	setting.Delete("/:id", settingController.Delete)
+		
+	attendance := app.Group("/attendance")
+	attendance.Post("/", attendanceController.Create)
+	attendance.Get("/", attendanceController.FindAll)
+	attendance.Get("/user/:user_id", attendanceController.FindByUser)
+
+	office := app.Group("/office")
+	office.Post("/", officeController.Create)
+	office.Get("/", officeController.FindAll)
+	office.Put("/", officeController.Update)
+	office.Delete("/:id", officeController.Delete)
 }
