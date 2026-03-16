@@ -67,25 +67,25 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	paramGroup.Put("/", paramGroupController.Update)
 	paramGroup.Delete("/:id", paramGroupController.Delete)
 	
-	param := app.Group("/param")
+	param := api.Group("/param")
 	param.Post("/", paramController.Create)
 	param.Get("/", paramController.FindAll)
 	param.Put("/", paramController.Update)
 	param.Delete("/:id", paramController.Delete)
 
-	setting := app.Group("/setting")
+	setting := api.Group("/setting")
 
 	setting.Post("/", settingController.Create)
 	setting.Get("/", settingController.FindAll)
 	setting.Put("/", settingController.Update)
 	setting.Delete("/:id", settingController.Delete)
 		
-	attendance := app.Group("/attendance")
+	attendance := api.Group("/attendance")
 	attendance.Post("/", attendanceController.Create)
 	attendance.Get("/", attendanceController.FindAll)
 	attendance.Get("/user/:user_id", attendanceController.FindByUser)
 
-	office := app.Group("/office")
+	office := api.Group("/office")
 	office.Post("/", officeController.Create)
 	office.Get("/", officeController.FindAll)
 	office.Put("/", officeController.Update)

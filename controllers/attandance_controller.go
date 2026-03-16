@@ -24,6 +24,20 @@ func (c *AttendanceController) Create(ctx *fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
+	file, err := ctx.FormFile("photo_url")
+	if err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	fileUrl,err := utils.SaveFileToPath(file,"attandance",ctx)
+	if err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	if(fileUrl != nil){
+		attendance.PhotoUrl = *fileUrl
+	}
+
 	allowed := map[string]bool{
 		"WFH": true,
 		"VISIT": true,
@@ -35,6 +49,9 @@ func (c *AttendanceController) Create(ctx *fiber.Ctx) error {
 	}
 
 	if err := c.repo.Create(&attendance); err != nil {
+		if fileUrl != nil {
+			utils.RemoveFileFromPath(*fileUrl);
+		}
 		return utils.Error(ctx, 500, err.Error())
 	}
 
