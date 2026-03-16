@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"hrms_go/models"
+	"hrms_go/utils"
 
 	"gorm.io/gorm"
 )
@@ -11,7 +12,8 @@ type UserRepository interface {
 	FindAll() ([]models.User, error)
 	FindByEmail(email string) (*models.User, error)
 	Count() (int64, error)
-	UpdateUserShift(body *models.User) error
+	Update(body *models.User) error
+	UpdateProfilePicture(body *models.User) error
 }
 
 type userRepository struct {
@@ -39,7 +41,26 @@ func (r *userRepository) FindByEmail(email string) (*models.User, error) {
 	return &user, err
 }
 
-func (r *userRepository) UpdateUserShift(body *models.User) error  {
+func (r *userRepository) Update(body *models.User) error  {
+	return r.db.Model(&models.User{}).Where("user_id = ?",body.UserId).Updates(body).Error
+}
+
+func (r *userRepository) UpdateProfilePicture(body *models.User) error  {
+	var user models.User
+
+	// 1. Get existing user
+	if err := r.db.
+		Select("profile_picture_url").
+		Where("user_id = ?", body.UserId).
+		First(&user).Error; err != nil {
+		return err
+	}
+
+	// 2. Remove old image if exists
+	if user.ProfilePictureUrl != "" {
+		utils.RemoveFileFromPath(user.ProfilePictureUrl)
+	}
+
 	return r.db.Model(&models.User{}).Where("user_id = ?",body.UserId).Updates(body).Error
 }
 

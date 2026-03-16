@@ -6,6 +6,7 @@ import (
 	"hrms_go/utils"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type UserController struct {
@@ -53,9 +54,46 @@ func (c *UserController) UpdateUserShift(ctx *fiber.Ctx) error {
 	realData.ShiftId = data.ShiftId
 	realData.UserId = data.UserId
 
-	if err := c.repo.UpdateUserShift(&realData);err != nil {
+	if err := c.repo.Update(&realData);err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
 	return utils.Success(ctx, data);
+}
+
+func (c *UserController) UpdateUserPicture(ctx *fiber.Ctx) error {
+	
+	realData := models.User{};
+
+	userIdStr := ctx.FormValue("user_id");
+	userId, err := uuid.Parse(userIdStr)
+	if err != nil {
+		return utils.Error(ctx, 400, "invalid user_id")
+	}
+
+	file, err := ctx.FormFile("profile_picture_url")
+		if err != nil {
+			return utils.Error(ctx, 400, err.Error())
+		}
+
+	fileUrl,err := utils.SaveFileToPath(file,"user",ctx)
+	if err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	realData.UpdatedBy = ctx.Locals("user_id").(string)
+	realData.UserId = userId
+
+	if fileUrl != nil {
+		realData.ProfilePictureUrl = *fileUrl
+	}
+
+	if err := c.repo.UpdateProfilePicture(&realData);err != nil {
+		if fileUrl != nil {
+			utils.RemoveFileFromPath(*fileUrl);
+		}
+		return utils.Error(ctx, 500, err.Error())
+	}
+
+	return utils.Success(ctx, realData);
 }

@@ -4,10 +4,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
 	"hrms_go/config"
 	"hrms_go/routes"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -19,6 +20,8 @@ func main() {
 	}
 
 	app := fiber.New()
+
+	app.Static("/api/uploads", "./uploads")
 	routes.Setup(app, db)
 
 	log.Fatal(app.Listen(":" + os.Getenv("APP_PORT")))

@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"log"
 	"os"
 	"strings"
 
@@ -29,7 +28,7 @@ func JWTProtected() fiber.Handler {
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
-		log.Println("JWT Claims:", claims)
+		// log.Println("JWT Claims:", claims)
 		
 		ctx.Locals("employee_nik", claims["employee_nik"])
 		ctx.Locals("user_id", claims["user_id"])

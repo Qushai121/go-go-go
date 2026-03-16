@@ -16,6 +16,8 @@ type User struct {
 
 	ShiftId uuid.UUID `gorm:"type:uuid" json:"shift_id"`
 	Shift   Shift     `gorm:"foreignKey:ShiftId;references:ShiftId"`
+
+	ProfilePictureUrl string `gorm:"column:profile_picture_url" json:"profile_picture_url"`
 	
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
