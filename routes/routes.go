@@ -20,6 +20,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	attendanceRepo := repositories.NewAttendanceRepository(db)
 	officeRepo := repositories.NewOfficeRepository(db)
 	claimSubmissionRepo := repositories.NewClaimSubmissionRepository(db)
+	leaveRepo := repositories.NewLeaveRepository(db)
 
 	auth := controllers.NewAuthController(repo)
 	user := controllers.NewUserController(repo)
@@ -33,6 +34,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	attendanceController := controllers.NewAttendanceController(attendanceRepo)
 	officeController := controllers.NewOfficeController(officeRepo)
 	claimSubmissionController := controllers.NewClaimSubmissionController(claimSubmissionRepo)
+	leaveController := controllers.NewLeaveController(leaveRepo)
 
 	api := app.Group("/api")
 	
@@ -98,5 +100,11 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	claimSubmission.Get("/",claimSubmissionController.FindAll)
 	claimSubmission.Put("/",claimSubmissionController.Update)
 	claimSubmission.Delete("/",claimSubmissionController.Delete)
+	
+	leaveRoute := api.Group("claim_submission")
+	leaveRoute.Post("/",leaveController.Create)
+	leaveRoute.Get("/",leaveController.FindAll)
+	leaveRoute.Put("/",leaveController.Update)
+	leaveRoute.Delete("/",leaveController.Delete)
 	
 }
