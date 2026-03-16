@@ -19,6 +19,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	settingRepo := repositories.NewSettingRepository(db)
 	attendanceRepo := repositories.NewAttendanceRepository(db)
 	officeRepo := repositories.NewOfficeRepository(db)
+	claimSubmissionRepo := repositories.NewClaimSubmissionRepository(db)
 
 	auth := controllers.NewAuthController(repo)
 	user := controllers.NewUserController(repo)
@@ -31,6 +32,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	settingController := controllers.NewSettingController(settingRepo)
 	attendanceController := controllers.NewAttendanceController(attendanceRepo)
 	officeController := controllers.NewOfficeController(officeRepo)
+	claimSubmissionController := controllers.NewClaimSubmissionController(claimSubmissionRepo)
 
 	api := app.Group("/api")
 	
@@ -90,4 +92,11 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	office.Get("/", officeController.FindAll)
 	office.Put("/", officeController.Update)
 	office.Delete("/:id", officeController.Delete)
+
+	claimSubmission := api.Group("claim_submission")
+	claimSubmission.Post("/",claimSubmissionController.Create)
+	claimSubmission.Get("/",claimSubmissionController.FindAll)
+	claimSubmission.Put("/",claimSubmissionController.Update)
+	claimSubmission.Delete("/",claimSubmissionController.Delete)
+	
 }
