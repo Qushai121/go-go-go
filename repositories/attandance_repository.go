@@ -80,7 +80,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 	}
 
 	if queryParams.SortBy == nil {
-		sort := "date"
+		sort := "attendance_id"
 		queryParams.SortBy = &sort
 	}
 

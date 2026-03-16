@@ -7,7 +7,7 @@ import (
 )
 
 type Claim struct {
-	ID            uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	ClaimId            uuid.UUID `gorm:"type:uuid;primaryKey" json:"claim_id"`
 	SubmissionID  uuid.UUID `gorm:"type:uuid" json:"id_submission"`
 	RequestNumber string    `json:"request_number"`
 	EmployeeName  string    `json:"employee_name"`

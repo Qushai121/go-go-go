@@ -7,11 +7,13 @@ import (
 )
 
 type ClaimSubmission struct {
-	ID            uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	SubmissionID            uuid.UUID `gorm:"type:uuid;primaryKey" json:"submission_id"`
+	UserId   		uuid.UUID `gorm:"type:uuid;not null" json:"user_id"`
 	RequestNumber string    `json:"request_number"`
 	SubmitDate    time.Time `json:"submit_date"`
 	Status        string    `json:"status"`
 	Remarks       string    `json:"remarks"`
 	Amount        float64   `json:"amount"`
 	Claims        []Claim   `gorm:"foreignKey:SubmissionID" json:"claims"`
+	User User `gorm:"foreignKey:UserId;references:UserId"`
 }

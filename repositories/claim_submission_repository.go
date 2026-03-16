@@ -14,10 +14,37 @@ type ClaimSubmissionRepository interface {
 	Create(submission *models.ClaimSubmission) error
 	Update(submission *models.ClaimSubmission) error
 	Delete(id string) error
+	FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.ClaimSubmission], error)
 }
 
 type claimSubmissionRepository struct {
 	db *gorm.DB
+}
+
+func (r *claimSubmissionRepository) FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.ClaimSubmission], error) {
+	var data []models.ClaimSubmission
+	var totalRecord int64
+
+	modelDb := r.db.Model(&models.ClaimSubmission{}).
+		Where("user_id = ?", userId).
+		Joins("Claims")
+
+	dataAkhir := response.PaginateResponseDto[[]models.ClaimSubmission]{
+		Data:        data,
+		TotalRecord: totalRecord,
+	}
+
+	if queryParams.SortBy == nil {
+		sort := "date"
+		queryParams.SortBy = &sort
+	}
+
+	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
+
+	dataAkhir.Data = data
+	dataAkhir.TotalRecord = totalRecord
+
+	return dataAkhir, err
 }
 
 func NewClaimSubmissionRepository(db *gorm.DB) ClaimSubmissionRepository {
@@ -33,12 +60,12 @@ func (r *claimSubmissionRepository) Update(submission *models.ClaimSubmission) e
 }
 
 func (r *claimSubmissionRepository) Delete(id string) error {
-	return r.db.Delete(&models.ClaimSubmission{}, "id = ?", id).Error
+	return r.db.Delete(&models.ClaimSubmission{}, "submission_id = ?", id).Error
 }
 
 func (r *claimSubmissionRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.ClaimSubmission], error) {
 	data := []models.ClaimSubmission{}
-	modelDb := r.db.Model(&models.ClaimSubmission{}).Preload("Claims")
+	modelDb := r.db.Model(&models.ClaimSubmission{}).Joins("Claims")
 	var total int64
 
 	dataAkhir := response.PaginateResponseDto[[]models.ClaimSubmission]{
@@ -47,7 +74,7 @@ func (r *claimSubmissionRepository) FindAll(queryParams *dto.PaginateFieldDto) (
 	}
 
 	if queryParams.SortBy == nil {
-		sort := "submit_date"
+		sort := "submission_id"
 		queryParams.SortBy = &sort
 	}
 
