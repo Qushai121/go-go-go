@@ -14,6 +14,9 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	customerRepo := repositories.NewCustomerRepository(db)
 	shiftRepo := repositories.NewShiftRepository(db)
 	companiesRepo := repositories.NewCompaniesRepository(db)
+	paramRepo := repositories.NewParamRepository(db)
+	paramGroupRepo := repositories.NewParamGroupRepository(db)
+	settingRepo := repositories.NewSettingRepository(db)
 
 	auth := controllers.NewAuthController(repo)
 	user := controllers.NewUserController(repo)
@@ -21,6 +24,11 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	customer := controllers.NewCustomerController(customerRepo)
 	shift := controllers.NewShiftController(shiftRepo)
 	companies := controllers.NewCompaniesController(companiesRepo)
+	paramController := controllers.NewParamController(paramRepo)	
+	paramGroupController := controllers.NewParamGroupController(paramGroupRepo)
+	settingController := controllers.NewSettingController(settingRepo)
+
+
 
 	api := app.Group("/api")
 	
@@ -49,4 +57,23 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	companiesRoute.Get("/",companies.FindAll);
 	companiesRoute.Put("/",companies.Update);
 	companiesRoute.Delete("/:id",companies.Delete);
+	
+	paramGroup := api.Group("/param-group")
+	paramGroup.Post("/", paramGroupController.Create)
+	paramGroup.Get("/", paramGroupController.FindAll)
+	paramGroup.Put("/", paramGroupController.Update)
+	paramGroup.Delete("/:id", paramGroupController.Delete)
+	
+	param := app.Group("/param")
+	param.Post("/", paramController.Create)
+	param.Get("/", paramController.FindAll)
+	param.Put("/", paramController.Update)
+	param.Delete("/:id", paramController.Delete)
+
+	setting := app.Group("/setting")
+
+	setting.Post("/", settingController.Create)
+	setting.Get("/", settingController.FindAll)
+	setting.Put("/", settingController.Update)
+	setting.Delete("/:id", settingController.Delete)
 }
