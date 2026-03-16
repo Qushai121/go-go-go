@@ -1,14 +1,10 @@
 package base
 
-import (
-	"time"
-
-	"github.com/google/uuid"
-)
+import "time"
 
 type AuditFields struct {
-    CreatedAt time.Time `json:"created_at"`
-    UpdatedAt time.Time `json:"updated_at"`
-    CreatedBy uuid.UUID `json:"created_by"`
-    UpdatedBy uuid.UUID `json:"updated_by"`
+	CreatedAt time.Time  `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt *time.Time `json:"updated_at" gorm:"autoUpdateTime"`
+	CreatedBy string     `json:"created_by"`
+	UpdatedBy *string    `json:"updated_by"`
 }

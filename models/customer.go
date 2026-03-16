@@ -1,9 +1,13 @@
 package models
 
-import "hrms_go/models/base"
+import (
+	"hrms_go/models/base"
+
+	"github.com/google/uuid"
+)
 
 type Customer struct {
-	CustomerId      string `gorm:"primaryKey" json:"customer_id"`
+	CustomerId      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"customer_id"`
 	LocationCode    string `json:"location_code"`
 	LocationName    string `json:"location_name"`
 	Address         string `json:"address"`

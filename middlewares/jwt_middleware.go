@@ -1,12 +1,14 @@
 package middlewares
 
 import (
+	"log"
 	"os"
 	"strings"
 
+	"hrms_go/utils"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"hrms_go/utils"
 )
 
 func JWTProtected() fiber.Handler {
@@ -27,7 +29,10 @@ func JWTProtected() fiber.Handler {
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
+		log.Println("JWT Claims:", claims)
+		
 		ctx.Locals("employee_nik", claims["employee_nik"])
+		ctx.Locals("user_id", claims["user_id"])
 
 		return ctx.Next()
 	}

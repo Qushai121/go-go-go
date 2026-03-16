@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"hrms_go/dto"
 	"hrms_go/models"
 	"hrms_go/repositories"
 	"hrms_go/utils"
@@ -11,7 +12,6 @@ import (
 type ShiftController struct {
 	repo repositories.ShiftRepository
 }
-
 
 func (c *ShiftController) Create(ctx *fiber.Ctx) error {
 	var shift models.Shift
@@ -26,11 +26,41 @@ func (c *ShiftController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c *ShiftController) FindAll(ctx *fiber.Ctx) error {
-	shift, err := c.repo.FindAll()
+	queryParams := dto.PaginateFieldDto{}
+
+	if err := ctx.QueryParser(&queryParams); err != nil {
+		return utils.Error(ctx, 400, "invalid request")
+	}
+
+	shift, err := c.repo.FindAll(&queryParams)
 	if err != nil {
 		return utils.Error(ctx, 500, "failed to fetch shift")
 	}
 	return utils.Success(ctx, shift)
+}
+
+func (c *ShiftController) Update(ctx *fiber.Ctx) error {
+	data := models.Shift{}
+	
+	if err := ctx.BodyParser(&data); err != nil {
+		return utils.Error(ctx, 400, "invalid request")
+	}
+	userId := ctx.Locals("user_id").(string)
+	data.UpdatedBy = &userId
+
+	if err := c.repo.Update(&data);err != nil {
+		return utils.Error(ctx, 500, "failed to update company")
+	}
+
+	return utils.Success(ctx, data);
+}
+
+func (c *ShiftController) Delete(ctx *fiber.Ctx) error  {
+	id := ctx.Params("id")
+	if err := c.repo.Delete(id); err != nil {
+		return utils.Error(ctx, 500, "failed to delete company")
+	}
+	return utils.Success(ctx,nil)
 }
 
 func NewShiftController(repo repositories.ShiftRepository) *ShiftController {
