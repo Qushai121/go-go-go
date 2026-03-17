@@ -7,7 +7,7 @@ import (
 )
 
 type Setting struct {
-	SettingId    uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"setting_id"`
+	SettingId    uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"setting_id"`
 	SettingName  string    `gorm:"type:varchar(150);not null;unique" json:"setting_name"`
 	SettingValue string    `gorm:"type:varchar(150);not null" json:"setting_value"`
 

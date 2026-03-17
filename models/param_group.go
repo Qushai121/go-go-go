@@ -7,7 +7,7 @@ import (
 )
 
 type ParamGroup struct {
-	ParamGroupId   uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"paramgroup_id"`
+	ParamGroupId   uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"paramgroup_id"`
 	ParamGroupCode string    `gorm:"type:varchar(50);unique;not null" json:"paramgroup_code"`
 	ParamGroupName string    `gorm:"type:varchar(150);not null" json:"paramgroup_name"`
 

@@ -8,7 +8,7 @@ import (
 )
 
 type Leave struct {
-    LeaveID           uuid.UUID `gorm:"type:uuid;primaryKey" json:"leave_id"`
+	LeaveID uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"leave_id"`
     RequestNumber     string    `json:"request_number"`
     EmployeeName      string    `json:"employee_name"`
     LeaveType         string    `json:"leave_type"`
@@ -21,4 +21,8 @@ type Leave struct {
     LeaveBalance      float64   `json:"leave_balance"`
 
 	base.AuditFields
+}
+
+func (Leave) TableName() string {
+	return "hrms_leave"
 }

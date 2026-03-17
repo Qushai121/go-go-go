@@ -19,7 +19,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	settingRepo := repositories.NewSettingRepository(db)
 	attendanceRepo := repositories.NewAttendanceRepository(db)
 	officeRepo := repositories.NewOfficeRepository(db)
-	claimSubmissionRepo := repositories.NewClaimSubmissionRepository(db)
+	SubmissionRepo := repositories.NewSubmissionRepository(db)
 	leaveRepo := repositories.NewLeaveRepository(db)
 
 	auth := controllers.NewAuthController(repo)
@@ -33,7 +33,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	settingController := controllers.NewSettingController(settingRepo)
 	attendanceController := controllers.NewAttendanceController(attendanceRepo)
 	officeController := controllers.NewOfficeController(officeRepo)
-	claimSubmissionController := controllers.NewClaimSubmissionController(claimSubmissionRepo)
+	submissionController := controllers.NewSubmissionController(SubmissionRepo)
 	leaveController := controllers.NewLeaveController(leaveRepo)
 
 	api := app.Group("/api")
@@ -43,67 +43,67 @@ func Setup(app *fiber.App, db *gorm.DB) {
 
 	users := api.Group("/users", middlewares.JWTProtected())
 	users.Post("/", user.Create)
-	users.Get("/", user.FindAll)
+	users.Get("/all", user.FindAll)
 	users.Post("/update-shift", user.UpdateUserShift)
 	users.Post("/update-profile-picture",user.UpdateUserPicture)
 
 	customerRoute := api.Group("/customer", middlewares.JWTProtected())
 	customerRoute.Post("/", customer.Create)
-	customerRoute.Get("/", customer.FindAll)
+	customerRoute.Get("/all", customer.FindAll)
 	customerRoute.Put("/",customer.Update);
 	customerRoute.Delete("/:id",customer.Delete);
 
 	shiftRoute := api.Group("/shift", middlewares.JWTProtected())
 	shiftRoute.Post("/", shift.Create)
-	shiftRoute.Get("/", shift.FindAll)
+	shiftRoute.Get("/all", shift.FindAll)
 	shiftRoute.Put("/",shift.Update);
 	shiftRoute.Delete("/:id",shift.Delete);
 
 	companiesRoute := api.Group("/companies",middlewares.JWTProtected())
 	companiesRoute.Post("/",companies.Create);
-	companiesRoute.Get("/",companies.FindAll);
+	companiesRoute.Get("/all",companies.FindAll);
 	companiesRoute.Put("/",companies.Update);
 	companiesRoute.Delete("/:id",companies.Delete);
 	
 	paramGroup := api.Group("/param-group")
 	paramGroup.Post("/", paramGroupController.Create)
-	paramGroup.Get("/", paramGroupController.FindAll)
+	paramGroup.Get("/all", paramGroupController.FindAll)
 	paramGroup.Put("/", paramGroupController.Update)
 	paramGroup.Delete("/:id", paramGroupController.Delete)
 	
-	param := api.Group("/param")
+	param := api.Group("/param",middlewares.JWTProtected())
 	param.Post("/", paramController.Create)
-	param.Get("/", paramController.FindAll)
+	param.Get("/all", paramController.FindAll)
 	param.Put("/", paramController.Update)
 	param.Delete("/:id", paramController.Delete)
 
-	setting := api.Group("/setting")
-
+	setting := api.Group("/setting",middlewares.JWTProtected())
 	setting.Post("/", settingController.Create)
-	setting.Get("/", settingController.FindAll)
+	setting.Get("/all", settingController.FindAll)
 	setting.Put("/", settingController.Update)
 	setting.Delete("/:id", settingController.Delete)
 		
-	attendance := api.Group("/attendance")
+	attendance := api.Group("/attendance",middlewares.JWTProtected())
 	attendance.Post("/", attendanceController.Create)
-	attendance.Get("/", attendanceController.FindAll)
-	attendance.Get("/user/:user_id", attendanceController.FindByUser)
+	attendance.Get("/all", attendanceController.FindAll)
+	attendance.Get("/", attendanceController.FindByUser)
 
-	office := api.Group("/office")
+	office := api.Group("/office",middlewares.JWTProtected())
 	office.Post("/", officeController.Create)
 	office.Get("/", officeController.FindAll)
 	office.Put("/", officeController.Update)
 	office.Delete("/:id", officeController.Delete)
 
-	claimSubmission := api.Group("claim_submission")
-	claimSubmission.Post("/",claimSubmissionController.Create)
-	claimSubmission.Get("/",claimSubmissionController.FindAll)
-	claimSubmission.Put("/",claimSubmissionController.Update)
-	claimSubmission.Delete("/",claimSubmissionController.Delete)
+	Submission := api.Group("claim_submission",middlewares.JWTProtected())
+	Submission.Post("/",submissionController.Create)
+	Submission.Get("/all",submissionController.FindAll)
+	Submission.Get("/",submissionController.FindByUser)
+	Submission.Put("/",submissionController.Update)
+	Submission.Delete("/",submissionController.Delete)
 	
-	leaveRoute := api.Group("claim_submission")
+	leaveRoute := api.Group("leave",middlewares.JWTProtected())
 	leaveRoute.Post("/",leaveController.Create)
-	leaveRoute.Get("/",leaveController.FindAll)
+	leaveRoute.Get("/all",leaveController.FindAll)
 	leaveRoute.Put("/",leaveController.Update)
 	leaveRoute.Delete("/",leaveController.Delete)
 	

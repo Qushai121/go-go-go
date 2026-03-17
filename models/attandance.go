@@ -7,7 +7,7 @@ import (
 )
 
 type Attendance struct {
-	AttendanceId uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"attendance_id"`
+	AttendanceId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"attendance_id"`
 
 	UserId   uuid.UUID `gorm:"type:uuid;not null" json:"user_id"`
 	DeviceId string    `gorm:"type:varchar(150)" json:"device_id"`

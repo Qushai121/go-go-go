@@ -19,17 +19,18 @@ func NewOfficeController(repo repositories.OfficeRepository) *OfficeController {
 
 func (c *OfficeController) Create(ctx *fiber.Ctx) error {
 
-	var office models.Office
+	var data models.Office
 
-	if err := ctx.BodyParser(&office); err != nil {
+	if err := ctx.BodyParser(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
+	data.CreatedBy = ctx.Locals("user_id").(string)
 
-	if err := c.repo.Create(&office); err != nil {
+	if err := c.repo.Create(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, office)
+	return utils.Success(ctx, data)
 }
 
 func (c *OfficeController) FindAll(ctx *fiber.Ctx) error {
@@ -51,20 +52,20 @@ func (c *OfficeController) FindAll(ctx *fiber.Ctx) error {
 
 func (c *OfficeController) Update(ctx *fiber.Ctx) error {
 
-	var office models.Office
+	var data models.Office
 
-	if err := ctx.BodyParser(&office); err != nil {
+	if err := ctx.BodyParser(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
 	userId := ctx.Locals("user_id").(string)
-	office.UpdatedUser = &userId
+	data.UpdatedBy = &userId
 
-	if err := c.repo.Update(&office); err != nil {
+	if err := c.repo.Update(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, office)
+	return utils.Success(ctx, data)
 }
 
 func (c *OfficeController) Delete(ctx *fiber.Ctx) error {

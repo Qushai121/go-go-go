@@ -18,15 +18,17 @@ func NewCustomerController(repo repositories.CustomerRepository) *CustomerContro
 }
 
 func (c *CustomerController) Create(ctx *fiber.Ctx) error {
-	var customer models.Customer
-	if err := ctx.BodyParser(&customer); err != nil {
+	var data models.Customer
+	if err := ctx.BodyParser(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
-	if err := c.repo.Create(&customer);err != nil {
+	data.CreatedBy = ctx.Locals("user_id").(string)
+
+	if err := c.repo.Create(&data);err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, customer);
+	return utils.Success(ctx, data);
 }
 
 func (c *CustomerController) FindAll(ctx *fiber.Ctx) error {

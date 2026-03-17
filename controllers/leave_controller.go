@@ -7,7 +7,6 @@ import (
 	"hrms_go/utils"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 type LeaveController struct {
@@ -19,20 +18,17 @@ func NewLeaveController(repo repositories.LeaveRepository) *LeaveController {
 }
 
 func (c *LeaveController) Create(ctx *fiber.Ctx) error {
-	var leave models.Leave
-	if err := ctx.BodyParser(&leave); err != nil {
+	var data models.Leave
+	if err := ctx.BodyParser(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
+	data.CreatedBy = ctx.Locals("user_id").(string)
 
-	if leave.LeaveID == uuid.Nil {
-		leave.LeaveID = uuid.New()
-	}
-
-	if err := c.repo.Create(&leave); err != nil {
+	if err := c.repo.Create(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, leave)
+	return utils.Success(ctx, data)
 }
 
 func (c *LeaveController) FindAll(ctx *fiber.Ctx) error {
@@ -51,20 +47,19 @@ func (c *LeaveController) FindAll(ctx *fiber.Ctx) error {
 }
 
 func (c *LeaveController) Update(ctx *fiber.Ctx) error {
-	var leave models.Leave
+	var data models.Leave
 
-	if err := ctx.BodyParser(&leave); err != nil {
+	if err := ctx.BodyParser(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
-
 	userId := ctx.Locals("user_id").(string)
-	leave.UpdatedBy = &userId // optional if you track who updated
+	data.UpdatedBy = &userId 
 
-	if err := c.repo.Update(&leave); err != nil {
+	if err := c.repo.Update(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, leave)
+	return utils.Success(ctx, data)
 }
 
 func (c *LeaveController) Delete(ctx *fiber.Ctx) error {

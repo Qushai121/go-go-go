@@ -18,9 +18,9 @@ func NewAttendanceController(repo repositories.AttendanceRepository) *Attendance
 }
 
 func (c *AttendanceController) Create(ctx *fiber.Ctx) error {
-	var attendance models.Attendance
+	var data models.Attendance
 
-	if err := ctx.BodyParser(&attendance); err != nil {
+	if err := ctx.BodyParser(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -35,7 +35,7 @@ func (c *AttendanceController) Create(ctx *fiber.Ctx) error {
 	}
 
 	if(fileUrl != nil){
-		attendance.PhotoUrl = *fileUrl
+		data.PhotoUrl = *fileUrl
 	}
 
 	allowed := map[string]bool{
@@ -44,18 +44,27 @@ func (c *AttendanceController) Create(ctx *fiber.Ctx) error {
 		"OFFICE": true,
 	}
 
-	if !allowed[attendance.Activity] {
+	if !allowed[data.Activity] {
 		return utils.Error(ctx, 400, "activity must be WFH, VISIT, or OFFICE")
 	}
 
-	if err := c.repo.Create(&attendance); err != nil {
+	allowedCheckType := map[string]bool{
+		"1":true,
+		"2":true,
+	}
+
+	if !allowedCheckType[data.CheckType]{
+		return utils.Error(ctx, 400, "checktype value must be 1 or 2")
+	}
+
+	if err := c.repo.Create(&data); err != nil {
 		if fileUrl != nil {
 			utils.RemoveFileFromPath(*fileUrl);
 		}
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, attendance)
+	return utils.Success(ctx, data)
 }
 
 func (c *AttendanceController) FindAll(ctx *fiber.Ctx) error {
@@ -74,13 +83,12 @@ func (c *AttendanceController) FindAll(ctx *fiber.Ctx) error {
 }
 
 func (c *AttendanceController) FindByUser(ctx *fiber.Ctx) error {
-	userId := ctx.Params("user_id")
-
 	queryParams := dto.PaginateFieldDto{}
 	if err := ctx.QueryParser(&queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
+	userId := ctx.Locals("user_id").(string)
 	data, err := c.repo.FindByUser(userId, &queryParams)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
