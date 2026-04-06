@@ -17,6 +17,16 @@ func NewUserController(repo repositories.UserRepository) *UserController {
 	return &UserController{repo}
 }
 
+// Create User godoc
+// @Summary Create user
+// @Description Create new user
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param request body models.User true "User data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/users [post]
 func (c *UserController) Create(ctx fiber.Ctx) error {
 	var user models.User
 	if err := ctx.Bind().Body(&user); err != nil {
@@ -34,6 +44,15 @@ func (c *UserController) Create(ctx fiber.Ctx) error {
 	return utils.Success(ctx, user)
 }
 
+// Get All Users godoc
+// @Summary Get all users
+// @Description Get list of users
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/users [get]
 func (c *UserController) FindAll(ctx fiber.Ctx) error {
 	users, err := c.repo.FindAll()
 	if err != nil {
@@ -42,6 +61,16 @@ func (c *UserController) FindAll(ctx fiber.Ctx) error {
 	return utils.Success(ctx, users)
 }
 
+// Update User Shift godoc
+// @Summary Update user shift
+// @Description Update shift for a user
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param request body models.User true "User shift data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/users/update-shift [post]
 func (c *UserController) UpdateUserShift(ctx fiber.Ctx) error {
 	var data models.User
 	realData := models.User{}
@@ -61,6 +90,17 @@ func (c *UserController) UpdateUserShift(ctx fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
+// Update User Picture godoc
+// @Summary Update user profile picture
+// @Description Upload and update user profile picture
+// @Tags Users
+// @Accept multipart/form-data
+// @Produce json
+// @Param user_id formData string true "User ID (UUID)"
+// @Param profile_picture_url formData file true "Profile picture file"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/users/update-profile-picture [post]
 func (c *UserController) UpdateUserPicture(ctx fiber.Ctx) error {
 
 	realData := models.User{}
