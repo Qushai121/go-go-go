@@ -6,7 +6,7 @@ import (
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type ParamGroupController struct {
@@ -17,10 +17,19 @@ func NewParamGroupController(repo repositories.ParamGroupRepository) *ParamGroup
 	return &ParamGroupController{repo}
 }
 
-func (c *ParamGroupController) Create(ctx *fiber.Ctx) error {
+// Create Param Group godoc
+// @Summary Create param group
+// @Description Create new param group
+// @Tags Param Group
+// @Accept json
+// @Produce json
+// @Param request body models.ParamGroup true "Param Group data"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/param-group [post]
+func (c *ParamGroupController) Create(ctx fiber.Ctx) error {
 	var paramGroup models.ParamGroup
 
-	if err := ctx.BodyParser(&paramGroup); err != nil {
+	if err := ctx.Bind().Body(&paramGroup); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -34,10 +43,20 @@ func (c *ParamGroupController) Create(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, paramGroup)
 }
 
-func (c *ParamGroupController) FindAll(ctx *fiber.Ctx) error {
+// Get All Param Group godoc
+// @Summary Get all param groups
+// @Description Get list of param groups with pagination
+// @Tags Param Group
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/param-group [get]
+func (c *ParamGroupController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.QueryParser(&queryParams); err != nil {
+	if err := ctx.Bind().Query(&queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -49,10 +68,19 @@ func (c *ParamGroupController) FindAll(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
-func (c *ParamGroupController) Update(ctx *fiber.Ctx) error {
+// Update Param Group godoc
+// @Summary Update param group
+// @Description Update existing param group
+// @Tags Param Group
+// @Accept json
+// @Produce json
+// @Param request body models.ParamGroup true "Param Group data"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/param-group [put]
+func (c *ParamGroupController) Update(ctx fiber.Ctx) error {
 	data := models.ParamGroup{}
 
-	if err := ctx.BodyParser(&data); err != nil {
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -66,7 +94,16 @@ func (c *ParamGroupController) Update(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
-func (c *ParamGroupController) Delete(ctx *fiber.Ctx) error {
+// Delete Param Group godoc
+// @Summary Delete param group
+// @Description Delete param group by ID
+// @Tags Param Group
+// @Accept json
+// @Produce json
+// @Param id path string true "Param Group ID"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/param-group/{id} [delete]
+func (c *ParamGroupController) Delete(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 
 	if err := c.repo.Delete(id); err != nil {

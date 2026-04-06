@@ -21,7 +21,7 @@ type customerRepository struct {
 }
 
 func (c *customerRepository) Delete(customerId string) error {
-	return c.db.Delete(&models.Customer{},"customer_id = ?",customerId).Error
+	return c.db.Delete(&models.Customer{}, "customer_id = ?", customerId).Error
 }
 
 func (c *customerRepository) Update(customer *models.Customer) error {
@@ -34,20 +34,20 @@ func (c *customerRepository) Create(customer *models.Customer) error {
 
 func (c *customerRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Customer], error) {
 	var data []models.Customer
-	modelDb := c.db.Model(&models.Customer{}) 
-	var totalRecord int64;
+	modelDb := c.db.Model(&models.Customer{})
+	var totalRecord int64
 
 	dataAkhir := response.PaginateResponseDto[[]models.Customer]{
-		Data: data,
-		TotalRecord : totalRecord,
+		Data:        data,
+		TotalRecord: totalRecord,
 	}
-	
-	if(queryParams.SortBy == nil){
+
+	if queryParams.SortBy == nil {
 		sort := "customer_id"
 		queryParams.SortBy = &sort
 	}
-	
-	err := utils.GetQuery(queryParams,modelDb,&totalRecord).Find(&data).Error
+
+	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
 	return dataAkhir, err
 }
 

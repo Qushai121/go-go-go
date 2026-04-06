@@ -6,31 +6,52 @@ import (
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type ShiftController struct {
 	repo repositories.ShiftRepository
 }
 
-func (c *ShiftController) Create(ctx *fiber.Ctx) error {
+// Create Shift godoc
+// @Summary Create shift
+// @Description Create new shift
+// @Tags Shift
+// @Accept json
+// @Produce json
+// @Param request body models.Shift true "Shift data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/shift [post]
+func (c *ShiftController) Create(ctx fiber.Ctx) error {
 	var data models.Shift
-	if err := ctx.BodyParser(&data); err != nil {
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 	data.CreatedBy = ctx.Locals("user_id").(string)
 
-	if err := c.repo.Create(&data);err != nil {
+	if err := c.repo.Create(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, data);
+	return utils.Success(ctx, data)
 }
 
-func (c *ShiftController) FindAll(ctx *fiber.Ctx) error {
+// Get All Shift godoc
+// @Summary Get all shifts
+// @Description Get list of shifts with pagination
+// @Tags Shift
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/shift [get]
+func (c *ShiftController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.QueryParser(&queryParams); err != nil {
+	if err := ctx.Bind().Query(&queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -41,28 +62,48 @@ func (c *ShiftController) FindAll(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, shift)
 }
 
-func (c *ShiftController) Update(ctx *fiber.Ctx) error {
+// Update Shift godoc
+// @Summary Update shift
+// @Description Update existing shift
+// @Tags Shift
+// @Accept json
+// @Produce json
+// @Param request body models.Shift true "Shift data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/shift [put]
+func (c *ShiftController) Update(ctx fiber.Ctx) error {
 	data := models.Shift{}
-	
-	if err := ctx.BodyParser(&data); err != nil {
+
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 	userId := ctx.Locals("user_id").(string)
 	data.UpdatedBy = &userId
 
-	if err := c.repo.Update(&data);err != nil {
+	if err := c.repo.Update(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, data);
+	return utils.Success(ctx, data)
 }
 
-func (c *ShiftController) Delete(ctx *fiber.Ctx) error  {
+// Delete Shift godoc
+// @Summary Delete shift
+// @Description Delete shift by ID
+// @Tags Shift
+// @Accept json
+// @Produce json
+// @Param id path string true "Shift ID"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/shift/{id} [delete]
+func (c *ShiftController) Delete(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 	if err := c.repo.Delete(id); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
-	return utils.Success(ctx,nil)
+	return utils.Success(ctx, nil)
 }
 
 func NewShiftController(repo repositories.ShiftRepository) *ShiftController {

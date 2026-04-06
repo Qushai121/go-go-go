@@ -6,7 +6,7 @@ import (
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type SubmissionController struct {
@@ -17,10 +17,20 @@ func NewSubmissionController(repo repositories.SubmissionRepository) *Submission
 	return &SubmissionController{repo}
 }
 
-func (c *SubmissionController) Create(ctx *fiber.Ctx) error {
+// Create Submission godoc
+// @Summary Create submission
+// @Description Create new claim submission
+// @Tags Submission
+// @Accept json
+// @Produce json
+// @Param request body models.Submission true "Submission data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/claim_submission [post]
+func (c *SubmissionController) Create(ctx fiber.Ctx) error {
 	data := models.Submission{}
 
-	if err := ctx.BodyParser(&data); err != nil {
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -34,10 +44,21 @@ func (c *SubmissionController) Create(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
-func (c *SubmissionController) FindAll(ctx *fiber.Ctx) error {
+// Get All Submission godoc
+// @Summary Get all submissions
+// @Description Get list of submissions with pagination
+// @Tags Submission
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/claim_submission [get]
+func (c *SubmissionController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.QueryParser(&queryParams); err != nil {
+	if err := ctx.Bind().Query(&queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -48,24 +69,45 @@ func (c *SubmissionController) FindAll(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, result)
 }
 
-func (c *SubmissionController) FindByUser(ctx *fiber.Ctx) error {
+// Get My Submission godoc
+// @Summary Get current user submissions
+// @Description Get submissions by logged-in user
+// @Tags Submission
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/claim_submission/me [get]
+func (c *SubmissionController) FindByUser(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.QueryParser(&queryParams);err != nil{
+	if err := ctx.Bind().Query(&queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
 	userId := ctx.Locals("user_id").(string)
-	result,err := c.repo.FindByUser(userId,&queryParams)
-	if err != nil{
+	result, err := c.repo.FindByUser(userId, &queryParams)
+	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 	return utils.Success(ctx, result)
 }
 
-func (c *SubmissionController) Update(ctx *fiber.Ctx) error {
+// Update Submission godoc
+// @Summary Update submission
+// @Description Update existing submission
+// @Tags Submission
+// @Accept json
+// @Produce json
+// @Param request body models.Submission true "Submission data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/claim_submission [put]
+func (c *SubmissionController) Update(ctx fiber.Ctx) error {
 	data := models.Submission{}
-	if err := ctx.BodyParser(&data); err != nil {
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -78,7 +120,17 @@ func (c *SubmissionController) Update(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
-func (c *SubmissionController) Delete(ctx *fiber.Ctx) error {
+// Delete Submission godoc
+// @Summary Delete submission
+// @Description Delete submission by ID
+// @Tags Submission
+// @Accept json
+// @Produce json
+// @Param id path string true "Submission ID"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/claim_submission/{id} [delete]
+func (c *SubmissionController) Delete(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 	if err := c.repo.Delete(id); err != nil {
 		return utils.Error(ctx, 500, err.Error())

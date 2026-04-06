@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func GetQuery(queryParams *dto.PaginateFieldDto,query *gorm.DB,totalRecord *int64) *gorm.DB {
+func GetQuery(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64) *gorm.DB {
 	query = query.Order(clause.OrderByColumn{
 		Column: clause.Column{
 			Name: queryParams.GetSortByWithDefaultId(queryParams.SortBy),
@@ -15,11 +15,11 @@ func GetQuery(queryParams *dto.PaginateFieldDto,query *gorm.DB,totalRecord *int6
 		Desc: queryParams.GetSortOrderBool(),
 	})
 
-	query.Count(totalRecord);
+	query.Count(totalRecord)
 
-	if offset := queryParams.GetOffset(); offset != nil{
+	if offset := queryParams.GetOffset(); offset != nil {
 		query = query.Limit(*queryParams.PerPage).Offset(*offset)
 	}
 
-	return query;
+	return query
 }

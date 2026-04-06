@@ -1,11 +1,12 @@
 package controllers
 
 import (
+	"hrms_go/dto/request/auth"
 	"hrms_go/models"
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type AuthController struct {
@@ -16,14 +17,19 @@ func NewAuthController(repo repositories.UserRepository) *AuthController {
 	return &AuthController{repo}
 }
 
-func (c *AuthController) Login(ctx *fiber.Ctx) error {
-	type LoginRequest struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
 
-	var req LoginRequest
-	if err := ctx.BodyParser(&req); err != nil {
+// Login godoc
+// @Summary Login
+// @Description Login
+// @Tags Login
+// @Accept json
+// @Produce json
+// @Param request body auth.LoginRequest true "Login Request"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/login [post]
+func (c *AuthController) Login(ctx fiber.Ctx) error {
+	var req auth.LoginRequest
+	if err := ctx.Bind().Body(&req); err != nil {
 		return utils.Error(ctx, 400, "invalid request")
 	}
 

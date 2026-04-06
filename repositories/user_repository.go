@@ -41,11 +41,11 @@ func (r *userRepository) FindByEmail(email string) (*models.User, error) {
 	return &user, err
 }
 
-func (r *userRepository) Update(body *models.User) error  {
-	return r.db.Model(&models.User{}).Where("user_id = ?",body.UserId).Updates(body).Error
+func (r *userRepository) Update(body *models.User) error {
+	return r.db.Model(&models.User{}).Where("user_id = ?", body.UserId).Updates(body).Error
 }
 
-func (r *userRepository) UpdateProfilePicture(body *models.User) error  {
+func (r *userRepository) UpdateProfilePicture(body *models.User) error {
 	var user models.User
 
 	// 1. Get existing user
@@ -61,7 +61,7 @@ func (r *userRepository) UpdateProfilePicture(body *models.User) error  {
 		utils.RemoveFileFromPath(user.ProfilePictureUrl)
 	}
 
-	return r.db.Model(&models.User{}).Where("user_id = ?",body.UserId).Updates(body).Error
+	return r.db.Model(&models.User{}).Where("user_id = ?", body.UserId).Updates(body).Error
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {

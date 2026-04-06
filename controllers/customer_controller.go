@@ -6,7 +6,7 @@ import (
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type CustomerController struct {
@@ -17,24 +17,45 @@ func NewCustomerController(repo repositories.CustomerRepository) *CustomerContro
 	return &CustomerController{repo}
 }
 
-func (c *CustomerController) Create(ctx *fiber.Ctx) error {
+// Create Customer godoc
+// @Summary Create customer
+// @Description Create new customer
+// @Tags Customer
+// @Accept json
+// @Produce json
+// @Param request body models.Customer true "Customer data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/customer [post]
+func (c *CustomerController) Create(ctx fiber.Ctx) error {
 	var data models.Customer
-	if err := ctx.BodyParser(&data); err != nil {
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 	data.CreatedBy = ctx.Locals("user_id").(string)
 
-	if err := c.repo.Create(&data);err != nil {
+	if err := c.repo.Create(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, data);
+	return utils.Success(ctx, data)
 }
 
-func (c *CustomerController) FindAll(ctx *fiber.Ctx) error {
+// Get All Customers godoc
+// @Summary Get all customers
+// @Description Get list of customers with pagination
+// @Tags Customer
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/customer [get]
+func (c *CustomerController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.QueryParser(&queryParams); err != nil {
+	if err := ctx.Bind().Query(&queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -45,26 +66,46 @@ func (c *CustomerController) FindAll(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, customers)
 }
 
-func (c *CustomerController) Update(ctx *fiber.Ctx) error {
+// Update Customer godoc
+// @Summary Update customer
+// @Description Update existing customer
+// @Tags Customer
+// @Accept json
+// @Produce json
+// @Param request body models.Customer true "Customer data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/customer [put]
+func (c *CustomerController) Update(ctx fiber.Ctx) error {
 	data := models.Customer{}
-	
-	if err := ctx.BodyParser(&data); err != nil {
+
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 	userId := ctx.Locals("user_id").(string)
 	data.UpdatedBy = &userId
 
-	if err := c.repo.Update(&data);err != nil {
+	if err := c.repo.Update(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, data);
+	return utils.Success(ctx, data)
 }
 
-func (c *CustomerController) Delete(ctx *fiber.Ctx) error  {
+// Delete Customer godoc
+// @Summary Delete customer
+// @Description Delete customer by ID
+// @Tags Customer
+// @Accept json
+// @Produce json
+// @Param id path string true "Customer ID"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/customer/{id} [delete]
+func (c *CustomerController) Delete(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 	if err := c.repo.Delete(id); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
-	return utils.Success(ctx,nil)
+	return utils.Success(ctx, nil)
 }

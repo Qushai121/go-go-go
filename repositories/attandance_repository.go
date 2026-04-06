@@ -25,7 +25,7 @@ func (r *attendanceRepository) Create(attendance *models.Attendance) error {
 	var count int64
 
 	err := r.db.Model(&models.Attendance{}).
-		Where("user_id = ? AND date = ? AND check_type = ?", 
+		Where("user_id = ? AND date = ? AND check_type = ?",
 			attendance.UserId,
 			attendance.Date,
 			attendance.CheckType).

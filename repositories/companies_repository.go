@@ -25,29 +25,29 @@ func (c *companiesRepository) Create(companies *models.Companies) error {
 }
 
 func (c *companiesRepository) Delete(companiesId string) error {
-	return c.db.Delete(&models.Companies{},"companies_id = ?",companiesId).Error
+	return c.db.Delete(&models.Companies{}, "companies_id = ?", companiesId).Error
 }
 
 func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Companies], error) {
-	data := []models.Companies{};
-	modelDb := c.db.Model(&models.Companies{}) 
-	var totalRecord int64;
+	data := []models.Companies{}
+	modelDb := c.db.Model(&models.Companies{})
+	var totalRecord int64
 
 	dataAkhir := response.PaginateResponseDto[[]models.Companies]{
-		Data: data,
-		TotalRecord : totalRecord,
+		Data:        data,
+		TotalRecord: totalRecord,
 	}
-	
-	if(queryParams.SortBy == nil){
+
+	if queryParams.SortBy == nil {
 		sort := "companies_id"
 		queryParams.SortBy = &sort
 	}
-	
-	if err := utils.GetQuery(queryParams,modelDb,&totalRecord).Find(&data).Error; err != nil{
-		return dataAkhir,err;
+
+	if err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error; err != nil {
+		return dataAkhir, err
 	}
 
-	return dataAkhir,nil;
+	return dataAkhir, nil
 }
 
 func (c *companiesRepository) Update(companies *models.Companies) error {

@@ -1,0 +1,1325 @@
+basePath: /
+definitions:
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  models.Claim:
+    properties:
+      amount:
+        type: number
+      claim_id:
+        type: string
+      claim_type:
+        type: string
+      employee_name:
+        type: string
+      id_submission:
+        type: string
+      receipt_date:
+        type: string
+      remarks:
+        type: string
+      request_number:
+        type: string
+      status:
+        type: string
+    type: object
+  models.Companies:
+    properties:
+      companies_code:
+        type: string
+      companies_id:
+        type: string
+      companies_name:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Customer:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      customer_id:
+        type: string
+      location_code:
+        type: string
+      location_name:
+        type: string
+      radius_meter:
+        type: integer
+      target_latitude:
+        type: string
+      target_longitude:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Leave:
+    properties:
+      cancellation_reason:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      employee_name:
+        type: string
+      end_date:
+        type: string
+      leave_balance:
+        type: number
+      leave_id:
+        type: string
+      leave_type:
+        type: string
+      message:
+        type: string
+      req_date:
+        type: string
+      request_number:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Office:
+    properties:
+      company_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      current_utc_offset:
+        type: string
+      max_radius:
+        type: integer
+      object_code:
+        type: string
+      office_address:
+        type: string
+      office_city:
+        type: string
+      office_code:
+        type: string
+      office_code_ha:
+        type: string
+      office_code_sunfish:
+        type: string
+      office_id:
+        type: string
+      office_latitude:
+        type: string
+      office_longitude:
+        type: string
+      office_name:
+        type: string
+      office_phone:
+        type: string
+      office_pic:
+        type: string
+      office_province:
+        type: string
+      office_subdistrict:
+        type: string
+      office_ward:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Param:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      param_code:
+        type: string
+      param_id:
+        type: string
+      param_name:
+        type: string
+      paramGroup:
+        $ref: '#/definitions/models.ParamGroup'
+      paramgroup_id:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.ParamGroup:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      paramgroup_code:
+        type: string
+      paramgroup_id:
+        type: string
+      paramgroup_name:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Setting:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      setting_id:
+        type: string
+      setting_name:
+        type: string
+      setting_value:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Shift:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      end_time:
+        type: string
+      grace_period:
+        type: integer
+      shift_code:
+        type: string
+      shift_duration:
+        type: integer
+      shift_id:
+        type: string
+      shift_name:
+        type: string
+      start_time:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Submission:
+    properties:
+      amount:
+        type: number
+      claims:
+        items:
+          $ref: '#/definitions/models.Claim'
+        type: array
+      remarks:
+        type: string
+      request_number:
+        type: string
+      status:
+        type: string
+      submission_id:
+        type: string
+      submit_date:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: string
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      email:
+        type: string
+      employee_nik:
+        type: string
+      fullname:
+        type: string
+      password:
+        type: string
+      profile_picture_url:
+        type: string
+      role:
+        type: string
+      shift:
+        $ref: '#/definitions/models.Shift'
+      shift_id:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact: {}
+  description: This is HRMS API documentation
+  title: HRMS API
+  version: "1.0"
+paths:
+  /api/attendance:
+    get:
+      consumes:
+      - application/json
+      description: Get all attendance with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all attendance
+      tags:
+      - Attendance
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create attendance with photo upload
+      parameters:
+      - description: Activity (WFH, VISIT, OFFICE)
+        enum:
+        - WFH
+        - VISIT
+        - OFFICE
+        in: formData
+        name: activity
+        required: true
+        type: string
+      - description: Check type (1=IN, 2=OUT)
+        enum:
+        - "1"
+        - "2"
+        in: formData
+        name: check_type
+        required: true
+        type: string
+      - description: Photo file
+        in: formData
+        name: photo_url
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create attendance
+      tags:
+      - Attendance
+  /api/attendance/me:
+    get:
+      consumes:
+      - application/json
+      description: Get attendance by logged-in user
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user attendance
+      tags:
+      - Attendance
+  /api/claim_submission:
+    get:
+      consumes:
+      - application/json
+      description: Get list of submissions with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all submissions
+      tags:
+      - Submission
+    post:
+      consumes:
+      - application/json
+      description: Create new claim submission
+      parameters:
+      - description: Submission data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Submission'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create submission
+      tags:
+      - Submission
+    put:
+      consumes:
+      - application/json
+      description: Update existing submission
+      parameters:
+      - description: Submission data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Submission'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update submission
+      tags:
+      - Submission
+  /api/claim_submission/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete submission by ID
+      parameters:
+      - description: Submission ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete submission
+      tags:
+      - Submission
+  /api/claim_submission/me:
+    get:
+      consumes:
+      - application/json
+      description: Get submissions by logged-in user
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user submissions
+      tags:
+      - Submission
+  /api/companies:
+    get:
+      consumes:
+      - application/json
+      description: Get list of companies with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all companies
+      tags:
+      - Companies
+    post:
+      consumes:
+      - application/json
+      description: Create new company
+      parameters:
+      - description: Company data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Companies'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create company
+      tags:
+      - Companies
+    put:
+      consumes:
+      - application/json
+      description: Update existing company
+      parameters:
+      - description: Company data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Companies'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update company
+      tags:
+      - Companies
+  /api/customer:
+    get:
+      consumes:
+      - application/json
+      description: Get list of customers with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all customers
+      tags:
+      - Customer
+    post:
+      consumes:
+      - application/json
+      description: Create new customer
+      parameters:
+      - description: Customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Customer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create customer
+      tags:
+      - Customer
+    put:
+      consumes:
+      - application/json
+      description: Update existing customer
+      parameters:
+      - description: Customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Customer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update customer
+      tags:
+      - Customer
+  /api/customer/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete customer by ID
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete customer
+      tags:
+      - Customer
+  /api/leave:
+    get:
+      consumes:
+      - application/json
+      description: Get list of leave with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all leave
+      tags:
+      - Leave
+    post:
+      consumes:
+      - application/json
+      description: Create new leave request
+      parameters:
+      - description: Leave data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Leave'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create leave
+      tags:
+      - Leave
+    put:
+      consumes:
+      - application/json
+      description: Update existing leave
+      parameters:
+      - description: Leave data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Leave'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update leave
+      tags:
+      - Leave
+  /api/leave/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete leave by ID
+      parameters:
+      - description: Leave ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete leave
+      tags:
+      - Leave
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: Login Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login
+      tags:
+      - Login
+  /api/office:
+    get:
+      consumes:
+      - application/json
+      description: Get list of offices with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all offices
+      tags:
+      - Office
+    post:
+      consumes:
+      - application/json
+      description: Create new office
+      parameters:
+      - description: Office data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Office'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create office
+      tags:
+      - Office
+    put:
+      consumes:
+      - application/json
+      description: Update existing office
+      parameters:
+      - description: Office data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Office'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update office
+      tags:
+      - Office
+  /api/office/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete office by ID
+      parameters:
+      - description: Office ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete office
+      tags:
+      - Office
+  /api/param:
+    get:
+      consumes:
+      - application/json
+      description: Get list of params with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all params
+      tags:
+      - Param
+    post:
+      consumes:
+      - application/json
+      description: Create new parameter
+      parameters:
+      - description: Param data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Param'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create param
+      tags:
+      - Param
+    put:
+      consumes:
+      - application/json
+      description: Update existing param
+      parameters:
+      - description: Param data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Param'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update param
+      tags:
+      - Param
+  /api/param-group:
+    get:
+      consumes:
+      - application/json
+      description: Get list of param groups with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all param groups
+      tags:
+      - Param Group
+    post:
+      consumes:
+      - application/json
+      description: Create new param group
+      parameters:
+      - description: Param Group data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ParamGroup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create param group
+      tags:
+      - Param Group
+    put:
+      consumes:
+      - application/json
+      description: Update existing param group
+      parameters:
+      - description: Param Group data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ParamGroup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update param group
+      tags:
+      - Param Group
+  /api/param-group/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete param group by ID
+      parameters:
+      - description: Param Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete param group
+      tags:
+      - Param Group
+  /api/param/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete param by ID
+      parameters:
+      - description: Param ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete param
+      tags:
+      - Param
+  /api/setting:
+    get:
+      consumes:
+      - application/json
+      description: Get list of settings with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all settings
+      tags:
+      - Setting
+    post:
+      consumes:
+      - application/json
+      description: Create new setting
+      parameters:
+      - description: Setting data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Setting'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create setting
+      tags:
+      - Setting
+    put:
+      consumes:
+      - application/json
+      description: Update existing setting
+      parameters:
+      - description: Setting data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Setting'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update setting
+      tags:
+      - Setting
+  /api/setting/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete setting by ID
+      parameters:
+      - description: Setting ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete setting
+      tags:
+      - Setting
+  /api/setup:
+    post:
+      consumes:
+      - application/json
+      description: create first admin user
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Initialize admin
+      tags:
+      - Setup
+  /api/shift:
+    get:
+      consumes:
+      - application/json
+      description: Get list of shifts with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all shifts
+      tags:
+      - Shift
+    post:
+      consumes:
+      - application/json
+      description: Create new shift
+      parameters:
+      - description: Shift data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Shift'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create shift
+      tags:
+      - Shift
+    put:
+      consumes:
+      - application/json
+      description: Update existing shift
+      parameters:
+      - description: Shift data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Shift'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update shift
+      tags:
+      - Shift
+  /api/shift/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete shift by ID
+      parameters:
+      - description: Shift ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete shift
+      tags:
+      - Shift
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

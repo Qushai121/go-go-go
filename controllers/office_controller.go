@@ -6,7 +6,7 @@ import (
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type OfficeController struct {
@@ -17,11 +17,21 @@ func NewOfficeController(repo repositories.OfficeRepository) *OfficeController {
 	return &OfficeController{repo}
 }
 
-func (c *OfficeController) Create(ctx *fiber.Ctx) error {
+// Create Office godoc
+// @Summary Create office
+// @Description Create new office
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param request body models.Office true "Office data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/office [post]
+func (c *OfficeController) Create(ctx fiber.Ctx) error {
 
 	var data models.Office
 
-	if err := ctx.BodyParser(&data); err != nil {
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 	data.CreatedBy = ctx.Locals("user_id").(string)
@@ -33,11 +43,22 @@ func (c *OfficeController) Create(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
-func (c *OfficeController) FindAll(ctx *fiber.Ctx) error {
+// Get All Office godoc
+// @Summary Get all offices
+// @Description Get list of offices with pagination
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/office [get]
+func (c *OfficeController) FindAll(ctx fiber.Ctx) error {
 
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.QueryParser(&queryParams); err != nil {
+	if err := ctx.Bind().Query(&queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -50,11 +71,21 @@ func (c *OfficeController) FindAll(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
-func (c *OfficeController) Update(ctx *fiber.Ctx) error {
+// Update Office godoc
+// @Summary Update office
+// @Description Update existing office
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param request body models.Office true "Office data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/office [put]
+func (c *OfficeController) Update(ctx fiber.Ctx) error {
 
 	var data models.Office
 
-	if err := ctx.BodyParser(&data); err != nil {
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -68,7 +99,17 @@ func (c *OfficeController) Update(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
-func (c *OfficeController) Delete(ctx *fiber.Ctx) error {
+// Delete Office godoc
+// @Summary Delete office
+// @Description Delete office by ID
+// @Tags Office
+// @Accept json
+// @Produce json
+// @Param id path string true "Office ID"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/office/{id} [delete]
+func (c *OfficeController) Delete(ctx fiber.Ctx) error {
 
 	id := ctx.Params("id")
 

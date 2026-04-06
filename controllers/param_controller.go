@@ -6,7 +6,7 @@ import (
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type ParamController struct {
@@ -17,10 +17,20 @@ func NewParamController(repo repositories.ParamRepository) *ParamController {
 	return &ParamController{repo}
 }
 
-func (c *ParamController) Create(ctx *fiber.Ctx) error {
+// Create Param godoc
+// @Summary Create param
+// @Description Create new parameter
+// @Tags Param
+// @Accept json
+// @Produce json
+// @Param request body models.Param true "Param data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/param [post]
+func (c *ParamController) Create(ctx fiber.Ctx) error {
 	var param models.Param
 
-	if err := ctx.BodyParser(&param); err != nil {
+	if err := ctx.Bind().Body(&param); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -34,10 +44,21 @@ func (c *ParamController) Create(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, param)
 }
 
-func (c *ParamController) FindAll(ctx *fiber.Ctx) error {
+// Get All Param godoc
+// @Summary Get all params
+// @Description Get list of params with pagination
+// @Tags Param
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/param [get]
+func (c *ParamController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.QueryParser(&queryParams); err != nil {
+	if err := ctx.Bind().Query(&queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -49,10 +70,20 @@ func (c *ParamController) FindAll(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
-func (c *ParamController) Update(ctx *fiber.Ctx) error {
+// Update Param godoc
+// @Summary Update param
+// @Description Update existing param
+// @Tags Param
+// @Accept json
+// @Produce json
+// @Param request body models.Param true "Param data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/param [put]
+func (c *ParamController) Update(ctx fiber.Ctx) error {
 	data := models.Param{}
 
-	if err := ctx.BodyParser(&data); err != nil {
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -66,7 +97,17 @@ func (c *ParamController) Update(ctx *fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
-func (c *ParamController) Delete(ctx *fiber.Ctx) error {
+// Delete Param godoc
+// @Summary Delete param
+// @Description Delete param by ID
+// @Tags Param
+// @Accept json
+// @Produce json
+// @Param id path string true "Param ID"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/param/{id} [delete]
+func (c *ParamController) Delete(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 
 	if err := c.repo.Delete(id); err != nil {

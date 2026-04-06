@@ -7,7 +7,7 @@ import (
 	"hrms_go/utils"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type SetupController struct {
@@ -18,21 +18,29 @@ func NewSetupController(repo repositories.UserRepository) *SetupController {
 	return &SetupController{repo}
 }
 
-func (c *SetupController) InitAdmin(ctx *fiber.Ctx) error {
+// InitAdmin godoc
+// @Summary Initialize admin
+// @Description create first admin user
+// @Tags Setup
+// @Accept json
+// @Produce json
+// @Param request body models.User true "User data"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/setup [post]
+func (c *SetupController) InitAdmin(ctx fiber.Ctx) error {
 	count, _ := c.repo.Count()
 	if count > 0 {
 		return utils.Error(ctx, 403, "setup already completed")
 	}
 
 	var user models.User
-	if err := ctx.BodyParser(&user); err != nil {
+	if err := ctx.Bind().Body(&user); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
 	user.Password = strings.TrimSpace(user.Password)
 
 	fmt.Println(user.Password)
-	
 
 	hashed, _ := utils.HashPassword(user.Password)
 	user.Password = hashed
