@@ -25,6 +25,7 @@ func NewParamGroupController(repo repositories.ParamGroupRepository) *ParamGroup
 // @Produce json
 // @Param request body models.ParamGroup true "Param Group data"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/param-group [post]
 func (c *ParamGroupController) Create(ctx fiber.Ctx) error {
 	var paramGroup models.ParamGroup
@@ -52,6 +53,7 @@ func (c *ParamGroupController) Create(ctx fiber.Ctx) error {
 // @Param page query int false "Page number"
 // @Param limit query int false "Items per page"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/param-group [get]
 func (c *ParamGroupController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
@@ -76,6 +78,7 @@ func (c *ParamGroupController) FindAll(ctx fiber.Ctx) error {
 // @Produce json
 // @Param request body models.ParamGroup true "Param Group data"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/param-group [put]
 func (c *ParamGroupController) Update(ctx fiber.Ctx) error {
 	data := models.ParamGroup{}
@@ -102,6 +105,7 @@ func (c *ParamGroupController) Update(ctx fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Param Group ID"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/param-group/{id} [delete]
 func (c *ParamGroupController) Delete(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
