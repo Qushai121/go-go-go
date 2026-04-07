@@ -1003,6 +1003,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Get all param groups
       tags:
       - Param Group
@@ -1025,6 +1027,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Create param group
       tags:
       - Param Group
@@ -1047,6 +1051,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Update param group
       tags:
       - Param Group
@@ -1069,6 +1075,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete param group
       tags:
       - Param Group
@@ -1317,6 +1325,102 @@ paths:
       summary: Delete shift
       tags:
       - Shift
+  /api/users:
+    get:
+      consumes:
+      - application/json
+      description: Get list of users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create new user
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create user
+      tags:
+      - Users
+  /api/users/update-profile-picture:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload and update user profile picture
+      parameters:
+      - description: User ID (UUID)
+        in: formData
+        name: user_id
+        required: true
+        type: string
+      - description: Profile picture file
+        in: formData
+        name: profile_picture_url
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user profile picture
+      tags:
+      - Users
+  /api/users/update-shift:
+    post:
+      consumes:
+      - application/json
+      description: Update shift for a user
+      parameters:
+      - description: User shift data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user shift
+      tags:
+      - Users
 securityDefinitions:
   BearerAuth:
     in: header
