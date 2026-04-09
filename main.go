@@ -11,6 +11,7 @@ import (
 
 	"github.com/gofiber/contrib/v3/swaggo"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/static"
 	"github.com/joho/godotenv"
 )
 
@@ -32,7 +33,7 @@ func main() {
 
 	app := fiber.New()
 	app.Get("/swagger/*", swaggo.HandlerDefault)
-	// app.Static("/api/uploads", "./uploads")
+	app.Use("/uploads",static.New("./uploads"))
 	routes.Setup(app, db)
 
 	log.Fatal(app.Listen(":" + os.Getenv("APP_PORT")))

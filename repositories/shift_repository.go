@@ -25,13 +25,15 @@ func (s *shiftRepository) Create(shift *models.Shift) error {
 }
 
 func (s *shiftRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Shift], error) {
-	data := []models.Shift{}
+	var data = []models.Shift{}
 	modelDb := s.db.Model(&models.Shift{})
 	var totalRecord int64
+	var totalPage int
 
 	dataAkhir := response.PaginateResponseDto[[]models.Shift]{
 		Data:        data,
 		TotalRecord: totalRecord,
+		TotalPage: totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -39,7 +41,7 @@ func (s *shiftRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		queryParams.SortBy = &sort
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
+	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 
@@ -48,7 +50,7 @@ func (c *shiftRepository) Delete(shiftId string) error {
 }
 
 func (c *shiftRepository) Update(shift *models.Shift) error {
-	return c.db.Model(&models.Companies{}).Updates(&shift).Error
+	return c.db.Model(&models.Shift{}).Where("shift_id = ?",shift.ShiftId).Updates(&shift).Error
 }
 
 func NewShiftRepository(db *gorm.DB) ShiftRepository {

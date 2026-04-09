@@ -45,7 +45,7 @@ func (c *CompaniesController) Create(ctx fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param page query int false "Page number"
-// @Param limit query int false "Items per page"
+// @Param perPage query int false "Per page"
 // @Success 200 {object} map[string]interface{}
 // @Security BearerAuth
 // @Router /api/companies [get]

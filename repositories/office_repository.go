@@ -35,15 +35,17 @@ func (r *officeRepository) Delete(id string) error {
 }
 
 func (r *officeRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Office], error) {
-
 	var data []models.Office
 	var totalRecord int64
+	var totalPage int
+
 
 	modelDb := r.db.Model(&models.Office{})
 
 	dataAkhir := response.PaginateResponseDto[[]models.Office]{
 		Data:        data,
 		TotalRecord: totalRecord,
+		TotalPage: totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -51,11 +53,7 @@ func (r *officeRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.
 		queryParams.SortBy = &sort
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
-
-	dataAkhir.Data = data
-	dataAkhir.TotalRecord = totalRecord
-
+	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 

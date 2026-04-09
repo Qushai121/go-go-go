@@ -284,6 +284,29 @@ definitions:
       user_id:
         type: string
     type: object
+  submission.PostSubmissionDto:
+    properties:
+      amount:
+        minimum: 0
+        type: number
+      remarks:
+        type: string
+      request_number:
+        type: string
+      status:
+        type: string
+      submission_id:
+        type: string
+      submit_date:
+        type: string
+      user_id:
+        type: string
+    required:
+    - amount
+    - request_number
+    - status
+    - user_id
+    type: object
 host: 127.0.0.1:8080
 info:
   contact: {}
@@ -323,7 +346,15 @@ paths:
       - multipart/form-data
       description: Create attendance with photo upload
       parameters:
-      - description: Activity (WFH, VISIT, OFFICE)
+      - description: User ID (UUID)
+        in: formData
+        name: user_id
+        type: string
+      - description: Device ID
+        in: formData
+        name: device_id
+        type: string
+      - description: Activity
         enum:
         - WFH
         - VISIT
@@ -332,7 +363,7 @@ paths:
         name: activity
         required: true
         type: string
-      - description: Check type (1=IN, 2=OUT)
+      - description: Check type
         enum:
         - "1"
         - "2"
@@ -340,7 +371,57 @@ paths:
         name: check_type
         required: true
         type: string
-      - description: Photo file
+      - description: Description
+        in: formData
+        name: check_description
+        type: string
+      - description: Shift code
+        in: formData
+        name: shift_code
+        type: string
+      - description: Shift duration
+        in: formData
+        name: shift_duration_hours
+        type: integer
+      - description: Date (YYYY-MM-DD)
+        in: formData
+        name: date
+        required: true
+        type: string
+      - description: Time (HH:mm:ss)
+        in: formData
+        name: time
+        required: true
+        type: string
+      - description: Location code
+        in: formData
+        name: location_code
+        type: string
+      - description: Location name
+        in: formData
+        name: location_name
+        type: string
+      - description: Latitude
+        in: formData
+        name: latitude
+        type: number
+      - description: Longitude
+        in: formData
+        name: longitude
+        type: number
+      - description: GPS accuracy
+        in: formData
+        name: gps_accuracy
+        type: number
+      - description: Mock location
+        in: formData
+        name: is_mock_location
+        type: boolean
+      - description: Notes
+        in: formData
+        name: notes
+        type: string
+      - description: Photo
         in: formData
         name: photo_url
         required: true
@@ -422,7 +503,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.Submission'
+          $ref: '#/definitions/submission.PostSubmissionDto'
       produces:
       - application/json
       responses:
@@ -521,9 +602,9 @@ paths:
         in: query
         name: page
         type: integer
-      - description: Items per page
+      - description: Per page
         in: query
-        name: limit
+        name: perPage
         type: integer
       produces:
       - application/json
@@ -1365,6 +1446,22 @@ paths:
       security:
       - BearerAuth: []
       summary: Create user
+      tags:
+      - Users
+  /api/users/me:
+    get:
+      description: Get My User Information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Find Me
       tags:
       - Users
   /api/users/update-profile-picture:

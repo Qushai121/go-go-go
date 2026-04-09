@@ -23,7 +23,6 @@ func SaveFileToPath(file *multipart.FileHeader, folderName string, ctx fiber.Ctx
 	err := ctx.SaveFile(file, "."+path)
 
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 

@@ -44,6 +44,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	users := api.Group("/users", middlewares.JWTProtected())
 	users.Post("/", user.Create)
 	users.Get("/", user.FindAll)
+	users.Get("/me", user.Me)
 	users.Post("/update-shift", user.UpdateUserShift)
 	users.Post("/update-profile-picture", user.UpdateUserPicture)
 
@@ -65,7 +66,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	companiesRoute.Put("/", companies.Update)
 	companiesRoute.Delete("/:id", companies.Delete)
 
-	paramGroup := api.Group("/param-group")
+	paramGroup := api.Group("/param-group",middlewares.JWTProtected())
 	paramGroup.Post("/", paramGroupController.Create)
 	paramGroup.Get("/", paramGroupController.FindAll)
 	paramGroup.Put("/", paramGroupController.Update)
@@ -86,7 +87,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	attendance := api.Group("/attendance", middlewares.JWTProtected())
 	attendance.Post("/", attendanceController.Create)
 	attendance.Get("/", attendanceController.FindAll)
-	attendance.Get("/", attendanceController.FindByUser)
+	attendance.Get("/me", attendanceController.FindByUser)
 
 	office := api.Group("/office", middlewares.JWTProtected())
 	office.Post("/", officeController.Create)
@@ -97,7 +98,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	Submission := api.Group("claim_submission", middlewares.JWTProtected())
 	Submission.Post("/", submissionController.Create)
 	Submission.Get("/", submissionController.FindAll)
-	Submission.Get("/", submissionController.FindByUser)
+	Submission.Get("/me", submissionController.FindByUser)
 	Submission.Put("/", submissionController.Update)
 	Submission.Delete("/:id", submissionController.Delete)
 

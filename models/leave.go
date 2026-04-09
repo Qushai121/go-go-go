@@ -1,7 +1,6 @@
 package models
 
 import (
-	"hrms_go/models/base"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,9 +19,9 @@ type Leave struct {
 	CancellationReason string    `json:"cancellation_reason"`
 	LeaveBalance       float64   `json:"leave_balance"`
 
-	base.AuditFields
+	// base.AuditFields
 }
 
 func (Leave) TableName() string {
-	return "hrms_leave"
+	return "hrms_leaves"
 }

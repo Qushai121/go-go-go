@@ -29,13 +29,16 @@ func (c *companiesRepository) Delete(companiesId string) error {
 }
 
 func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Companies], error) {
-	data := []models.Companies{}
-	modelDb := c.db.Model(&models.Companies{})
+	var data = []models.Companies{}
 	var totalRecord int64
+	var totalPage int
+	modelDb := c.db.Model(&models.Companies{})
+
 
 	dataAkhir := response.PaginateResponseDto[[]models.Companies]{
-		Data:        data,
-		TotalRecord: totalRecord,
+		Data:        	data,
+		TotalRecord: 	totalRecord,
+		TotalPage: 		totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -43,7 +46,7 @@ func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (respon
 		queryParams.SortBy = &sort
 	}
 
-	if err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error; err != nil {
+	if err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error; err != nil {
 		return dataAkhir, err
 	}
 
@@ -51,7 +54,7 @@ func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (respon
 }
 
 func (c *companiesRepository) Update(companies *models.Companies) error {
-	return c.db.Model(&models.Companies{}).Updates(&companies).Error
+	return c.db.Model(&models.Companies{}).Where("companies_id = ?",companies.CompaniesId).Updates(&companies).Error
 }
 
 func NewCompaniesRepository(db *gorm.DB) CompaniesRepository {

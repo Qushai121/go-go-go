@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"hrms_go/dto"
+	"hrms_go/dto/submission"
+	mappers "hrms_go/mapper"
 	"hrms_go/models"
 	"hrms_go/repositories"
 	"hrms_go/utils"
@@ -23,14 +25,20 @@ func NewSubmissionController(repo repositories.SubmissionRepository) *Submission
 // @Tags Submission
 // @Accept json
 // @Produce json
-// @Param request body models.Submission true "Submission data"
+// @Param request body submission.PostSubmissionDto true "Submission data"
 // @Success 200 {object} map[string]interface{}
 // @Security BearerAuth
 // @Router /api/claim_submission [post]
 func (c *SubmissionController) Create(ctx fiber.Ctx) error {
+	body := submission.PostSubmissionDto{}
 	data := models.Submission{}
 
-	if err := ctx.Bind().Body(&data); err != nil {
+	if err := ctx.Bind().Body(&body); err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	data,err := mappers.ToSubmissionModel(body);
+	if err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -106,8 +114,15 @@ func (c *SubmissionController) FindByUser(ctx fiber.Ctx) error {
 // @Security BearerAuth
 // @Router /api/claim_submission [put]
 func (c *SubmissionController) Update(ctx fiber.Ctx) error {
+	body := submission.PostSubmissionDto{}
 	data := models.Submission{}
+
 	if err := ctx.Bind().Body(&data); err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	data,err := mappers.ToSubmissionModel(body);
+	if err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 

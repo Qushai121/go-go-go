@@ -25,7 +25,7 @@ func (c *customerRepository) Delete(customerId string) error {
 }
 
 func (c *customerRepository) Update(customer *models.Customer) error {
-	return c.db.Model(&models.Companies{}).Updates(&customer).Error
+	return c.db.Model(&models.Customer{}).Where("customer_id = ?",customer.CustomerId).Updates(&customer).Error
 }
 
 func (c *customerRepository) Create(customer *models.Customer) error {
@@ -34,20 +34,23 @@ func (c *customerRepository) Create(customer *models.Customer) error {
 
 func (c *customerRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Customer], error) {
 	var data []models.Customer
-	modelDb := c.db.Model(&models.Customer{})
 	var totalRecord int64
+	var totalPage int
 
-	dataAkhir := response.PaginateResponseDto[[]models.Customer]{
-		Data:        data,
-		TotalRecord: totalRecord,
-	}
+	modelDb := c.db.Model(&models.Customer{})
 
 	if queryParams.SortBy == nil {
 		sort := "customer_id"
 		queryParams.SortBy = &sort
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
+	dataAkhir := response.PaginateResponseDto[[]models.Customer]{
+		Data:        	data,
+		TotalRecord: 	totalRecord,
+		TotalPage: 		totalPage,
+	}
+	
+	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 

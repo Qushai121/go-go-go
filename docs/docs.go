@@ -76,13 +76,25 @@ const docTemplate = `{
                 "summary": "Create attendance",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "User ID (UUID)",
+                        "name": "user_id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Device ID",
+                        "name": "device_id",
+                        "in": "formData"
+                    },
+                    {
                         "enum": [
                             "WFH",
                             "VISIT",
                             "OFFICE"
                         ],
                         "type": "string",
-                        "description": "Activity (WFH, VISIT, OFFICE)",
+                        "description": "Activity",
                         "name": "activity",
                         "in": "formData",
                         "required": true
@@ -93,14 +105,88 @@ const docTemplate = `{
                             "2"
                         ],
                         "type": "string",
-                        "description": "Check type (1=IN, 2=OUT)",
+                        "description": "Check type",
                         "name": "check_type",
                         "in": "formData",
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Description",
+                        "name": "check_description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Shift code",
+                        "name": "shift_code",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Shift duration",
+                        "name": "shift_duration_hours",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date (YYYY-MM-DD)",
+                        "name": "date",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time (HH:mm:ss)",
+                        "name": "time",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Location code",
+                        "name": "location_code",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Location name",
+                        "name": "location_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Latitude",
+                        "name": "latitude",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Longitude",
+                        "name": "longitude",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "GPS accuracy",
+                        "name": "gps_accuracy",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Mock location",
+                        "name": "is_mock_location",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Notes",
+                        "name": "notes",
+                        "in": "formData"
+                    },
+                    {
                         "type": "file",
-                        "description": "Photo file",
+                        "description": "Photo",
                         "name": "photo_url",
                         "in": "formData",
                         "required": true
@@ -264,7 +350,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Submission"
+                            "$ref": "#/definitions/submission.PostSubmissionDto"
                         }
                     }
                 ],
@@ -387,8 +473,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Items per page",
-                        "name": "limit",
+                        "description": "Per page",
+                        "name": "perPage",
                         "in": "query"
                     }
                 ],
@@ -1715,6 +1801,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/users/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get My User Information",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Find Me",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/update-profile-picture": {
             "post": {
                 "security": [
@@ -2227,6 +2339,39 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "submission.PostSubmissionDto": {
+            "type": "object",
+            "required": [
+                "amount",
+                "request_number",
+                "status",
+                "user_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "remarks": {
+                    "type": "string"
+                },
+                "request_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "submission_id": {
+                    "type": "string"
+                },
+                "submit_date": {
                     "type": "string"
                 },
                 "user_id": {

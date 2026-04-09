@@ -7,9 +7,9 @@ import (
 )
 
 type ParamGroup struct {
-	ParamGroupId   uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"paramgroup_id"`
-	ParamGroupCode string    `gorm:"type:varchar(50);unique;not null" json:"paramgroup_code"`
-	ParamGroupName string    `gorm:"type:varchar(150);not null" json:"paramgroup_name"`
+	ParamGroupId   uuid.UUID `gorm:"column:paramgroup_id;type:uuid;default:uuid_generate_v4();primaryKey" json:"paramgroup_id"`
+	ParamGroupCode string    `gorm:"column:paramgroup_code;type:varchar(50);unique;not null" json:"paramgroup_code"`
+	ParamGroupName string    `gorm:"column:paramgroup_name;type:varchar(150);not null" json:"paramgroup_name"`
 
 	CreatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`

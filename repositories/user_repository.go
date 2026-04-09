@@ -14,10 +14,18 @@ type UserRepository interface {
 	Count() (int64, error)
 	Update(body *models.User) error
 	UpdateProfilePicture(body *models.User) error
+	Me(userId string) (*models.User, error)
 }
 
 type userRepository struct {
 	db *gorm.DB
+}
+
+// Me implements [UserRepository].
+func (r *userRepository) Me(userId string) (*models.User, error) {
+	var data = models.User{}
+	err := r.db.Model(models.User{}).Where("user_id = ?",userId).Find(&data).Error
+	return &data,err
 }
 
 // Count implements [UserRepository].

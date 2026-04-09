@@ -37,12 +37,15 @@ func (r *paramRepository) Delete(paramId string) error {
 func (r *paramRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Param], error) {
 	var data []models.Param
 	var totalRecord int64
+	var totalPage int
+
 
 	modelDb := r.db.Model(&models.Param{}).Preload("ParamGroup")
 
 	dataAkhir := response.PaginateResponseDto[[]models.Param]{
 		Data:        data,
 		TotalRecord: totalRecord,
+		TotalPage: totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -50,10 +53,7 @@ func (r *paramRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		queryParams.SortBy = &sort
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
-
-	dataAkhir.Data = data
-	dataAkhir.TotalRecord = totalRecord
+	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 
 	return dataAkhir, err
 }

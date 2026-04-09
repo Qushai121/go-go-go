@@ -2,7 +2,8 @@ package controllers
 
 import (
 	"hrms_go/dto"
-	"hrms_go/models"
+	"hrms_go/dto/leave"
+	mappers "hrms_go/mapper"
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
@@ -28,11 +29,17 @@ func NewLeaveController(repo repositories.LeaveRepository) *LeaveController {
 // @Security BearerAuth
 // @Router /api/leave [post]
 func (c *LeaveController) Create(ctx fiber.Ctx) error {
-	var data models.Leave
-	if err := ctx.Bind().Body(&data); err != nil {
+	var body leave.PostLeaveDto
+	if err := ctx.Bind().Body(&body); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
-	data.CreatedBy = ctx.Locals("user_id").(string)
+
+	data,err := mappers.ToLeaveModel(body)
+	if err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	// data.CreatedBy = ctx.Locals("user_id").(string)
 
 	if err := c.repo.Create(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
@@ -78,13 +85,19 @@ func (c *LeaveController) FindAll(ctx fiber.Ctx) error {
 // @Security BearerAuth
 // @Router /api/leave [put]
 func (c *LeaveController) Update(ctx fiber.Ctx) error {
-	var data models.Leave
+	var body leave.PostLeaveDto
 
-	if err := ctx.Bind().Body(&data); err != nil {
+	if err := ctx.Bind().Body(&body); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
-	userId := ctx.Locals("user_id").(string)
-	data.UpdatedBy = &userId
+	
+	data,err := mappers.ToLeaveModel(body)
+	if err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+	
+	// userId := ctx.Locals("user_id").(string)
+	// data.UpdatedBy = &userId
 
 	if err := c.repo.Update(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())

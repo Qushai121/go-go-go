@@ -137,3 +137,22 @@ func (c *UserController) UpdateUserPicture(ctx fiber.Ctx) error {
 
 	return utils.Success(ctx, realData)
 }
+
+
+// Find Me godoc
+// @Summary Find Me
+// @Description Get My User Information
+// @Tags Users
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/users/me [get]
+func (c *UserController) Me(ctx fiber.Ctx) error {
+	userId := ctx.Locals("user_id").(string)
+
+	data, err := c.repo.Me(userId); 
+	if err != nil {
+		return utils.Error(ctx, 500, err.Error())
+	}
+	return utils.Success(ctx, data)
+}

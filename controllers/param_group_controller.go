@@ -28,20 +28,20 @@ func NewParamGroupController(repo repositories.ParamGroupRepository) *ParamGroup
 // @Security BearerAuth
 // @Router /api/param-group [post]
 func (c *ParamGroupController) Create(ctx fiber.Ctx) error {
-	var paramGroup models.ParamGroup
+	data := models.ParamGroup{}
 
-	if err := ctx.Bind().Body(&paramGroup); err != nil {
+	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
 	userId := ctx.Locals("user_id").(string)
-	paramGroup.CreatedBy = userId
+	data.CreatedBy = userId
 
-	if err := c.repo.Create(&paramGroup); err != nil {
+	if err := c.repo.Create(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, paramGroup)
+	return utils.Success(ctx, data)
 }
 
 // Get All Param Group godoc

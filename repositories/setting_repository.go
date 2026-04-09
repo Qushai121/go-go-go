@@ -37,12 +37,14 @@ func (r *settingRepository) Delete(settingId string) error {
 func (r *settingRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Setting], error) {
 	var data []models.Setting
 	var totalRecord int64
+	var totalPage int
 
 	modelDb := r.db.Model(&models.Setting{})
 
 	dataAkhir := response.PaginateResponseDto[[]models.Setting]{
 		Data:        data,
 		TotalRecord: totalRecord,
+		TotalPage: totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -50,10 +52,7 @@ func (r *settingRepository) FindAll(queryParams *dto.PaginateFieldDto) (response
 		queryParams.SortBy = &sort
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
-
-	dataAkhir.Data = data
-	dataAkhir.TotalRecord = totalRecord
+	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 
 	return dataAkhir, err
 }

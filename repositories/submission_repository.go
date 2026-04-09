@@ -24,6 +24,7 @@ type submissionRepository struct {
 func (r *submissionRepository) FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Submission], error) {
 	var data []models.Submission
 	var totalRecord int64
+	var totalPage int
 
 	modelDb := r.db.Model(&models.Submission{}).
 		Where("user_id = ?", userId).
@@ -32,6 +33,7 @@ func (r *submissionRepository) FindByUser(userId string, queryParams *dto.Pagina
 	dataAkhir := response.PaginateResponseDto[[]models.Submission]{
 		Data:        data,
 		TotalRecord: totalRecord,
+		TotalPage: totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -39,11 +41,7 @@ func (r *submissionRepository) FindByUser(userId string, queryParams *dto.Pagina
 		queryParams.SortBy = &sort
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
-
-	dataAkhir.Data = data
-	dataAkhir.TotalRecord = totalRecord
-
+	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 
@@ -52,21 +50,23 @@ func (r *submissionRepository) Create(submission *models.Submission) error {
 }
 
 func (r *submissionRepository) Update(submission *models.Submission) error {
-	return r.db.Model(&models.Submission{}).Updates(submission).Error
+	return r.db.Model(&models.Submission{}).Where("submission_id = ?", submission.SubmissionID).Updates(submission).Error
 }
 
 func (r *submissionRepository) Delete(id string) error {
-	return r.db.Delete(&models.Submission{}, "submission_id = ?", id).Error
+	return r.db.Delete(&models.Submission{}, ).Error
 }
 
 func (r *submissionRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Submission], error) {
 	data := []models.Submission{}
 	modelDb := r.db.Model(&models.Submission{}).Joins("Claims")
 	var total int64
+	var totalPage int
 
 	dataAkhir := response.PaginateResponseDto[[]models.Submission]{
 		Data:        data,
 		TotalRecord: total,
+		TotalPage: totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -74,12 +74,10 @@ func (r *submissionRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 		queryParams.SortBy = &sort
 	}
 
-	if err := utils.GetQuery(queryParams, modelDb, &total).Find(&data).Error; err != nil {
+	if err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error; err != nil {
 		return dataAkhir, err
 	}
 
-	dataAkhir.Data = data
-	dataAkhir.TotalRecord = total
 	return dataAkhir, nil
 }
 

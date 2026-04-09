@@ -28,10 +28,13 @@ func (r *leaveRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 	var data []models.Leave
 	modelDb := r.db.Model(&models.Leave{})
 	var totalRecord int64
+	var totalPage int
+
 
 	dataAkhir := response.PaginateResponseDto[[]models.Leave]{
 		Data:        data,
 		TotalRecord: totalRecord,
+		TotalPage: totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -39,12 +42,12 @@ func (r *leaveRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		queryParams.SortBy = &sort
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
+	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 
 func (r *leaveRepository) Update(leave *models.Leave) error {
-	return r.db.Model(&models.Leave{}).Updates(&leave).Error
+	return r.db.Model(&models.Leave{}).Where("leave_id = ?", leave.LeaveID).Updates(&leave).Error
 }
 
 func (r *leaveRepository) Delete(leaveId string) error {

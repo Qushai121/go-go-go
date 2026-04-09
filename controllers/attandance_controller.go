@@ -2,7 +2,8 @@ package controllers
 
 import (
 	"hrms_go/dto"
-	"hrms_go/models"
+	"hrms_go/dto/attandance"
+	mappers "hrms_go/mapper"
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
@@ -23,16 +24,35 @@ func NewAttendanceController(repo repositories.AttendanceRepository) *Attendance
 // @Tags Attendance
 // @Accept multipart/form-data
 // @Produce json
-// @Param activity formData string true "Activity (WFH, VISIT, OFFICE)" Enums(WFH, VISIT, OFFICE)
-// @Param check_type formData string true "Check type (1=IN, 2=OUT)" Enums(1, 2)
-// @Param photo_url formData file true "Photo file"
+// @Param user_id formData string false "User ID (UUID)"
+// @Param device_id formData string false "Device ID"
+// @Param activity formData string true "Activity" Enums(WFH, VISIT, OFFICE)
+// @Param check_type formData string true "Check type" Enums(1,2)
+// @Param check_description formData string false "Description"
+// @Param shift_code formData string false "Shift code"
+// @Param shift_duration_hours formData int false "Shift duration"
+// @Param date formData string true "Date (YYYY-MM-DD)"
+// @Param time formData string true "Time (HH:mm:ss)"
+// @Param location_code formData string false "Location code"
+// @Param location_name formData string false "Location name"
+// @Param latitude formData number false "Latitude"
+// @Param longitude formData number false "Longitude"
+// @Param gps_accuracy formData number false "GPS accuracy"
+// @Param is_mock_location formData boolean false "Mock location"
+// @Param notes formData string false "Notes"
+// @Param photo_url formData file true "Photo"
 // @Success 200 {object} map[string]interface{}
 // @Security BearerAuth
 // @Router /api/attendance [post]
 func (c *AttendanceController) Create(ctx fiber.Ctx) error {
-	var data models.Attendance
+	var request attandance.PostAttandanceDto
 
-	if err := ctx.Bind().Body(&data); err != nil {
+	if err := ctx.Bind().Body(&request); err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	data, err := mappers.ToAttendanceModel(request); 
+	if err != nil{
 		return utils.Error(ctx, 400, err.Error())
 	}
 

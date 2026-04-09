@@ -45,12 +45,14 @@ func (r *attendanceRepository) Create(attendance *models.Attendance) error {
 func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Attendance], error) {
 	var data []models.Attendance
 	var totalRecord int64
+	var totalPage int
 
 	modelDb := r.db.Model(&models.Attendance{}).Preload("User")
 
 	dataAkhir := response.PaginateResponseDto[[]models.Attendance]{
-		Data:        data,
-		TotalRecord: totalRecord,
+		Data:        	data,
+		TotalRecord: 	totalRecord,
+		TotalPage: 		totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -58,17 +60,14 @@ func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 		queryParams.SortBy = &sort
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
-
-	dataAkhir.Data = data
-	dataAkhir.TotalRecord = totalRecord
-
+	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 
 func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Attendance], error) {
 	var data []models.Attendance
 	var totalRecord int64
+	var totalPage int
 
 	modelDb := r.db.Model(&models.Attendance{}).
 		Where("user_id = ?", userId).
@@ -77,6 +76,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 	dataAkhir := response.PaginateResponseDto[[]models.Attendance]{
 		Data:        data,
 		TotalRecord: totalRecord,
+		TotalPage: totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -84,10 +84,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 		queryParams.SortBy = &sort
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &totalRecord).Find(&data).Error
-
-	dataAkhir.Data = data
-	dataAkhir.TotalRecord = totalRecord
+	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Where("user_id = ?",userId).Find(&dataAkhir.Data).Error
 
 	return dataAkhir, err
 }
