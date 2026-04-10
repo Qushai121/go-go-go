@@ -83,7 +83,7 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 		)
 	}
 	
-	err := utils.GetQuery(queryParams, modelDb, &result.TotalRecord, &result.TotalPage).Joins("Shift").Find(&result.Data).Error
+	err := utils.GetQuery(queryParams, modelDb, &result.TotalRecord, &result.TotalPage).Find(&result.Data).Error
 
 	return result, err
 }
