@@ -74,10 +74,6 @@ definitions:
     properties:
       cancellation_reason:
         type: string
-      created_at:
-        type: string
-      created_by:
-        type: string
       employee_name:
         type: string
       end_date:
@@ -97,10 +93,6 @@ definitions:
       start_date:
         type: string
       status:
-        type: string
-      updated_at:
-        type: string
-      updated_by:
         type: string
     type: object
   models.Office:
@@ -273,8 +265,6 @@ definitions:
         type: string
       role:
         type: string
-      shift:
-        $ref: '#/definitions/models.Shift'
       shift_id:
         type: string
       updated_at:
@@ -307,7 +297,20 @@ definitions:
     - status
     - user_id
     type: object
-host: 127.0.0.1:8080
+  wfh.PostWfhDto:
+    properties:
+      end_time:
+        type: string
+      remarks:
+        type: string
+      start_time:
+        type: string
+      user_id:
+        type: string
+      wfh_id:
+        type: string
+    type: object
+host: 192.168.1.2:7725
 info:
   contact: {}
   description: This is HRMS API documentation
@@ -320,13 +323,25 @@ paths:
       - application/json
       description: Get all attendance with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
       - description: Items per page
         in: query
-        name: limit
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -472,13 +487,25 @@ paths:
       - application/json
       description: Get list of submissions with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
       - description: Items per page
         in: query
-        name: limit
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -570,15 +597,6 @@ paths:
       consumes:
       - application/json
       description: Get submissions by logged-in user
-      parameters:
-      - description: Page number
-        in: query
-        name: page
-        type: integer
-      - description: Items per page
-        in: query
-        name: limit
-        type: integer
       produces:
       - application/json
       responses:
@@ -598,13 +616,25 @@ paths:
       - application/json
       description: Get list of companies with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
-      - description: Per page
+      - description: Items per page
         in: query
-        name: perPage
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -673,13 +703,25 @@ paths:
       - application/json
       description: Get list of customers with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
       - description: Items per page
         in: query
-        name: limit
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -772,13 +814,25 @@ paths:
       - application/json
       description: Get list of leave with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
       - description: Items per page
         in: query
-        name: limit
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -894,13 +948,25 @@ paths:
       - application/json
       description: Get list of offices with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
       - description: Items per page
         in: query
-        name: limit
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -993,13 +1059,25 @@ paths:
       - application/json
       description: Get list of params with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
       - description: Items per page
         in: query
-        name: limit
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -1068,13 +1146,25 @@ paths:
       - application/json
       description: Get list of param groups with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
       - description: Items per page
         in: query
-        name: limit
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -1191,13 +1281,25 @@ paths:
       - application/json
       description: Get list of settings with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
       - description: Items per page
         in: query
-        name: limit
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -1313,13 +1415,25 @@ paths:
       - application/json
       description: Get list of shifts with pagination
       parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
       - description: Page number
         in: query
         name: page
         type: integer
       - description: Items per page
         in: query
-        name: limit
+        name: per_page
         type: integer
       produces:
       - application/json
@@ -1411,6 +1525,27 @@ paths:
       consumes:
       - application/json
       description: Get list of users
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
       produces:
       - application/json
       responses:
@@ -1518,6 +1653,132 @@ paths:
       summary: Update user shift
       tags:
       - Users
+  /api/wfh:
+    get:
+      consumes:
+      - application/json
+      description: Get list of WFH with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all WFH
+      tags:
+      - WFH
+    post:
+      consumes:
+      - application/json
+      description: Create new WFH
+      parameters:
+      - description: WFH data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/wfh.PostWfhDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create WFH
+      tags:
+      - WFH
+  /api/wfh/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete WFH by ID
+      parameters:
+      - description: WFH ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete WFH
+      tags:
+      - WFH
+  /api/wfh/me:
+    get:
+      consumes:
+      - application/json
+      description: Get list of WFH By User with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all WFH By User
+      tags:
+      - WFH
 securityDefinitions:
   BearerAuth:
     in: header

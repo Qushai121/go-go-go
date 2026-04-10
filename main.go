@@ -18,7 +18,7 @@ import (
 // @title HRMS API
 // @version 1.0
 // @description This is HRMS API documentation
-// @host 127.0.0.1:8080
+// @host 192.168.1.2:7725
 // @BasePath /
 // @securityDefinitions.apikey BearerAuth
 // @in header

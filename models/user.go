@@ -15,7 +15,7 @@ type User struct {
 	Role        string    `json:"role"`
 
 	ShiftId uuid.UUID `gorm:"type:uuid" json:"shift_id"`
-	Shift   Shift     `gorm:"foreignKey:ShiftId;references:ShiftId"`
+	// Shift   Shift     `gorm:"foreignKey:ShiftId;references:ShiftId"`
 
 	ProfilePictureUrl string `gorm:"column:profile_picture_url" json:"profile_picture_url"`
 

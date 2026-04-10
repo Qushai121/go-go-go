@@ -49,6 +49,20 @@ func (c *customerRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 		TotalRecord: 	totalRecord,
 		TotalPage: 		totalPage,
 	}
+
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			customer_id::text LIKE ? OR
+			location_code LIKE ? OR
+			location_name LIKE ? OR
+			address LIKE ? OR
+			target_latitude LIKE ? OR
+			target_longitude LIKE ? OR
+			radius_meter::text LIKE ?
+		`, search, search, search, search, search, search, search)
+	}
 	
 	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err

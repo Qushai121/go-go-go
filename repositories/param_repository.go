@@ -53,6 +53,17 @@ func (r *paramRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		queryParams.SortBy = &sort
 	}
 
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			param_id::text LIKE ? OR
+			paramgroup_id::text LIKE ? OR
+			param_code LIKE ? OR
+			param_name LIKE ?
+		`, search, search, search, search)
+	}
+
 	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 
 	return dataAkhir, err

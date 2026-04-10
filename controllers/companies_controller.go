@@ -44,8 +44,11 @@ func (c *CompaniesController) Create(ctx fiber.Ctx) error {
 // @Tags Companies
 // @Accept json
 // @Produce json
+// @Param sort_order query string false "Sort order (asc/desc)"
+// @Param sort_by query string false "Sort by column"
+// @Param search query string false "Search keyword"
 // @Param page query int false "Page number"
-// @Param perPage query int false "Per page"
+// @Param per_page query int false "Items per page"
 // @Success 200 {object} map[string]interface{}
 // @Security BearerAuth
 // @Router /api/companies [get]

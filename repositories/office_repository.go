@@ -53,6 +53,32 @@ func (r *officeRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.
 		queryParams.SortBy = &sort
 	}
 
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			office_id::text LIKE ? OR
+			company_code LIKE ? OR
+			office_code LIKE ? OR
+			office_name LIKE ? OR
+			office_phone LIKE ? OR
+			office_address LIKE ? OR
+			office_province LIKE ? OR
+			office_city LIKE ? OR
+			office_subdistrict LIKE ? OR
+			office_ward LIKE ? OR
+			office_latitude LIKE ? OR
+			office_longitude LIKE ? OR
+			object_code LIKE ? OR
+			timezone_set LIKE ? OR
+			current_utc_offset LIKE ?
+		`, 
+			search, search, search, search, search,
+			search, search, search, search, search,
+			search, search, search, search, search,
+		)
+	}
+
 	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }

@@ -46,6 +46,16 @@ func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (respon
 		queryParams.SortBy = &sort
 	}
 
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			companies_id::text LIKE ? OR
+			companies_code LIKE ? OR
+			companies_name LIKE ?
+		`, search, search, search)
+	}
+	
 	if err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error; err != nil {
 		return dataAkhir, err
 	}

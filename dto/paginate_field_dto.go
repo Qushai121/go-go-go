@@ -1,18 +1,28 @@
 package dto
 
 type PaginateFieldDto struct {
-	SortOrder *string
-	SortBy    *string
-	Search    *string
-	Page      *int
-	PerPage   *int
+	SortOrder *string `query:"sort_order"`
+	SortBy    *string `query:"sort_by"`
+	Search    *string `query:"search"`
+	Page      *int    `query:"page"`
+	PerPage   *int    `query:"per_page"`
+	StartDate *string `query:"start_date"`
+	EndDate   *string `query:"end_date"`
 }
 
 func (d *PaginateFieldDto) GetSortOrderBool() bool {
 	if d.SortOrder == nil {
-		return true
+		return false // default ASC
 	}
-	return *d.SortOrder == "desc"
+
+	switch *d.SortOrder {
+	case "desc":
+		return true
+	case "asc":
+		return false
+	default:
+		return false
+	}
 }
 
 func (d *PaginateFieldDto) GetOffset() *int {
@@ -24,12 +34,9 @@ func (d *PaginateFieldDto) GetOffset() *int {
 	return &offset
 }
 
-func (d *PaginateFieldDto) GetSortByWithDefaultId(sortBy *string) string {
-	defaultSortBy := ""
-
-	if sortBy != nil {
-		defaultSortBy = *sortBy
+func (d *PaginateFieldDto) GetSortByWithDefaultId(defaultCol *string) string {
+	if d.SortBy != nil && *d.SortBy != "" {
+		return *d.SortBy
 	}
-
-	return defaultSortBy
+	return ""
 }

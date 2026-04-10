@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"hrms_go/dto"
+	"hrms_go/dto/response"
 	"hrms_go/models"
 	"hrms_go/utils"
 
@@ -9,7 +11,7 @@ import (
 
 type UserRepository interface {
 	Create(user *models.User) error
-	FindAll() ([]models.User, error)
+	FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.User], error)
 	FindByEmail(email string) (*models.User, error)
 	Count() (int64, error)
 	Update(body *models.User) error
@@ -36,10 +38,54 @@ func (r *userRepository) Count() (int64, error) {
 }
 
 // FindAll implements [UserRepository].
-func (r *userRepository) FindAll() ([]models.User, error) {
-	var users []models.User
-	err := r.db.Joins("Shift").Find(&users).Error
-	return users, err
+func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.User], error) {
+	var data []models.User
+	var totalRecord int64
+	var totalPage int
+
+	modelDb := r.db.Model(&models.User{})
+
+	// default sort
+	if queryParams.SortBy == nil {
+		sort := "user_id"
+		queryParams.SortBy = &sort
+	}
+	
+	result := response.PaginateResponseDto[[]models.User]{
+		Data:        data,
+		TotalRecord: totalRecord,
+		TotalPage:   totalPage,
+	}
+
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			user_id::text LIKE ? OR
+			employee_nik LIKE ? OR
+			fullname LIKE ? OR
+			email LIKE ? OR
+			role LIKE ? OR
+			shift_id::text LIKE ? OR
+			profile_picture_url LIKE ? OR
+			created_at::text LIKE ? OR
+			updated_at::text LIKE ?
+		`, 
+			search, // user_id
+			search, // employee_nik
+			search, // fullname
+			search, // email
+			search, // role
+			search, // shift_id
+			search, // profile_picture_url
+			search, // created_at
+			search, // updated_at
+		)
+	}
+	
+	err := utils.GetQuery(queryParams, modelDb, &result.TotalRecord, &result.TotalPage).Joins("Shift").Find(&result.Data).Error
+
+	return result, err
 }
 
 // FindByEmail implements [UserRepository].

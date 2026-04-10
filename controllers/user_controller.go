@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"hrms_go/dto"
 	"hrms_go/models"
 	"hrms_go/repositories"
 	"hrms_go/utils"
@@ -50,11 +51,22 @@ func (c *UserController) Create(ctx fiber.Ctx) error {
 // @Tags Users
 // @Accept json
 // @Produce json
+// @Param sort_order query string false "Sort order (asc/desc)"
+// @Param sort_by query string false "Sort by column"
+// @Param search query string false "Search keyword"
+// @Param page query int false "Page number"
+// @Param per_page query int false "Items per page"
 // @Success 200 {object} map[string]interface{}
 // @Security BearerAuth
 // @Router /api/users [get]
 func (c *UserController) FindAll(ctx fiber.Ctx) error {
-	users, err := c.repo.FindAll()
+	queryParams := dto.PaginateFieldDto{}
+
+	if err := ctx.Bind().Query(&queryParams); err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	users, err := c.repo.FindAll(&queryParams)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}

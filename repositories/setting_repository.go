@@ -52,6 +52,18 @@ func (r *settingRepository) FindAll(queryParams *dto.PaginateFieldDto) (response
 		queryParams.SortBy = &sort
 	}
 
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			setting_id::text LIKE ? OR
+			setting_name LIKE ? OR
+			setting_value LIKE ? OR
+			created_at::text LIKE ? OR
+			updated_at::text LIKE ?
+		`, search, search, search, search, search)
+	}
+
 	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 
 	return dataAkhir, err

@@ -21,6 +21,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	officeRepo := repositories.NewOfficeRepository(db)
 	SubmissionRepo := repositories.NewSubmissionRepository(db)
 	leaveRepo := repositories.NewLeaveRepository(db)
+	wfhRepo := repositories.NewWFHRepository(db)
 
 	auth := controllers.NewAuthController(repo)
 	user := controllers.NewUserController(repo)
@@ -35,6 +36,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	officeController := controllers.NewOfficeController(officeRepo)
 	submissionController := controllers.NewSubmissionController(SubmissionRepo)
 	leaveController := controllers.NewLeaveController(leaveRepo)
+	wfhControler := controllers.NewWFHController(wfhRepo)
 
 	api := app.Group("/api")
 
@@ -107,5 +109,12 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	leaveRoute.Get("/", leaveController.FindAll)
 	leaveRoute.Put("/", leaveController.Update)
 	leaveRoute.Delete("/:id", leaveController.Delete)
+
+	wfhRoute := api.Group("wfh", middlewares.JWTProtected())
+	wfhRoute.Post("/", wfhControler.Create)
+	wfhRoute.Get("/", wfhControler.FindAll)
+	wfhRoute.Get("/me", wfhControler.FindAll)
+	// wfhRoute.Put("/", wfhControler.Update)
+	wfhRoute.Delete("/:id", wfhControler.Delete)
 
 }

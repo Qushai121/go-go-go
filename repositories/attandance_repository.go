@@ -60,6 +60,34 @@ func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 		queryParams.SortBy = &sort
 	}
 
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			attendance_id::text LIKE ? OR
+			user_id::text LIKE ? OR
+			device_id LIKE ? OR
+			check_type LIKE ? OR
+			check_description LIKE ? OR
+			shift_code LIKE ? OR
+			date::text LIKE ? OR
+			time LIKE ? OR
+			server_timestamp::text LIKE ? OR
+			location_code LIKE ? OR
+			location_name LIKE ? OR
+			latitude::text LIKE ? OR
+			longitude::text LIKE ? OR
+			activity LIKE ? OR
+			photo_url LIKE ? OR
+			notes LIKE ?
+		`,
+			search, search, search, search, search,
+			search, search, search, search, search,
+			search, search, search, search, search,
+			search,
+		)
+	}
+
 	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }

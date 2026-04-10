@@ -42,6 +42,28 @@ func (r *leaveRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		queryParams.SortBy = &sort
 	}
 
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			leave_id::text LIKE ? OR
+			request_number LIKE ? OR
+			employee_name LIKE ? OR
+			leave_type LIKE ? OR
+			start_date::text LIKE ? OR
+			end_date::text LIKE ? OR
+			req_date::text LIKE ? OR
+			status LIKE ? OR
+			message LIKE ? OR
+			cancellation_reason LIKE ? OR
+			leave_balance::text LIKE ?
+		`,
+			search, search, search, search, search,
+			search, search, search, search, search,
+			search,
+		)
+	}
+
 	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }

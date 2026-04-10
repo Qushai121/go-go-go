@@ -40,6 +40,20 @@ func (s *shiftRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		sort := "shift_id"
 		queryParams.SortBy = &sort
 	}
+	
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			shift_id::text LIKE ? OR
+			shift_code LIKE ? OR
+			shift_name LIKE ? OR
+			shift_duration::text LIKE ? OR
+			start_time LIKE ? OR
+			end_time LIKE ? OR
+			grace_period::text LIKE ?
+		`, search, search, search, search, search, search, search)
+	}
 
 	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
 	return dataAkhir, err

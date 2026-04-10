@@ -35,6 +35,24 @@ const docTemplate = `{
                 "summary": "Get all attendance",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -43,7 +61,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -266,6 +284,24 @@ const docTemplate = `{
                 "summary": "Get all submissions",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -274,7 +310,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -383,20 +419,6 @@ const docTemplate = `{
                     "Submission"
                 ],
                 "summary": "Get current user submissions",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Items per page",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -466,6 +488,24 @@ const docTemplate = `{
                 "summary": "Get all companies",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -473,8 +513,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Per page",
-                        "name": "perPage",
+                        "description": "Items per page",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -585,6 +625,24 @@ const docTemplate = `{
                 "summary": "Get all customers",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -593,7 +651,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -742,6 +800,24 @@ const docTemplate = `{
                 "summary": "Get all leave",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -750,7 +826,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -934,6 +1010,24 @@ const docTemplate = `{
                 "summary": "Get all offices",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -942,7 +1036,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -1091,6 +1185,24 @@ const docTemplate = `{
                 "summary": "Get all params",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -1099,7 +1211,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -1210,6 +1322,24 @@ const docTemplate = `{
                 "summary": "Get all param groups",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -1218,7 +1348,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -1405,6 +1535,24 @@ const docTemplate = `{
                 "summary": "Get all settings",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -1413,7 +1561,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -1597,6 +1745,24 @@ const docTemplate = `{
                 "summary": "Get all shifts",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -1605,7 +1771,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -1752,6 +1918,38 @@ const docTemplate = `{
                     "Users"
                 ],
                 "summary": "Get all users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1911,6 +2109,204 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/wfh": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of WFH with pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WFH"
+                ],
+                "summary": "Get all WFH",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new WFH",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WFH"
+                ],
+                "summary": "Create WFH",
+                "parameters": [
+                    {
+                        "description": "WFH data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/wfh.PostWfhDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/wfh/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of WFH By User with pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WFH"
+                ],
+                "summary": "Get all WFH By User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/wfh/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete WFH by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WFH"
+                ],
+                "summary": "Delete WFH",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "WFH ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2027,12 +2423,6 @@ const docTemplate = `{
                 "cancellation_reason": {
                     "type": "string"
                 },
-                "created_at": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "type": "string"
-                },
                 "employee_name": {
                     "type": "string"
                 },
@@ -2061,12 +2451,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "updated_by": {
                     "type": "string"
                 }
             }
@@ -2329,9 +2713,6 @@ const docTemplate = `{
                 "role": {
                     "type": "string"
                 },
-                "shift": {
-                    "$ref": "#/definitions/models.Shift"
-                },
                 "shift_id": {
                     "type": "string"
                 },
@@ -2378,6 +2759,26 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "wfh.PostWfhDto": {
+            "type": "object",
+            "properties": {
+                "end_time": {
+                    "type": "string"
+                },
+                "remarks": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "wfh_id": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {
@@ -2392,7 +2793,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "127.0.0.1:8080",
+	Host:             "192.168.1.2:7725",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "HRMS API",

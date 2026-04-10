@@ -58,10 +58,11 @@ func (r *submissionRepository) Delete(id string) error {
 }
 
 func (r *submissionRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Submission], error) {
-	data := []models.Submission{}
-	modelDb := r.db.Model(&models.Submission{}).Joins("Claims")
+	var data []models.Submission
 	var total int64
 	var totalPage int
+	
+	modelDb := r.db.Model(&models.Submission{}).Joins("Claims")
 
 	dataAkhir := response.PaginateResponseDto[[]models.Submission]{
 		Data:        data,
@@ -72,6 +73,28 @@ func (r *submissionRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 	if queryParams.SortBy == nil {
 		sort := "submission_id"
 		queryParams.SortBy = &sort
+	}
+	
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			submission_id::text LIKE ? OR
+			user_id::text LIKE ? OR
+			request_number LIKE ? OR
+			submit_date::text LIKE ? OR
+			status LIKE ? OR
+			remarks LIKE ? OR
+			amount::text LIKE ?
+		`,
+			search, // submission_id
+			search, // user_id
+			search, // request_number
+			search, // submit_date
+			search, // status
+			search, // remarks
+			search, // amount
+		)
 	}
 
 	if err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error; err != nil {
