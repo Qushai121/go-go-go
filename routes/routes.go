@@ -22,6 +22,8 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	SubmissionRepo := repositories.NewSubmissionRepository(db)
 	leaveRepo := repositories.NewLeaveRepository(db)
 	wfhRepo := repositories.NewWFHRepository(db)
+	approvalRepo := repositories.NewApprovalRepository(db)
+	approvalTemplateRepo := repositories.NewApprovalTemplateRepository(db)
 
 	auth := controllers.NewAuthController(repo)
 	user := controllers.NewUserController(repo)
@@ -37,6 +39,8 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	submissionController := controllers.NewSubmissionController(SubmissionRepo)
 	leaveController := controllers.NewLeaveController(leaveRepo)
 	wfhControler := controllers.NewWFHController(wfhRepo)
+	approvalController := controllers.NewApprovalController(approvalRepo)
+	approvalTemplateController := controllers.NewApprovalTemplateController(approvalTemplateRepo)
 
 	api := app.Group("/api")
 
@@ -116,5 +120,25 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	wfhRoute.Get("/me", wfhControler.FindAll)
 	// wfhRoute.Put("/", wfhControler.Update)
 	wfhRoute.Delete("/:id", wfhControler.Delete)
+
+	approval := api.Group("/approval")
+	approval.Get("/", approvalController.FindAll)
+	approval.Get("/:id", approvalController.Detail)
+	approval.Delete("/:id", approvalController.Delete)
+	approval.Post("/approve", approvalController.Approve)
+
+	template := api.Group("/approval_template")
+	// header
+	template.Post("/header", approvalTemplateController.CreateHeader)
+	template.Get("/header", approvalTemplateController.FindAllHeader)
+	template.Get("/header/:id", approvalTemplateController.DetailHeader)
+	template.Put("/header/:id", approvalTemplateController.UpdateHeader)
+	template.Delete("/header/:id", approvalTemplateController.DeleteHeader)
+
+	// detail
+	template.Post("/detail", approvalTemplateController.CreateDetail)
+	template.Get("/detail/:header_id", approvalTemplateController.FindDetailByHeader)
+	template.Put("/detail/:id", approvalTemplateController.UpdateDetail)
+	template.Delete("/detail/:id", approvalTemplateController.DeleteDetail)
 
 }

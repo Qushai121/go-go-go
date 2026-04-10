@@ -7,6 +7,63 @@ definitions:
       password:
         type: string
     type: object
+  models.ApprovalDetail:
+    properties:
+      approvalDetailId:
+        type: string
+      approvalHeaderId:
+        type: string
+      approvalStatus:
+        type: string
+      approver:
+        $ref: '#/definitions/models.User'
+      approverBy:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.ApprovalTemplateDetail:
+    properties:
+      approvalTemplateDetailId:
+        type: string
+      approvalTemplateHeaderId:
+        type: string
+      approver:
+        $ref: '#/definitions/models.User'
+      approverBy:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      sequenceNumber:
+        type: integer
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.ApprovalTemplateHeader:
+    properties:
+      approvalTemplateHeaderId:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      templateType:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
   models.Claim:
     properties:
       amount:
@@ -317,6 +374,117 @@ info:
   title: HRMS API
   version: "1.0"
 paths:
+  /api/approval:
+    get:
+      consumes:
+      - application/json
+      description: Get all approval header with pagination & search
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all approvals
+      tags:
+      - Approval
+  /api/approval/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete approval header by ID
+      parameters:
+      - description: Approval Header ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete approval
+      tags:
+      - Approval
+    get:
+      consumes:
+      - application/json
+      description: Get approval header detail by ID
+      parameters:
+      - description: Approval Header ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get approval detail
+      tags:
+      - Approval
+  /api/approval/approve:
+    post:
+      consumes:
+      - application/json
+      description: Insert or update approval detail (upsert)
+      parameters:
+      - description: Approval Detail Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ApprovalDetail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Approve document
+      tags:
+      - Approval
   /api/attendance:
     get:
       consumes:
@@ -1520,6 +1688,184 @@ paths:
       summary: Delete shift
       tags:
       - Shift
+  /api/template/detail:
+    post:
+      parameters:
+      - description: Detail
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ApprovalTemplateDetail'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create template detail
+      tags:
+      - Approval Template
+  /api/template/detail/{header_id}:
+    get:
+      parameters:
+      - description: Header ID
+        in: path
+        name: header_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get detail by header
+      tags:
+      - Approval Template
+  /api/template/detail/{id}:
+    delete:
+      parameters:
+      - description: Detail ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete template detail
+      tags:
+      - Approval Template
+    put:
+      parameters:
+      - description: Detail ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Detail
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ApprovalTemplateDetail'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update template detail
+      tags:
+      - Approval Template
+  /api/template/header:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Search
+        in: query
+        name: search
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all template headers
+      tags:
+      - Approval Template
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Header
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ApprovalTemplateHeader'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create approval template header
+      tags:
+      - Approval Template
+  /api/template/header/{id}:
+    delete:
+      parameters:
+      - description: Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete template header
+      tags:
+      - Approval Template
+    get:
+      parameters:
+      - description: Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get template header detail
+      tags:
+      - Approval Template
+    put:
+      parameters:
+      - description: Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Header
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ApprovalTemplateHeader'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update template header
+      tags:
+      - Approval Template
   /api/users:
     get:
       consumes:
