@@ -65,14 +65,16 @@ func (r *approvalTemplateRepository) FindAllHeader(query *dto.PaginateFieldDto) 
 		`, search, search, search, search)
 	}
 
-	err := utils.GetQuery(query, db, &total, &totalPage).
-		Find(&data).Error
-
-	return response.PaginateResponseDto[[]models.ApprovalTemplateHeader]{
+	result :=  response.PaginateResponseDto[[]models.ApprovalTemplateHeader]{
 		Data:        data,
 		TotalRecord: total,
 		TotalPage:   totalPage,
-	}, err
+	}
+
+	err := utils.GetQuery(query, db, &result.TotalRecord, &result.TotalPage).
+		Find(&result.Data).Error
+
+	return result,err
 }
 
 func (r *approvalTemplateRepository) CreateDetail(data *models.ApprovalTemplateDetail) error {

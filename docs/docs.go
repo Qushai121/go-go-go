@@ -190,6 +190,289 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/approval_template/detail": {
+            "post": {
+                "tags": [
+                    "Approval Template"
+                ],
+                "summary": "Create template detail",
+                "parameters": [
+                    {
+                        "description": "Detail",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ApprovalTemplateDetail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/approval_template/detail/{header_id}": {
+            "get": {
+                "tags": [
+                    "Approval Template"
+                ],
+                "summary": "Get detail by header",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Header ID",
+                        "name": "header_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/approval_template/detail/{id}": {
+            "put": {
+                "tags": [
+                    "Approval Template"
+                ],
+                "summary": "Update template detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Detail ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Detail",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ApprovalTemplateDetail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Approval Template"
+                ],
+                "summary": "Delete template detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Detail ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/approval_template/header": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Approval Template"
+                ],
+                "summary": "Get all template headers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Approval Template"
+                ],
+                "summary": "Create approval template header",
+                "parameters": [
+                    {
+                        "description": "Header",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ApprovalTemplateHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/approval_template/header/{id}": {
+            "get": {
+                "tags": [
+                    "Approval Template"
+                ],
+                "summary": "Get template header detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Header ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Approval Template"
+                ],
+                "summary": "Update template header",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Header ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Header",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ApprovalTemplateHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Approval Template"
+                ],
+                "summary": "Delete template header",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Header ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/attendance": {
             "get": {
                 "security": [
@@ -2075,277 +2358,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/template/detail": {
-            "post": {
-                "tags": [
-                    "Approval Template"
-                ],
-                "summary": "Create template detail",
-                "parameters": [
-                    {
-                        "description": "Detail",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ApprovalTemplateDetail"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/api/template/detail/{header_id}": {
-            "get": {
-                "tags": [
-                    "Approval Template"
-                ],
-                "summary": "Get detail by header",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Header ID",
-                        "name": "header_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/api/template/detail/{id}": {
-            "put": {
-                "tags": [
-                    "Approval Template"
-                ],
-                "summary": "Update template detail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Detail ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Detail",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ApprovalTemplateDetail"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Approval Template"
-                ],
-                "summary": "Delete template detail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Detail ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/api/template/header": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Approval Template"
-                ],
-                "summary": "Get all template headers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Search",
-                        "name": "search",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Per page",
-                        "name": "per_page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Approval Template"
-                ],
-                "summary": "Create approval template header",
-                "parameters": [
-                    {
-                        "description": "Header",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ApprovalTemplateHeader"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/api/template/header/{id}": {
-            "get": {
-                "tags": [
-                    "Approval Template"
-                ],
-                "summary": "Get template header detail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Header ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Approval Template"
-                ],
-                "summary": "Update template header",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Header ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Header",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ApprovalTemplateHeader"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Approval Template"
-                ],
-                "summary": "Delete template header",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Header ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
         "/api/users": {
             "get": {
                 "security": [
@@ -3326,7 +3338,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "192.168.1.2:7725",
+	Host:             "127.0.0.1:7725",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "HRMS API",

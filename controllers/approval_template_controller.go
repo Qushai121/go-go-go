@@ -24,7 +24,7 @@ func NewApprovalTemplateController(repo repositories.ApprovalTemplateRepository)
 // @Produce json
 // @Param request body models.ApprovalTemplateHeader true "Header"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/template/header [post]
+// @Router /api/approval_template/header [post]
 func (c *ApprovalTemplateController) CreateHeader(ctx fiber.Ctx) error {
 	var data models.ApprovalTemplateHeader
 
@@ -44,11 +44,13 @@ func (c *ApprovalTemplateController) CreateHeader(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Accept json
 // @Produce json
-// @Param search query string false "Search"
-// @Param page query int false "Page"
-// @Param per_page query int false "Per page"
+// @Param sort_order query string false "Sort order (asc/desc)"
+// @Param sort_by query string false "Sort by column"
+// @Param search query string false "Search keyword"
+// @Param page query int false "Page number"
+// @Param per_page query int false "Items per page"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/template/header [get]
+// @Router /api/approval_template/header [get]
 func (c *ApprovalTemplateController) FindAllHeader(ctx fiber.Ctx) error {
 	query := dto.PaginateFieldDto{}
 
@@ -69,7 +71,7 @@ func (c *ApprovalTemplateController) FindAllHeader(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Param id path string true "Header ID"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/template/header/{id} [get]
+// @Router /api/approval_template/header/{id} [get]
 func (c *ApprovalTemplateController) DetailHeader(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 
@@ -87,7 +89,7 @@ func (c *ApprovalTemplateController) DetailHeader(ctx fiber.Ctx) error {
 // @Param id path string true "Header ID"
 // @Param request body models.ApprovalTemplateHeader true "Header"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/template/header/{id} [put]
+// @Router /api/approval_template/header/{id} [put]
 func (c *ApprovalTemplateController) UpdateHeader(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 	var data models.ApprovalTemplateHeader
@@ -108,7 +110,7 @@ func (c *ApprovalTemplateController) UpdateHeader(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Param id path string true "Header ID"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/template/header/{id} [delete]
+// @Router /api/approval_template/header/{id} [delete]
 func (c *ApprovalTemplateController) DeleteHeader(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 
@@ -124,7 +126,7 @@ func (c *ApprovalTemplateController) DeleteHeader(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Param request body models.ApprovalTemplateDetail true "Detail"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/template/detail [post]
+// @Router /api/approval_template/detail [post]
 func (c *ApprovalTemplateController) CreateDetail(ctx fiber.Ctx) error {
 	var data models.ApprovalTemplateDetail
 
@@ -144,7 +146,7 @@ func (c *ApprovalTemplateController) CreateDetail(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Param header_id path string true "Header ID"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/template/detail/{header_id} [get]
+// @Router /api/approval_template/detail/{header_id} [get]
 func (c *ApprovalTemplateController) FindDetailByHeader(ctx fiber.Ctx) error {
 	id := ctx.Params("header_id")
 
@@ -162,7 +164,7 @@ func (c *ApprovalTemplateController) FindDetailByHeader(ctx fiber.Ctx) error {
 // @Param id path string true "Detail ID"
 // @Param request body models.ApprovalTemplateDetail true "Detail"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/template/detail/{id} [put]
+// @Router /api/approval_template/detail/{id} [put]
 func (c *ApprovalTemplateController) UpdateDetail(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 	var data models.ApprovalTemplateDetail
@@ -183,7 +185,7 @@ func (c *ApprovalTemplateController) UpdateDetail(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Param id path string true "Detail ID"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/template/detail/{id} [delete]
+// @Router /api/approval_template/detail/{id} [delete]
 func (c *ApprovalTemplateController) DeleteDetail(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
 

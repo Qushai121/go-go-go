@@ -2,7 +2,6 @@ package utils
 
 import (
 	"hrms_go/dto"
-	"log"
 	"math"
 
 	"gorm.io/gorm"
@@ -10,15 +9,15 @@ import (
 )
 
 func GetQuery(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64,totalPage *int) *gorm.DB {
-	log.Println(queryParams.GetSortByWithDefaultId(queryParams.SortBy))
-	log.Println(queryParams.GetSortOrderBool())
-
-	query = query.Order(clause.OrderByColumn{
-		Column: clause.Column{
-			Name: queryParams.GetSortByWithDefaultId(queryParams.SortBy),
-		},
-		Desc: queryParams.GetSortOrderBool(),
-	})
+	
+	if queryParams.SortBy != nil {
+		query = query.Order(clause.OrderByColumn{
+			Column: clause.Column{
+				Name: queryParams.GetSortByWithDefaultId(queryParams.SortBy),
+			},
+			Desc: queryParams.GetSortOrderBool(),
+		})
+	}
 
 	query.Count(totalRecord)
 	offset := queryParams.GetOffset();

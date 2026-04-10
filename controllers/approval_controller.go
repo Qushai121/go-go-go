@@ -14,7 +14,7 @@ type ApprovalController struct {
 }
 
 func NewApprovalController(repo repositories.ApprovalRepository) *ApprovalController  {
-	return &ApprovalController{}
+	return &ApprovalController{repo}
 }
 
 // Get All Approval godoc

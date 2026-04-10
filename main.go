@@ -15,10 +15,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// http://127.0.0.1:7725/swagger/index.html
+
 // @title HRMS API
 // @version 1.0
 // @description This is HRMS API documentation
-// @host 192.168.1.2:7725
+// @host 127.0.0.1:7725
 // @BasePath /
 // @securityDefinitions.apikey BearerAuth
 // @in header

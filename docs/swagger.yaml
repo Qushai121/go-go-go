@@ -367,7 +367,7 @@ definitions:
       wfh_id:
         type: string
     type: object
-host: 192.168.1.2:7725
+host: 127.0.0.1:7725
 info:
   contact: {}
   description: This is HRMS API documentation
@@ -485,6 +485,192 @@ paths:
       summary: Approve document
       tags:
       - Approval
+  /api/approval_template/detail:
+    post:
+      parameters:
+      - description: Detail
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ApprovalTemplateDetail'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create template detail
+      tags:
+      - Approval Template
+  /api/approval_template/detail/{header_id}:
+    get:
+      parameters:
+      - description: Header ID
+        in: path
+        name: header_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get detail by header
+      tags:
+      - Approval Template
+  /api/approval_template/detail/{id}:
+    delete:
+      parameters:
+      - description: Detail ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete template detail
+      tags:
+      - Approval Template
+    put:
+      parameters:
+      - description: Detail ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Detail
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ApprovalTemplateDetail'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update template detail
+      tags:
+      - Approval Template
+  /api/approval_template/header:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all template headers
+      tags:
+      - Approval Template
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Header
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ApprovalTemplateHeader'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create approval template header
+      tags:
+      - Approval Template
+  /api/approval_template/header/{id}:
+    delete:
+      parameters:
+      - description: Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete template header
+      tags:
+      - Approval Template
+    get:
+      parameters:
+      - description: Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get template header detail
+      tags:
+      - Approval Template
+    put:
+      parameters:
+      - description: Header ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Header
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ApprovalTemplateHeader'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update template header
+      tags:
+      - Approval Template
   /api/attendance:
     get:
       consumes:
@@ -1688,184 +1874,6 @@ paths:
       summary: Delete shift
       tags:
       - Shift
-  /api/template/detail:
-    post:
-      parameters:
-      - description: Detail
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.ApprovalTemplateDetail'
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Create template detail
-      tags:
-      - Approval Template
-  /api/template/detail/{header_id}:
-    get:
-      parameters:
-      - description: Header ID
-        in: path
-        name: header_id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Get detail by header
-      tags:
-      - Approval Template
-  /api/template/detail/{id}:
-    delete:
-      parameters:
-      - description: Detail ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Delete template detail
-      tags:
-      - Approval Template
-    put:
-      parameters:
-      - description: Detail ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Detail
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.ApprovalTemplateDetail'
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Update template detail
-      tags:
-      - Approval Template
-  /api/template/header:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: Search
-        in: query
-        name: search
-        type: string
-      - description: Page
-        in: query
-        name: page
-        type: integer
-      - description: Per page
-        in: query
-        name: per_page
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Get all template headers
-      tags:
-      - Approval Template
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Header
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.ApprovalTemplateHeader'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Create approval template header
-      tags:
-      - Approval Template
-  /api/template/header/{id}:
-    delete:
-      parameters:
-      - description: Header ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Delete template header
-      tags:
-      - Approval Template
-    get:
-      parameters:
-      - description: Header ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Get template header detail
-      tags:
-      - Approval Template
-    put:
-      parameters:
-      - description: Header ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Header
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.ApprovalTemplateHeader'
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Update template header
-      tags:
-      - Approval Template
   /api/users:
     get:
       consumes:
