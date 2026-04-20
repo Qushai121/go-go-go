@@ -1,13 +1,6 @@
 basePath: /
 definitions:
-  auth.LoginRequest:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    type: object
-  models.ApprovalDetail:
+  approval.PostApproveDto:
     properties:
       approvalDetailId:
         type: string
@@ -15,17 +8,25 @@ definitions:
         type: string
       approvalStatus:
         type: string
-      approver:
-        $ref: '#/definitions/models.User'
       approverBy:
         type: string
-      created_at:
+      remark:
         type: string
-      created_by:
+    type: object
+  approval.PostCreateApprovalTemplateDetailDto:
+    properties:
+      approvalTemplateHeaderId:
         type: string
-      updated_at:
+      approverBy:
         type: string
-      updated_by:
+      sequenceNumber:
+        type: integer
+    type: object
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
         type: string
     type: object
   models.ApprovalTemplateDetail:
@@ -471,7 +472,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.ApprovalDetail'
+          $ref: '#/definitions/approval.PostApproveDto'
       produces:
       - application/json
       responses:
@@ -493,13 +494,15 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.ApprovalTemplateDetail'
+          $ref: '#/definitions/approval.PostCreateApprovalTemplateDetailDto'
       responses:
         "200":
           description: OK
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Create template detail
       tags:
       - Approval Template
@@ -517,6 +520,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Get detail by header
       tags:
       - Approval Template
@@ -534,6 +539,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete template detail
       tags:
       - Approval Template
@@ -556,6 +563,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Update template detail
       tags:
       - Approval Template
@@ -592,6 +601,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Get all template headers
       tags:
       - Approval Template
@@ -613,6 +624,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Create approval template header
       tags:
       - Approval Template
@@ -630,6 +643,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete template header
       tags:
       - Approval Template
@@ -646,6 +661,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Get template header detail
       tags:
       - Approval Template
@@ -668,6 +685,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Update template header
       tags:
       - Approval Template

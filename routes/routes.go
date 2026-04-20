@@ -121,13 +121,13 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	// wfhRoute.Put("/", wfhControler.Update)
 	wfhRoute.Delete("/:id", wfhControler.Delete)
 
-	approval := api.Group("/approval")
+	approval := api.Group("/approval", middlewares.JWTProtected())
 	approval.Get("/", approvalController.FindAll)
 	approval.Get("/:id", approvalController.Detail)
 	approval.Delete("/:id", approvalController.Delete)
 	approval.Post("/approve", approvalController.Approve)
 
-	template := api.Group("/approval_template")
+	template := api.Group("/approval_template", middlewares.JWTProtected())
 	// header
 	template.Post("/header", approvalTemplateController.CreateHeader)
 	template.Get("/header", approvalTemplateController.FindAllHeader)

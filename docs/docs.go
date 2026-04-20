@@ -101,7 +101,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ApprovalDetail"
+                            "$ref": "#/definitions/approval.PostApproveDto"
                         }
                     }
                 ],
@@ -192,6 +192,11 @@ const docTemplate = `{
         },
         "/api/approval_template/detail": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -203,7 +208,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ApprovalTemplateDetail"
+                            "$ref": "#/definitions/approval.PostCreateApprovalTemplateDetailDto"
                         }
                     }
                 ],
@@ -220,6 +225,11 @@ const docTemplate = `{
         },
         "/api/approval_template/detail/{header_id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -246,6 +256,11 @@ const docTemplate = `{
         },
         "/api/approval_template/detail/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -279,6 +294,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -305,6 +325,11 @@ const docTemplate = `{
         },
         "/api/approval_template/header": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -358,6 +383,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -392,6 +422,11 @@ const docTemplate = `{
         },
         "/api/approval_template/header/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -416,6 +451,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -449,6 +489,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -2768,18 +2813,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "auth.LoginRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ApprovalDetail": {
+        "approval.PostApproveDto": {
             "type": "object",
             "properties": {
                 "approvalDetailId": {
@@ -2791,22 +2825,35 @@ const docTemplate = `{
                 "approvalStatus": {
                     "type": "string"
                 },
-                "approver": {
-                    "$ref": "#/definitions/models.User"
+                "approverBy": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                }
+            }
+        },
+        "approval.PostCreateApprovalTemplateDetailDto": {
+            "type": "object",
+            "properties": {
+                "approvalTemplateHeaderId": {
+                    "type": "string"
                 },
                 "approverBy": {
                     "type": "string"
                 },
-                "created_at": {
+                "sequenceNumber": {
+                    "type": "integer"
+                }
+            }
+        },
+        "auth.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
                     "type": "string"
                 },
-                "created_by": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "updated_by": {
+                "password": {
                     "type": "string"
                 }
             }

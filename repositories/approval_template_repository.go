@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"hrms_go/dto"
 	"hrms_go/dto/response"
 	"hrms_go/models"
@@ -44,7 +45,7 @@ func (r *approvalTemplateRepository) DetailHeader(id string) (models.ApprovalTem
 	var data models.ApprovalTemplateHeader
 	err := r.db.
 		Where("approval_template_header_id = ?", id).
-		Find(&data).Error
+		First(&data).Error
 	return data, err
 }
 
@@ -78,6 +79,21 @@ func (r *approvalTemplateRepository) FindAllHeader(query *dto.PaginateFieldDto) 
 }
 
 func (r *approvalTemplateRepository) CreateDetail(data *models.ApprovalTemplateDetail) error {
+	var existing int64
+
+	if err := r.db.Model(&models.ApprovalTemplateDetail{}).
+		Where("approval_template_header_id = ?", data.ApprovalTemplateHeaderId).
+		Where("(approver_by = ? OR sequence_number = ?)", data.ApproverBy, data.SequenceNumber).
+		Order("sequence_number ASC").
+		Count(&existing).Error; 
+		err != nil {
+		return err
+	}
+
+	if existing > 0 {
+		return fmt.Errorf("approver or sequence number already exist")
+	}
+
 	return r.db.Create(data).Error
 }
 

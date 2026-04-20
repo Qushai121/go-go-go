@@ -14,7 +14,6 @@ type WFH struct {
 	StartTime     time.Time    `json:"start_time"`
 	EndTime       time.Time    `json:"end_time"`
 	// User User `gorm:"foreignKey:UserId;references:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
-
 	base.AuditFields
 }
 

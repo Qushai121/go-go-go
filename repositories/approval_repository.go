@@ -2,17 +2,18 @@ package repositories
 
 import (
 	"hrms_go/dto"
+	"hrms_go/dto/approval"
 	"hrms_go/dto/response"
+	mappers "hrms_go/mapper"
 	"hrms_go/models"
 	"hrms_go/utils"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type ApprovalRepository interface {
 	FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.ApprovalHeader], error)
-	Detail(approvalHeaderId string) (response.PaginateResponseDto[models.ApprovalHeader], error)
+	Detail(approvalHeaderId string) (response.PaginateResponseDto[[]approval.ApprovalDetailResponseDto], error)
 	Delete(approvalHeaderId string) error
 	Approve(approvalDetail models.ApprovalDetail) error
 }
@@ -22,38 +23,105 @@ type approvalRepository struct {
 }
 
 func (a *approvalRepository) Approve(approvalDetail models.ApprovalDetail) error {
-	return a.db.Clauses(clause.OnConflict{
-		Columns: []clause.Column{
-			{Name: "approval_header_id"},
-			{Name: "approver_by"},
-		},
-		DoUpdates: clause.Assignments(map[string]interface{}{
-			"approval_status": approvalDetail.ApprovalStatus,
-			"updated_by":      approvalDetail.UpdatedBy,
-			"updated_at":      gorm.Expr("NOW()"),
-		}),
-	}).Create(&approvalDetail).Error
+	approvalHeader := models.ApprovalHeader{}
 
+	if err := a.db.Model(&models.ApprovalHeader{}).
+	Where("approval_header_id = ?",approvalDetail.ApprovalHeaderId).
+	First(&approvalHeader).Error;
+	err != nil{
+		return err
+	}
+
+	approvalTemplateDetailData := models.ApprovalTemplateDetail{}
+	if err := a.db.Model(&models.ApprovalTemplateDetail{}).
+	Where("approval_template_header_id = ?",approvalHeader.ApprovalTemplateHeaderId).
+	Where("approver_by = ?",approvalDetail.ApproverBy).
+	First(&approvalTemplateDetailData).Error;
+	err != nil{
+		return err
+	}
+
+	existedApprovalDetail := models.ApprovalDetail{}
+	if err := a.db.Model(&models.ApprovalDetail{}).
+	Where("approval_header_id = ?",approvalHeader.ApprovalHeaderId).
+	Where("approver_by = ?",approvalDetail.ApproverBy).
+	First(&existedApprovalDetail).Error;
+	err != nil{
+		return a.db.Model(models.ApprovalDetail{}).Create(&approvalDetail).Error
+	}
+
+	return a.db.Model(models.ApprovalDetail{}).
+	Where("approval_header_id = ?",approvalHeader.ApprovalHeaderId).
+	Where("approver_by = ?",approvalDetail.ApproverBy).
+	Updates(map[string]interface{}{
+		"approval_status": approvalDetail.ApprovalStatus,
+		"approver_by":approvalDetail.ApproverBy,
+		"remark":approvalDetail.Remark,
+	}).Error
+}
+
+func CreateApproval(db *gorm.DB,createApprovalDto approval.CreateApprovalDto) (models.ApprovalHeader, error) {
+	approvalTemplateHeader := models.ApprovalTemplateHeader{}
+
+	if err := db.Model(models.ApprovalTemplateHeader{}).
+	Where("template_type = ?",createApprovalDto.TemplateType).
+	First(&approvalTemplateHeader).Error;
+	err != nil{
+		return models.ApprovalHeader{}, err
+	}
+
+	approval,err := mappers.ToApprovalHeader(createApprovalDto,approvalTemplateHeader)
+	if err != nil{
+		return models.ApprovalHeader{}, err
+	} 
+	
+	if err := db.Create(&approval).Error; err != nil {
+		return models.ApprovalHeader{}, err
+	}
+	return approval, nil
 }
 
 func (a *approvalRepository) Delete(approvalHeaderId string) error {
 	return a.db.Delete(&models.ApprovalHeader{}, "approval_header_id = ?", approvalHeaderId).Error
 }
 
-func (a *approvalRepository) Detail(approvalHeaderId string) (response.PaginateResponseDto[models.ApprovalHeader], error) {
-	var data models.ApprovalHeader
+func (a *approvalRepository) Detail(approvalHeaderId string) (response.PaginateResponseDto[[]approval.ApprovalDetailResponseDto], error) {
+	var data []approval.ApprovalDetailResponseDto
 	var totalRecord int64
 	var totalPage int
 
-	modelDb := a.db.Model(&models.ApprovalHeader{})
+	err := a.db.
+		Table("hrms_approval_template_detail atd").
+		Select(`
+			atd.approval_template_detail_id,
+			atd.approval_template_header_id,
+			atd.approver_by,
+			atd.sequence_number,
 
-	dataAkhir := response.PaginateResponseDto[models.ApprovalHeader]{
+			ad.approval_detail_id,
+			ad.approval_status,
+			ad.remark
+		`).
+		Joins(`
+			LEFT JOIN hrms_approval_detail ad 
+			ON ad.approver_by = atd.approver_by 
+			AND ad.approval_header_id = ?
+		`, approvalHeaderId).
+		Where("atd.approval_template_header_id = (?)",
+			a.db.
+				Table("hrms_approval_header").
+				Select("approval_template_header_id").
+				Where("approval_header_id = ?", approvalHeaderId),
+		).
+		Order("atd.sequence_number ASC").
+		Scan(&data).Error
+
+	dataAkhir := response.PaginateResponseDto[[]approval.ApprovalDetailResponseDto]{
 		Data:        	data,
 		TotalRecord: 	totalRecord,
 		TotalPage: 		totalPage,
 	}
 
-	err := modelDb.Joins("ApprovalTemplateHeader").Find(&data).Error
 	return dataAkhir,err
 }
 

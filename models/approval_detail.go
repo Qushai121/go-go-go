@@ -1,6 +1,7 @@
 package models
 
 import (
+	"hrms_go/constant"
 	"hrms_go/models/base"
 
 	"github.com/google/uuid"
@@ -11,10 +12,12 @@ type ApprovalDetail struct {
 
 	ApprovalHeaderId uuid.UUID `gorm:"column:approval_header_id;type:uuid"`
 
-	ApprovalStatus string `gorm:"column:approval_status;type:varchar(50)"`
+	ApprovalStatus constant.ApprovalStatus `gorm:"column:approval_status;type:varchar(50)"`
 
 	ApproverBy uuid.UUID `gorm:"column:approver_by;type:uuid"`
 	Approver       User      `gorm:"foreignKey:ApproverBy;references:UserId"`
+
+	Remark string `gorm:"column:remark;type:varchar(255)"`
 
 	base.AuditFields
 }

@@ -2,7 +2,8 @@ package controllers
 
 import (
 	"hrms_go/dto"
-	"hrms_go/models"
+	"hrms_go/dto/approval"
+	mappers "hrms_go/mapper"
 	"hrms_go/repositories"
 	"hrms_go/utils"
 
@@ -93,20 +94,40 @@ func (c *ApprovalController) Delete(ctx fiber.Ctx) error {
 // @Tags Approval
 // @Accept json
 // @Produce json
-// @Param request body models.ApprovalDetail true "Approval Detail Payload"
+// @Param request body approval.PostApproveDto true "Approval Detail Payload"
 // @Success 200 {object} map[string]interface{}
 // @Security BearerAuth
 // @Router /api/approval/approve [post]
 func (c *ApprovalController) Approve(ctx fiber.Ctx) error {
-	var payload models.ApprovalDetail
+	var body approval.PostApproveDto
 
-	if err := ctx.Bind().Body(&payload); err != nil {
+	if err := ctx.Bind().Body(&body); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	if err := c.repo.Approve(payload); err != nil {
+	isValidStatus := CheckApprovalStatus(body.ApprovalStatus)
+	if isValidStatus {
+		return utils.Error(ctx,422,"invalid approval status")
+	}
+
+	data,err := mappers.ToApprovalDetail(body);
+	if err != nil {
+		return utils.Error(ctx, 500, err.Error())
+	}
+
+	if err := c.repo.Approve(data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
 	return utils.Success(ctx, "approval updated")
+}
+
+
+func CheckApprovalStatus(status string) bool {
+	switch status {
+	case "PENDING", "APPROVED", "REJECTED":
+		return true
+	default:
+		return false
+	}
 }

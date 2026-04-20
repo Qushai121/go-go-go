@@ -25,6 +25,10 @@ type User struct {
 	UpdatedBy string    `json:"updated_by"`
 }
 
+func (u *User) getModelSave()  {
+	
+}
+
 func (User) TableName() string {
 	return "hrms_users"
 }

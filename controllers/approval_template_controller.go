@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"hrms_go/dto"
+	"hrms_go/dto/approval"
+	mappers "hrms_go/mapper"
 	"hrms_go/models"
 	"hrms_go/repositories"
 	"hrms_go/utils"
@@ -24,12 +26,18 @@ func NewApprovalTemplateController(repo repositories.ApprovalTemplateRepository)
 // @Produce json
 // @Param request body models.ApprovalTemplateHeader true "Header"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/approval_template/header [post]
 func (c *ApprovalTemplateController) CreateHeader(ctx fiber.Ctx) error {
 	var data models.ApprovalTemplateHeader
 
 	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
+	}
+
+	isAllowedType := checkAllowedTemplateType(data.TemplateType)
+	if isAllowedType == false {
+		return utils.Error(ctx, 422, "invalid template type")
 	}
 
 	if err := c.repo.CreateHeader(&data); err != nil {
@@ -50,6 +58,7 @@ func (c *ApprovalTemplateController) CreateHeader(ctx fiber.Ctx) error {
 // @Param page query int false "Page number"
 // @Param per_page query int false "Items per page"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/approval_template/header [get]
 func (c *ApprovalTemplateController) FindAllHeader(ctx fiber.Ctx) error {
 	query := dto.PaginateFieldDto{}
@@ -71,6 +80,7 @@ func (c *ApprovalTemplateController) FindAllHeader(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Param id path string true "Header ID"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/approval_template/header/{id} [get]
 func (c *ApprovalTemplateController) DetailHeader(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
@@ -89,6 +99,7 @@ func (c *ApprovalTemplateController) DetailHeader(ctx fiber.Ctx) error {
 // @Param id path string true "Header ID"
 // @Param request body models.ApprovalTemplateHeader true "Header"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/approval_template/header/{id} [put]
 func (c *ApprovalTemplateController) UpdateHeader(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
@@ -96,6 +107,11 @@ func (c *ApprovalTemplateController) UpdateHeader(ctx fiber.Ctx) error {
 
 	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
+	}
+	
+	isAllowedType := checkAllowedTemplateType(data.TemplateType)
+	if isAllowedType == false {
+		return utils.Error(ctx, 422, "invalid template type")
 	}
 
 	if err := c.repo.UpdateHeader(id, &data); err != nil {
@@ -110,6 +126,7 @@ func (c *ApprovalTemplateController) UpdateHeader(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Param id path string true "Header ID"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/approval_template/header/{id} [delete]
 func (c *ApprovalTemplateController) DeleteHeader(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
@@ -124,21 +141,37 @@ func (c *ApprovalTemplateController) DeleteHeader(ctx fiber.Ctx) error {
 // Create Template Detail godoc
 // @Summary Create template detail
 // @Tags Approval Template
-// @Param request body models.ApprovalTemplateDetail true "Detail"
+// @Param request body approval.PostCreateApprovalTemplateDetailDto true "Detail"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/approval_template/detail [post]
 func (c *ApprovalTemplateController) CreateDetail(ctx fiber.Ctx) error {
-	var data models.ApprovalTemplateDetail
+	var req approval.PostCreateApprovalTemplateDetailDto
 
-	if err := ctx.Bind().Body(&data); err != nil {
+	if err := ctx.Bind().Body(&req); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	if err := c.repo.CreateDetail(&data); err != nil {
+	body, err := mappers.ToApprovalTemplateDetail(req);
+	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, data)
+	if body.CreatedBy == "" {
+		userIdVal := ctx.Locals("user_id")
+
+		userId, ok := userIdVal.(string)
+		if !ok {
+			return utils.Error(ctx, 401, "unauthorized")
+		}
+		body.CreatedBy = userId
+	}
+
+	if err := c.repo.CreateDetail(body); err != nil {
+		return utils.Error(ctx, 500, err.Error())
+	}
+
+	return utils.Success(ctx, body)
 }
 
 // Get Template Detail by Header godoc
@@ -146,6 +179,7 @@ func (c *ApprovalTemplateController) CreateDetail(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Param header_id path string true "Header ID"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/approval_template/detail/{header_id} [get]
 func (c *ApprovalTemplateController) FindDetailByHeader(ctx fiber.Ctx) error {
 	id := ctx.Params("header_id")
@@ -164,6 +198,7 @@ func (c *ApprovalTemplateController) FindDetailByHeader(ctx fiber.Ctx) error {
 // @Param id path string true "Detail ID"
 // @Param request body models.ApprovalTemplateDetail true "Detail"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/approval_template/detail/{id} [put]
 func (c *ApprovalTemplateController) UpdateDetail(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
@@ -185,6 +220,7 @@ func (c *ApprovalTemplateController) UpdateDetail(ctx fiber.Ctx) error {
 // @Tags Approval Template
 // @Param id path string true "Detail ID"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/approval_template/detail/{id} [delete]
 func (c *ApprovalTemplateController) DeleteDetail(ctx fiber.Ctx) error {
 	id := ctx.Params("id")
@@ -194,4 +230,12 @@ func (c *ApprovalTemplateController) DeleteDetail(ctx fiber.Ctx) error {
 	}
 
 	return utils.Success(ctx, "deleted")
+}
+
+func checkAllowedTemplateType(templateType string) bool  {
+	allowedTemplateType := map[string]bool{
+		"WFH":true,
+	}
+
+	return allowedTemplateType[templateType];
 }

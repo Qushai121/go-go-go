@@ -95,7 +95,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ApprovalDetail"
+                            "$ref": "#/definitions/approval.PostApproveDto"
                         }
                     }
                 ],
@@ -186,6 +186,11 @@
         },
         "/api/approval_template/detail": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -197,7 +202,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ApprovalTemplateDetail"
+                            "$ref": "#/definitions/approval.PostCreateApprovalTemplateDetailDto"
                         }
                     }
                 ],
@@ -214,6 +219,11 @@
         },
         "/api/approval_template/detail/{header_id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -240,6 +250,11 @@
         },
         "/api/approval_template/detail/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -273,6 +288,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -299,6 +319,11 @@
         },
         "/api/approval_template/header": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -352,6 +377,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -386,6 +416,11 @@
         },
         "/api/approval_template/header/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -410,6 +445,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -443,6 +483,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Approval Template"
                 ],
@@ -2762,18 +2807,7 @@
         }
     },
     "definitions": {
-        "auth.LoginRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ApprovalDetail": {
+        "approval.PostApproveDto": {
             "type": "object",
             "properties": {
                 "approvalDetailId": {
@@ -2785,22 +2819,35 @@
                 "approvalStatus": {
                     "type": "string"
                 },
-                "approver": {
-                    "$ref": "#/definitions/models.User"
+                "approverBy": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                }
+            }
+        },
+        "approval.PostCreateApprovalTemplateDetailDto": {
+            "type": "object",
+            "properties": {
+                "approvalTemplateHeaderId": {
+                    "type": "string"
                 },
                 "approverBy": {
                     "type": "string"
                 },
-                "created_at": {
+                "sequenceNumber": {
+                    "type": "integer"
+                }
+            }
+        },
+        "auth.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
                     "type": "string"
                 },
-                "created_by": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "updated_by": {
+                "password": {
                     "type": "string"
                 }
             }
