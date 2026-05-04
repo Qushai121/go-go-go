@@ -9,6 +9,7 @@ type PostAttandanceDto struct {
 	LogTime     string `json:"logtime" form:"logtime"`
 	FunctionNo  int    `json:"functionno" form:"functionno"`
 	ActivityType string `json:"activity_type" form:"activity_type"`
+	ActionType   string `json:"action_type" form:"action_type"`
 
 	Latitude            string `json:"latitude" form:"latitude"`
 	Longitude           string `json:"longitude" form:"longitude"`

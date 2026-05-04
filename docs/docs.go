@@ -598,117 +598,71 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User ID (UUID)",
+                        "description": "User ID (UUID). If empty, taken from auth token.",
                         "name": "user_id",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Device ID",
-                        "name": "device_id",
+                        "description": "Company code",
+                        "name": "company_code",
                         "in": "formData"
                     },
                     {
-                        "enum": [
-                            "WFH",
-                            "VISIT",
-                            "OFFICE"
-                        ],
                         "type": "string",
-                        "description": "Activity",
-                        "name": "activity",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "enum": [
-                            "1",
-                            "2"
-                        ],
-                        "type": "string",
-                        "description": "Check type",
-                        "name": "check_type",
+                        "description": "Office code",
+                        "name": "office_code",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Description",
-                        "name": "check_description",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Shift code",
-                        "name": "shift_code",
-                        "in": "formData"
+                        "description": "Log time (YYYY-MM-DD HH:mm:ss or RFC3339)",
+                        "name": "logtime",
+                        "in": "formData",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Shift duration",
-                        "name": "shift_duration_hours",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Date (YYYY-MM-DD)",
-                        "name": "date",
+                        "description": "Function number",
+                        "name": "functionno",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Time (HH:mm:ss)",
-                        "name": "time",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Location code",
-                        "name": "location_code",
+                        "description": "Action type",
+                        "name": "action_type",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Location name",
-                        "name": "location_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "number",
                         "description": "Latitude",
                         "name": "latitude",
                         "in": "formData"
                     },
                     {
-                        "type": "number",
+                        "type": "string",
                         "description": "Longitude",
                         "name": "longitude",
                         "in": "formData"
                     },
                     {
-                        "type": "number",
-                        "description": "GPS accuracy",
-                        "name": "gps_accuracy",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Mock location",
-                        "name": "is_mock_location",
+                        "type": "string",
+                        "description": "Longitude alias",
+                        "name": "langtiude",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Notes",
-                        "name": "notes",
+                        "description": "Distance",
+                        "name": "distance",
                         "in": "formData"
                     },
                     {
                         "type": "file",
-                        "description": "Photo",
-                        "name": "photo_url",
+                        "description": "Attendance image",
+                        "name": "imagepath",
                         "in": "formData",
                         "required": true
                     }
@@ -2660,12 +2614,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Items per page",
                         "name": "per_page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Dynamic Search JSON",
-                        "name": "field_search",
                         "in": "query"
                     }
                 ],

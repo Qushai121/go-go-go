@@ -7,6 +7,7 @@ import (
 	mappers "hrms_go/mapper"
 	"hrms_go/repositories"
 	"hrms_go/utils"
+	"strconv"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -26,30 +27,22 @@ func NewAttendanceController(repo repositories.AttendanceRepository) *Attendance
 // @Accept multipart/form-data
 // @Produce json
 // @Param user_id formData string false "User ID (UUID). If empty, taken from auth token."
-// @Param company_code formData string true "Company code"
+// @Param company_code formData string false "Company code"
 // @Param office_code formData string true "Office code"
 // @Param logtime formData string true "Log time (YYYY-MM-DD HH:mm:ss or RFC3339)"
 // @Param functionno formData int true "Function number"
-// @Param activity_type formData string false "Activity type"
+// @Param action_type formData string false "Action type"
 // @Param latitude formData string false "Latitude"
 // @Param longitude formData string false "Longitude"
-// @Param presentase_kemiripan formData string false "Similarity percentage"
-// @Param is_offline formData string false "Offline flag"
+// @Param langtiude formData string false "Longitude alias"
 // @Param distance formData string false "Distance"
-// @Param platforms formData string false "Platform"
-// @Param max_radius formData int false "Max radius"
-// @Param expand_radius formData int false "Expand radius"
-// @Param object_code formData string false "Object code"
-// @Param created_by formData string false "Created by"
-// @Param updated_by formData string false "Updated by"
 // @Param imagepath formData file true "Attendance image"
 // @Success 200 {object} map[string]interface{}
 // @Security BearerAuth
 // @Router /api/attendance [post]
 func (c *AttendanceController) Create(ctx fiber.Ctx) error {
-	var request attandance.PostAttandanceDto
-
-	if err := ctx.Bind().Body(&request); err != nil {
+	request, err := parseAttendanceFormData(ctx)
+	if err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -91,12 +84,6 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	if data.CompanyCode == "" {
-		if fileUrl != nil {
-			_ = utils.RemoveFileFromPath(*fileUrl)
-		}
-		return utils.Error(ctx, 400, "company_code is required")
-	}
 	if data.OfficeCode == "" {
 		if fileUrl != nil {
 			_ = utils.RemoveFileFromPath(*fileUrl)
@@ -118,6 +105,57 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 	}
 
 	return utils.Success(ctx, data)
+}
+
+func parseAttendanceFormData(ctx fiber.Ctx) (attandance.PostAttandanceDto, error) {
+	request := attandance.PostAttandanceDto{
+		AttendanceId:        ctx.FormValue("attendance_id"),
+		UserId:              ctx.FormValue("user_id"),
+		CompanyCode:         ctx.FormValue("company_code"),
+		OfficeCode:          ctx.FormValue("office_code"),
+		LogTime:             ctx.FormValue("logtime"),
+		ActivityType:        ctx.FormValue("activity_type"),
+		ActionType:          ctx.FormValue("action_type"),
+		Latitude:            ctx.FormValue("latitude"),
+		Longitude:           firstFilledFormValue(ctx, "longitude", "langtiude"),
+		PresentaseKemiripan: ctx.FormValue("presentase_kemiripan"),
+		ImagePath:           ctx.FormValue("imagepath"),
+		IsOffline:           ctx.FormValue("is_offline"),
+		Distance:            ctx.FormValue("distance"),
+		Platforms:           ctx.FormValue("platforms"),
+		MaxRadius:           ctx.FormValue("max_radius"),
+		ExpandRadius:        ctx.FormValue("expand_radius"),
+		ObjectCode:          ctx.FormValue("object_code"),
+		CreatedAt:           ctx.FormValue("created_at"),
+		UpdatedAt:           ctx.FormValue("updated_at"),
+		CreatedBy:           ctx.FormValue("created_by"),
+		UpdatedBy:           ctx.FormValue("updated_by"),
+	}
+
+	functionNo := ctx.FormValue("functionno")
+	if functionNo == "" {
+		return request, fmt.Errorf("functionno is required")
+	}
+
+	parsedFunctionNo, err := strconv.Atoi(functionNo)
+	if err != nil {
+		return request, fmt.Errorf("invalid functionno")
+	}
+
+	request.FunctionNo = parsedFunctionNo
+
+	return request, nil
+}
+
+func firstFilledFormValue(ctx fiber.Ctx, keys ...string) string {
+	for _, key := range keys {
+		value := ctx.FormValue(key)
+		if value != "" {
+			return value
+		}
+	}
+
+	return ""
 }
 
 // Get All Attendance godoc

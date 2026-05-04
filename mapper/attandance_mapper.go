@@ -55,7 +55,7 @@ func ToAttendanceModel(dto attandance.PostAttandanceDto) (models.Attendance, err
 		OfficeCode:   strings.TrimSpace(dto.OfficeCode),
 		LogTime:      logTime,
 		FunctionNo:   dto.FunctionNo,
-		ActivityType: toOptionalString(dto.ActivityType),
+		ActivityType: toOptionalString(firstNonEmpty(dto.ActionType, dto.ActivityType)),
 		Latitude:     toOptionalString(dto.Latitude),
 		Longitude:    toOptionalString(dto.Longitude),
 		PresentaseKemiripan: toOptionalString(dto.PresentaseKemiripan),
@@ -164,4 +164,15 @@ func toOptionalString(value string) *string {
 
 func toOptionalStringPtr(value string) *string {
 	return toOptionalString(value)
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, value := range values {
+		value = strings.TrimSpace(value)
+		if value != "" {
+			return value
+		}
+	}
+
+	return ""
 }

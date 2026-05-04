@@ -734,84 +734,52 @@ paths:
       - multipart/form-data
       description: Create attendance with photo upload
       parameters:
-      - description: User ID (UUID)
+      - description: User ID (UUID). If empty, taken from auth token.
         in: formData
         name: user_id
         type: string
-      - description: Device ID
+      - description: Company code
         in: formData
-        name: device_id
+        name: company_code
         type: string
-      - description: Activity
-        enum:
-        - WFH
-        - VISIT
-        - OFFICE
+      - description: Office code
         in: formData
-        name: activity
+        name: office_code
         required: true
         type: string
-      - description: Check type
-        enum:
-        - "1"
-        - "2"
+      - description: Log time (YYYY-MM-DD HH:mm:ss or RFC3339)
         in: formData
-        name: check_type
+        name: logtime
         required: true
         type: string
-      - description: Description
+      - description: Function number
         in: formData
-        name: check_description
-        type: string
-      - description: Shift code
-        in: formData
-        name: shift_code
-        type: string
-      - description: Shift duration
-        in: formData
-        name: shift_duration_hours
+        name: functionno
+        required: true
         type: integer
-      - description: Date (YYYY-MM-DD)
+      - description: Action type
         in: formData
-        name: date
-        required: true
-        type: string
-      - description: Time (HH:mm:ss)
-        in: formData
-        name: time
-        required: true
-        type: string
-      - description: Location code
-        in: formData
-        name: location_code
-        type: string
-      - description: Location name
-        in: formData
-        name: location_name
+        name: action_type
         type: string
       - description: Latitude
         in: formData
         name: latitude
-        type: number
+        type: string
       - description: Longitude
         in: formData
         name: longitude
-        type: number
-      - description: GPS accuracy
-        in: formData
-        name: gps_accuracy
-        type: number
-      - description: Mock location
-        in: formData
-        name: is_mock_location
-        type: boolean
-      - description: Notes
-        in: formData
-        name: notes
         type: string
-      - description: Photo
+      - description: Longitude alias
         in: formData
-        name: photo_url
+        name: langtiude
+        type: string
+      - description: Distance
+        in: formData
+        name: distance
+        type: string
+      - description: Attendance image
+        in: formData
+        name: imagepath
         required: true
         type: file
       produces:
@@ -2052,10 +2020,6 @@ paths:
         in: query
         name: per_page
         type: integer
-      - description: Dynamic Search JSON
-        in: query
-        name: field_search
-        type: string
       produces:
       - application/json
       responses:
