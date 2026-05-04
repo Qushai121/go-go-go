@@ -70,6 +70,7 @@ func (c *WFHController) Create(ctx fiber.Ctx) error {
 // @Param search query string false "Search keyword"
 // @Param page query int false "Page number"
 // @Param per_page query int false "Items per page"
+// @Param field_search query string false "Dynamic Search JSON"
 // @Success 200 {object} map[string]interface{}
 // @Security BearerAuth
 // @Router /api/wfh [get]
@@ -79,7 +80,7 @@ func (c *WFHController) FindAll(ctx fiber.Ctx) error {
 	if err := ctx.Bind().Query(&queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
-
+	
 	result, err := c.repo.FindAll(nil,&queryParams)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())

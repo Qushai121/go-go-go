@@ -2661,6 +2661,12 @@ const docTemplate = `{
                         "description": "Items per page",
                         "name": "per_page",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Dynamic Search JSON",
+                        "name": "field_search",
+                        "in": "query"
                     }
                 ],
                 "responses": {

@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"encoding/json"
 	"hrms_go/dto"
+	"log"
 	"math"
 
 	"gorm.io/gorm"
@@ -9,7 +11,32 @@ import (
 )
 
 func GetQuery(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64,totalPage *int) *gorm.DB {
+	return GetQueryBase(queryParams,query,totalRecord,totalPage,nil);
+}
+
+func GetQueryBase(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64,totalPage *int,allowedField *map[string]dto.DynamicSearchDto) *gorm.DB {
 	
+	if queryParams.DynamicFieldSearch != nil && allowedField != nil {
+		var filters []dto.DynamicSearchFieldDto
+
+		err := json.Unmarshal([]byte(*queryParams.DynamicFieldSearch), &filters)
+		if err != nil {
+			log.Println("JSON parse error:", err)
+		} else {
+			for _, f := range filters {
+				fieldConfig, ok := (*allowedField)[f.Field]
+				if !ok {
+					continue // skip invalid field
+				}
+				log.Println("data1",fieldConfig.Field + fieldConfig.Query);
+				log.Println("data2",f.Value);
+
+				query.Where(fieldConfig.Field + fieldConfig.Query,f.Value)
+			}
+		}
+	}
+
+
 	if queryParams.SortBy != nil {
 		query = query.Order(clause.OrderByColumn{
 			Column: clause.Column{

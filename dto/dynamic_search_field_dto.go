@@ -1,7 +1,6 @@
 package dto
 
 type DynamicSearchFieldDto struct {
-	Field string
-	Query string
-	Value string
+	Field string `json:"field"`
+	Value string `json:"value"`
 }

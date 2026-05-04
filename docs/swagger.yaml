@@ -2052,6 +2052,10 @@ paths:
         in: query
         name: per_page
         type: integer
+      - description: Dynamic Search JSON
+        in: query
+        name: field_search
+        type: string
       produces:
       - application/json
       responses:

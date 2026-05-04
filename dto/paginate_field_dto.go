@@ -1,13 +1,14 @@
 package dto
 
 type PaginateFieldDto struct {
-	SortOrder *string `query:"sort_order"`
-	SortBy    *string `query:"sort_by"`
-	Search    *string `query:"search"`
-	Page      *int    `query:"page"`
-	PerPage   *int    `query:"per_page"`
-	StartDate *string `query:"start_date"`
-	EndDate   *string `query:"end_date"`
+	SortOrder          *string `query:"sort_order"`
+	SortBy             *string `query:"sort_by"`
+	Search             *string `query:"search"`
+	Page               *int    `query:"page"`
+	PerPage            *int    `query:"per_page"`
+	StartDate          *string `query:"start_date"`
+	EndDate            *string `query:"end_date"`
+	DynamicFieldSearch *string `query:"field_search"`
 }
 
 func (d *PaginateFieldDto) GetSortOrderBool() bool {

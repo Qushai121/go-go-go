@@ -95,7 +95,30 @@ func (r *wfhRepository) FindAll(userId *string,queryParams *dto.PaginateFieldDto
 		modelDb = modelDb.Where("user_id = ?", userId);
 	}
 
-	err := utils.GetQuery(queryParams,modelDb,&result.TotalRecord,&result.TotalPage).Find(&result.Data).Error; 
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"wfh_id":{
+			Field: "w.wfh_id",
+			Query: " = ?",
+		},
+		"start_time":{
+			Field: "w.start_time",
+			Query: " > ?",
+		},
+		"end_time":{
+			Field: "w.end_time",
+			Query: " < ?",
+		},
+		"remarks":{
+			Field: "w.remarks",
+			Query: "LIKE ?",
+		},
+		"user_id":{
+			Field: "user_id",
+			Query: " = ?",
+		},
+	}
+
+	err := utils.GetQueryBase(queryParams,modelDb,&result.TotalRecord,&result.TotalPage,&allowedDynamicList).Find(&result.Data).Error; 
 	return result,err
 }
 
