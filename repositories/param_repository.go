@@ -58,9 +58,10 @@ func (r *paramRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		modelDb = modelDb.Where(`
 			param_id::text LIKE ? OR
 			paramgroup_id::text LIKE ? OR
+			company_code LIKE ? OR
 			param_code LIKE ? OR
 			param_name LIKE ?
-		`, search, search, search, search)
+		`, search, search, search, search, search)
 	}
 
 	allowedDynamicList := map[string]dto.DynamicSearchDto{
@@ -71,6 +72,10 @@ func (r *paramRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		"paramgroup_id": {
 			Field: "paramgroup_id",
 			Query: " = ?",
+		},
+		"company_code": {
+			Field: "company_code",
+			Query: " LIKE ?",
 		},
 		"param_code": {
 			Field: "param_code",

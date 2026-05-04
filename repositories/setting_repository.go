@@ -57,17 +57,27 @@ func (r *settingRepository) FindAll(queryParams *dto.PaginateFieldDto) (response
 
 		modelDb = modelDb.Where(`
 			setting_id::text LIKE ? OR
+			company_code LIKE ? OR
+			setting_code LIKE ? OR
 			setting_name LIKE ? OR
 			setting_value LIKE ? OR
 			created_at::text LIKE ? OR
 			updated_at::text LIKE ?
-		`, search, search, search, search, search)
+		`, search, search, search, search, search, search, search)
 	}
 
 	allowedDynamicList := map[string]dto.DynamicSearchDto{
 		"setting_id": {
 			Field: "setting_id",
 			Query: " = ?",
+		},
+		"company_code": {
+			Field: "company_code",
+			Query: " LIKE ?",
+		},
+		"setting_code": {
+			Field: "setting_code",
+			Query: " LIKE ?",
 		},
 		"setting_name": {
 			Field: "setting_name",

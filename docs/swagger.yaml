@@ -65,6 +65,31 @@ definitions:
       updated_by:
         type: string
     type: object
+  models.Branch:
+    properties:
+      branch_address:
+        type: string
+      branch_code:
+        type: string
+      branch_id:
+        type: string
+      branch_name:
+        type: string
+      company_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      object_code:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
   models.Claim:
     properties:
       amount:
@@ -88,15 +113,17 @@ definitions:
     type: object
   models.Companies:
     properties:
-      companies_code:
+      company_code:
         type: string
-      companies_id:
+      company_id:
         type: string
-      companies_name:
+      company_name:
         type: string
       created_at:
         type: string
       created_by:
+        type: string
+      object_code:
         type: string
       updated_at:
         type: string
@@ -105,23 +132,83 @@ definitions:
     type: object
   models.Customer:
     properties:
-      address:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      customer_address:
+        type: string
+      customer_code:
+        type: string
+      customer_id:
+        type: string
+      customer_latitude:
+        type: string
+      customer_longitude:
+        type: string
+      customer_name:
+        type: string
+      max_radius:
+        type: integer
+      object_code:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Department:
+    properties:
+      branch_code:
+        type: string
+      company_code:
         type: string
       created_at:
         type: string
       created_by:
         type: string
-      customer_id:
+      department_code:
         type: string
-      location_code:
+      department_id:
         type: string
-      location_name:
+      department_name:
         type: string
-      radius_meter:
-        type: integer
-      target_latitude:
+      division_code:
         type: string
-      target_longitude:
+      object_code:
+        type: string
+      office_code:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Division:
+    properties:
+      branch_code:
+        type: string
+      company_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      division_code:
+        type: string
+      division_id:
+        type: string
+      division_name:
+        type: string
+      object_code:
+        type: string
+      office_code:
+        type: string
+      timezone_set:
         type: string
       updated_at:
         type: string
@@ -155,13 +242,13 @@ definitions:
     type: object
   models.Office:
     properties:
+      branch_code:
+        type: string
       company_code:
         type: string
       created_at:
         type: string
       created_by:
-        type: string
-      current_utc_offset:
         type: string
       max_radius:
         type: integer
@@ -169,13 +256,7 @@ definitions:
         type: string
       office_address:
         type: string
-      office_city:
-        type: string
       office_code:
-        type: string
-      office_code_ha:
-        type: string
-      office_code_sunfish:
         type: string
       office_id:
         type: string
@@ -187,14 +268,6 @@ definitions:
         type: string
       office_phone:
         type: string
-      office_pic:
-        type: string
-      office_province:
-        type: string
-      office_subdistrict:
-        type: string
-      office_ward:
-        type: string
       timezone_set:
         type: string
       updated_at:
@@ -204,6 +277,8 @@ definitions:
     type: object
   models.Param:
     properties:
+      company_code:
+        type: string
       created_at:
         type: string
       created_by:
@@ -225,6 +300,8 @@ definitions:
     type: object
   models.ParamGroup:
     properties:
+      company_code:
+        type: string
       created_at:
         type: string
       created_by:
@@ -242,9 +319,13 @@ definitions:
     type: object
   models.Setting:
     properties:
+      company_code:
+        type: string
       created_at:
         type: string
       created_by:
+        type: string
+      setting_code:
         type: string
       setting_id:
         type: string
@@ -305,19 +386,78 @@ definitions:
       user_id:
         type: string
     type: object
-  models.User:
+  models.Title:
     properties:
+      branch_code:
+        type: string
+      company_code:
+        type: string
       created_at:
         type: string
       created_by:
+        type: string
+      department_code:
+        type: string
+      division_code:
+        type: string
+      object_code:
+        type: string
+      office_code:
+        type: string
+      timezone_set:
+        type: string
+      title_code:
+        type: string
+      title_id:
+        type: string
+      title_name:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.User:
+    properties:
+      branch_code:
+        type: string
+      company_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      department_code:
+        type: string
+      division_code:
         type: string
       email:
         type: string
       employee_nik:
         type: string
+      expand_radius:
+        type: integer
+      failed_attempt:
+        type: integer
       fullname:
         type: string
+      is_active:
+        type: string
+      is_locked:
+        type: string
+      locked_by_user:
+        type: string
+      locked_date:
+        type: string
+      need_reset:
+        type: string
+      object_code:
+        type: string
+      office_code:
+        type: string
       password:
+        type: string
+      password_exp_date:
         type: string
       profile_picture_url:
         type: string
@@ -325,11 +465,105 @@ definitions:
         type: string
       shift_id:
         type: string
+      title_code:
+        type: string
       updated_at:
         type: string
       updated_by:
         type: string
       user_id:
+        type: string
+      usergroup_id:
+        type: string
+    type: object
+  models.UserCompany:
+    properties:
+      company_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      employee_nik:
+        type: string
+      object_code:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+      user_company_id:
+        type: string
+    type: object
+  models.UserCustomer:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      customer_code:
+        type: string
+      employee_nik:
+        type: string
+      object_code:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+      user_customer_id:
+        type: string
+    type: object
+  models.UserGroup:
+    properties:
+      company_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      object_code:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+      usergroup_code:
+        type: string
+      usergroup_id:
+        type: string
+      usergroup_name:
+        type: string
+    type: object
+  models.UserOffice:
+    properties:
+      branch_code:
+        type: string
+      company_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      employee_nik:
+        type: string
+      object_code:
+        type: string
+      office_code:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+      user_office_id:
         type: string
     type: object
   submission.PostSubmissionDto:
@@ -826,6 +1060,113 @@ paths:
       summary: Get current user attendance
       tags:
       - Attendance
+  /api/branch:
+    get:
+      description: Get list of branches with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all branches
+      tags:
+      - Branch
+    post:
+      consumes:
+      - application/json
+      description: Create new branch
+      parameters:
+      - description: Branch data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Branch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create branch
+      tags:
+      - Branch
+    put:
+      consumes:
+      - application/json
+      description: Update existing branch
+      parameters:
+      - description: Branch data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Branch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update branch
+      tags:
+      - Branch
+  /api/branch/{id}:
+    delete:
+      description: Delete branch by ID
+      parameters:
+      - description: Branch ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete branch
+      tags:
+      - Branch
   /api/claim_submission:
     get:
       consumes:
@@ -1153,6 +1494,220 @@ paths:
       summary: Delete customer
       tags:
       - Customer
+  /api/department:
+    get:
+      description: Get list of departments with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all departments
+      tags:
+      - Department
+    post:
+      consumes:
+      - application/json
+      description: Create new department
+      parameters:
+      - description: Department data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create department
+      tags:
+      - Department
+    put:
+      consumes:
+      - application/json
+      description: Update existing department
+      parameters:
+      - description: Department data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update department
+      tags:
+      - Department
+  /api/department/{id}:
+    delete:
+      description: Delete department by ID
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete department
+      tags:
+      - Department
+  /api/division:
+    get:
+      description: Get list of divisions with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all divisions
+      tags:
+      - Division
+    post:
+      consumes:
+      - application/json
+      description: Create new division
+      parameters:
+      - description: Division data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Division'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create division
+      tags:
+      - Division
+    put:
+      consumes:
+      - application/json
+      description: Update existing division
+      parameters:
+      - description: Division data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Division'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update division
+      tags:
+      - Division
+  /api/division/{id}:
+    delete:
+      description: Delete division by ID
+      parameters:
+      - description: Division ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete division
+      tags:
+      - Division
   /api/leave:
     get:
       consumes:
@@ -1865,6 +2420,541 @@ paths:
       summary: Delete shift
       tags:
       - Shift
+  /api/title:
+    get:
+      description: Get list of titles with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all titles
+      tags:
+      - Title
+    post:
+      consumes:
+      - application/json
+      description: Create new title
+      parameters:
+      - description: Title data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Title'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create title
+      tags:
+      - Title
+    put:
+      consumes:
+      - application/json
+      description: Update existing title
+      parameters:
+      - description: Title data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Title'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update title
+      tags:
+      - Title
+  /api/title/{id}:
+    delete:
+      description: Delete title by ID
+      parameters:
+      - description: Title ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete title
+      tags:
+      - Title
+  /api/user-company:
+    get:
+      description: Get list of user company mappings with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all user companies
+      tags:
+      - UserCompany
+    post:
+      consumes:
+      - application/json
+      description: Create new user company mapping
+      parameters:
+      - description: User company data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCompany'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create user company
+      tags:
+      - UserCompany
+    put:
+      consumes:
+      - application/json
+      description: Update existing user company mapping
+      parameters:
+      - description: User company data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCompany'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user company
+      tags:
+      - UserCompany
+  /api/user-company/{id}:
+    delete:
+      description: Delete user company mapping by ID
+      parameters:
+      - description: User company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete user company
+      tags:
+      - UserCompany
+  /api/user-customer:
+    get:
+      description: Get list of user customer mappings with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all user customers
+      tags:
+      - UserCustomer
+    post:
+      consumes:
+      - application/json
+      description: Create new user customer mapping
+      parameters:
+      - description: User customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCustomer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create user customer
+      tags:
+      - UserCustomer
+    put:
+      consumes:
+      - application/json
+      description: Update existing user customer mapping
+      parameters:
+      - description: User customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCustomer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user customer
+      tags:
+      - UserCustomer
+  /api/user-customer/{id}:
+    delete:
+      description: Delete user customer mapping by ID
+      parameters:
+      - description: User customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete user customer
+      tags:
+      - UserCustomer
+  /api/user-office:
+    get:
+      description: Get list of user office mappings with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all user offices
+      tags:
+      - UserOffice
+    post:
+      consumes:
+      - application/json
+      description: Create new user office mapping
+      parameters:
+      - description: User office data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserOffice'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create user office
+      tags:
+      - UserOffice
+    put:
+      consumes:
+      - application/json
+      description: Update existing user office mapping
+      parameters:
+      - description: User office data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserOffice'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user office
+      tags:
+      - UserOffice
+  /api/user-office/{id}:
+    delete:
+      description: Delete user office mapping by ID
+      parameters:
+      - description: User office ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete user office
+      tags:
+      - UserOffice
+  /api/usergroup:
+    get:
+      description: Get list of user groups with pagination
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all user groups
+      tags:
+      - UserGroup
+    post:
+      consumes:
+      - application/json
+      description: Create new user group
+      parameters:
+      - description: User group data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserGroup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create user group
+      tags:
+      - UserGroup
+    put:
+      consumes:
+      - application/json
+      description: Update existing user group
+      parameters:
+      - description: User group data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserGroup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user group
+      tags:
+      - UserGroup
+  /api/usergroup/{id}:
+    delete:
+      description: Delete user group by ID
+      parameters:
+      - description: User group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete user group
+      tags:
+      - UserGroup
   /api/users:
     get:
       consumes:

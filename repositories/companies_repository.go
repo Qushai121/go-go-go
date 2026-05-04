@@ -25,7 +25,7 @@ func (c *companiesRepository) Create(companies *models.Companies) error {
 }
 
 func (c *companiesRepository) Delete(companiesId string) error {
-	return c.db.Delete(&models.Companies{}, "companies_id = ?", companiesId).Error
+	return c.db.Delete(&models.Companies{}, "company_id = ?", companiesId).Error
 }
 
 func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Companies], error) {
@@ -41,7 +41,7 @@ func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (respon
 	}
 
 	if queryParams.SortBy == nil {
-		sort := "companies_id"
+		sort := "company_id"
 		queryParams.SortBy = &sort
 	}
 
@@ -49,23 +49,27 @@ func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (respon
 		search := "%" + *queryParams.Search + "%"
 
 		modelDb = modelDb.Where(`
-			companies_id::text LIKE ? OR
-			companies_code LIKE ? OR
-			companies_name LIKE ?
+			company_id::text LIKE ? OR
+			company_code LIKE ? OR
+			company_name LIKE ?
 		`, search, search, search)
 	}
 
 	allowedDynamicList := map[string]dto.DynamicSearchDto{
-		"companies_id": {
-			Field: "companies_id",
+		"company_id": {
+			Field: "company_id",
 			Query: " = ?",
 		},
-		"companies_code": {
-			Field: "companies_code",
+		"company_code": {
+			Field: "company_code",
 			Query: " LIKE ?",
 		},
-		"companies_name": {
-			Field: "companies_name",
+		"company_name": {
+			Field: "company_name",
+			Query: " LIKE ?",
+		},
+		"object_code": {
+			Field: "object_code",
 			Query: " LIKE ?",
 		},
 	}
@@ -78,7 +82,7 @@ func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (respon
 }
 
 func (c *companiesRepository) Update(companies *models.Companies) error {
-	return c.db.Model(&models.Companies{}).Where("companies_id = ?", companies.CompaniesId).Updates(&companies).Error
+	return c.db.Model(&models.Companies{}).Where("company_id = ?", companies.CompanyId).Updates(companies).Error
 }
 
 func NewCompaniesRepository(db *gorm.DB) CompaniesRepository {

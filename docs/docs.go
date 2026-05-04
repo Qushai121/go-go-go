@@ -727,6 +727,175 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/branch": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of branches with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Branch"
+                ],
+                "summary": "Get all branches",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing branch",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Branch"
+                ],
+                "summary": "Update branch",
+                "parameters": [
+                    {
+                        "description": "Branch data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Branch"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new branch",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Branch"
+                ],
+                "summary": "Create branch",
+                "parameters": [
+                    {
+                        "description": "Branch data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Branch"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/branch/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete branch by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Branch"
+                ],
+                "summary": "Delete branch",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Branch ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/claim_submission": {
             "get": {
                 "security": [
@@ -1227,6 +1396,344 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/department": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of departments with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Get all departments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing department",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Update department",
+                "parameters": [
+                    {
+                        "description": "Department data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Department"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new department",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Create department",
+                "parameters": [
+                    {
+                        "description": "Department data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Department"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/department/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete department by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Delete department",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Department ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/division": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of divisions with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Division"
+                ],
+                "summary": "Get all divisions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing division",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Division"
+                ],
+                "summary": "Update division",
+                "parameters": [
+                    {
+                        "description": "Division data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Division"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new division",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Division"
+                ],
+                "summary": "Create division",
+                "parameters": [
+                    {
+                        "description": "Division data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Division"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/division/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete division by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Division"
+                ],
+                "summary": "Delete division",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Division ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2363,6 +2870,851 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/title": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of titles with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Title"
+                ],
+                "summary": "Get all titles",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing title",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Title"
+                ],
+                "summary": "Update title",
+                "parameters": [
+                    {
+                        "description": "Title data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Title"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new title",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Title"
+                ],
+                "summary": "Create title",
+                "parameters": [
+                    {
+                        "description": "Title data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Title"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/title/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete title by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Title"
+                ],
+                "summary": "Delete title",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Title ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user-company": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of user company mappings with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserCompany"
+                ],
+                "summary": "Get all user companies",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing user company mapping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserCompany"
+                ],
+                "summary": "Update user company",
+                "parameters": [
+                    {
+                        "description": "User company data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserCompany"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new user company mapping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserCompany"
+                ],
+                "summary": "Create user company",
+                "parameters": [
+                    {
+                        "description": "User company data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserCompany"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user-company/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete user company mapping by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserCompany"
+                ],
+                "summary": "Delete user company",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User company ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user-customer": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of user customer mappings with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserCustomer"
+                ],
+                "summary": "Get all user customers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing user customer mapping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserCustomer"
+                ],
+                "summary": "Update user customer",
+                "parameters": [
+                    {
+                        "description": "User customer data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserCustomer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new user customer mapping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserCustomer"
+                ],
+                "summary": "Create user customer",
+                "parameters": [
+                    {
+                        "description": "User customer data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserCustomer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user-customer/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete user customer mapping by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserCustomer"
+                ],
+                "summary": "Delete user customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user-office": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of user office mappings with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserOffice"
+                ],
+                "summary": "Get all user offices",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing user office mapping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserOffice"
+                ],
+                "summary": "Update user office",
+                "parameters": [
+                    {
+                        "description": "User office data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserOffice"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new user office mapping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserOffice"
+                ],
+                "summary": "Create user office",
+                "parameters": [
+                    {
+                        "description": "User office data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserOffice"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user-office/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete user office mapping by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserOffice"
+                ],
+                "summary": "Delete user office",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User office ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/usergroup": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of user groups with pagination",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserGroup"
+                ],
+                "summary": "Get all user groups",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing user group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserGroup"
+                ],
+                "summary": "Update user group",
+                "parameters": [
+                    {
+                        "description": "User group data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserGroup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new user group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserGroup"
+                ],
+                "summary": "Create user group",
+                "parameters": [
+                    {
+                        "description": "User group data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserGroup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/usergroup/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete user group by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserGroup"
+                ],
+                "summary": "Delete user group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/users": {
             "get": {
                 "security": [
@@ -2873,6 +4225,44 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Branch": {
+            "type": "object",
+            "properties": {
+                "branch_address": {
+                    "type": "string"
+                },
+                "branch_code": {
+                    "type": "string"
+                },
+                "branch_id": {
+                    "type": "string"
+                },
+                "branch_name": {
+                    "type": "string"
+                },
+                "company_code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Claim": {
             "type": "object",
             "properties": {
@@ -2908,19 +4298,22 @@ const docTemplate = `{
         "models.Companies": {
             "type": "object",
             "properties": {
-                "companies_code": {
+                "company_code": {
                     "type": "string"
                 },
-                "companies_id": {
+                "company_id": {
                     "type": "string"
                 },
-                "companies_name": {
+                "company_name": {
                     "type": "string"
                 },
                 "created_at": {
                     "type": "string"
                 },
                 "created_by": {
+                    "type": "string"
+                },
+                "object_code": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -2934,7 +4327,54 @@ const docTemplate = `{
         "models.Customer": {
             "type": "object",
             "properties": {
-                "address": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "customer_address": {
+                    "type": "string"
+                },
+                "customer_code": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "customer_latitude": {
+                    "type": "string"
+                },
+                "customer_longitude": {
+                    "type": "string"
+                },
+                "customer_name": {
+                    "type": "string"
+                },
+                "max_radius": {
+                    "type": "integer"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Department": {
+            "type": "object",
+            "properties": {
+                "branch_code": {
+                    "type": "string"
+                },
+                "company_code": {
                     "type": "string"
                 },
                 "created_at": {
@@ -2943,22 +4383,66 @@ const docTemplate = `{
                 "created_by": {
                     "type": "string"
                 },
-                "customer_id": {
+                "department_code": {
                     "type": "string"
                 },
-                "location_code": {
+                "department_id": {
                     "type": "string"
                 },
-                "location_name": {
+                "department_name": {
                     "type": "string"
                 },
-                "radius_meter": {
-                    "type": "integer"
-                },
-                "target_latitude": {
+                "division_code": {
                     "type": "string"
                 },
-                "target_longitude": {
+                "object_code": {
+                    "type": "string"
+                },
+                "office_code": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Division": {
+            "type": "object",
+            "properties": {
+                "branch_code": {
+                    "type": "string"
+                },
+                "company_code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "division_code": {
+                    "type": "string"
+                },
+                "division_id": {
+                    "type": "string"
+                },
+                "division_name": {
+                    "type": "string"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "office_code": {
+                    "type": "string"
+                },
+                "timezone_set": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -3010,6 +4494,9 @@ const docTemplate = `{
         "models.Office": {
             "type": "object",
             "properties": {
+                "branch_code": {
+                    "type": "string"
+                },
                 "company_code": {
                     "type": "string"
                 },
@@ -3017,9 +4504,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "string"
-                },
-                "current_utc_offset": {
                     "type": "string"
                 },
                 "max_radius": {
@@ -3031,16 +4515,7 @@ const docTemplate = `{
                 "office_address": {
                     "type": "string"
                 },
-                "office_city": {
-                    "type": "string"
-                },
                 "office_code": {
-                    "type": "string"
-                },
-                "office_code_ha": {
-                    "type": "string"
-                },
-                "office_code_sunfish": {
                     "type": "string"
                 },
                 "office_id": {
@@ -3058,18 +4533,6 @@ const docTemplate = `{
                 "office_phone": {
                     "type": "string"
                 },
-                "office_pic": {
-                    "type": "string"
-                },
-                "office_province": {
-                    "type": "string"
-                },
-                "office_subdistrict": {
-                    "type": "string"
-                },
-                "office_ward": {
-                    "type": "string"
-                },
                 "timezone_set": {
                     "type": "string"
                 },
@@ -3084,6 +4547,9 @@ const docTemplate = `{
         "models.Param": {
             "type": "object",
             "properties": {
+                "company_code": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -3116,6 +4582,9 @@ const docTemplate = `{
         "models.ParamGroup": {
             "type": "object",
             "properties": {
+                "company_code": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -3142,10 +4611,16 @@ const docTemplate = `{
         "models.Setting": {
             "type": "object",
             "properties": {
+                "company_code": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
                 "created_by": {
+                    "type": "string"
+                },
+                "setting_code": {
                     "type": "string"
                 },
                 "setting_id": {
@@ -3238,13 +4713,72 @@ const docTemplate = `{
                 }
             }
         },
-        "models.User": {
+        "models.Title": {
             "type": "object",
             "properties": {
+                "branch_code": {
+                    "type": "string"
+                },
+                "company_code": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
                 "created_by": {
+                    "type": "string"
+                },
+                "department_code": {
+                    "type": "string"
+                },
+                "division_code": {
+                    "type": "string"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "office_code": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "title_code": {
+                    "type": "string"
+                },
+                "title_id": {
+                    "type": "string"
+                },
+                "title_name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "branch_code": {
+                    "type": "string"
+                },
+                "company_code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "department_code": {
+                    "type": "string"
+                },
+                "division_code": {
                     "type": "string"
                 },
                 "email": {
@@ -3253,10 +4787,40 @@ const docTemplate = `{
                 "employee_nik": {
                     "type": "string"
                 },
+                "expand_radius": {
+                    "type": "integer"
+                },
+                "failed_attempt": {
+                    "type": "integer"
+                },
                 "fullname": {
                     "type": "string"
                 },
+                "is_active": {
+                    "type": "string"
+                },
+                "is_locked": {
+                    "type": "string"
+                },
+                "locked_by_user": {
+                    "type": "string"
+                },
+                "locked_date": {
+                    "type": "string"
+                },
+                "need_reset": {
+                    "type": "string"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "office_code": {
+                    "type": "string"
+                },
                 "password": {
+                    "type": "string"
+                },
+                "password_exp_date": {
                     "type": "string"
                 },
                 "profile_picture_url": {
@@ -3268,6 +4832,9 @@ const docTemplate = `{
                 "shift_id": {
                     "type": "string"
                 },
+                "title_code": {
+                    "type": "string"
+                },
                 "updated_at": {
                     "type": "string"
                 },
@@ -3275,6 +4842,146 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                },
+                "usergroup_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserCompany": {
+            "type": "object",
+            "properties": {
+                "company_code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "employee_nik": {
+                    "type": "string"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                },
+                "user_company_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserCustomer": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "customer_code": {
+                    "type": "string"
+                },
+                "employee_nik": {
+                    "type": "string"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                },
+                "user_customer_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserGroup": {
+            "type": "object",
+            "properties": {
+                "company_code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                },
+                "usergroup_code": {
+                    "type": "string"
+                },
+                "usergroup_id": {
+                    "type": "string"
+                },
+                "usergroup_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserOffice": {
+            "type": "object",
+            "properties": {
+                "branch_code": {
+                    "type": "string"
+                },
+                "company_code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "employee_nik": {
+                    "type": "string"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "office_code": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                },
+                "user_office_id": {
                     "type": "string"
                 }
             }

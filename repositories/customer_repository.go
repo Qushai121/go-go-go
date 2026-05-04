@@ -25,7 +25,7 @@ func (c *customerRepository) Delete(customerId string) error {
 }
 
 func (c *customerRepository) Update(customer *models.Customer) error {
-	return c.db.Model(&models.Customer{}).Where("customer_id = ?", customer.CustomerId).Updates(&customer).Error
+	return c.db.Model(&models.Customer{}).Where("customer_id = ?", customer.CustomerId).Updates(customer).Error
 }
 
 func (c *customerRepository) Create(customer *models.Customer) error {
@@ -44,7 +44,7 @@ func (c *customerRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 		queryParams.SortBy = &sort
 	}
 
-	dataAkhir := response.PaginateResponseDto[[]models.Customer]{
+	result := response.PaginateResponseDto[[]models.Customer]{
 		Data:        data,
 		TotalRecord: totalRecord,
 		TotalPage:   totalPage,
@@ -55,13 +55,15 @@ func (c *customerRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 
 		modelDb = modelDb.Where(`
 			customer_id::text LIKE ? OR
-			location_code LIKE ? OR
-			location_name LIKE ? OR
-			address LIKE ? OR
-			target_latitude LIKE ? OR
-			target_longitude LIKE ? OR
-			radius_meter::text LIKE ?
-		`, search, search, search, search, search, search, search)
+			customer_code LIKE ? OR
+			customer_name LIKE ? OR
+			customer_address LIKE ? OR
+			customer_latitude LIKE ? OR
+			customer_longitude LIKE ? OR
+			max_radius::text LIKE ? OR
+			object_code LIKE ? OR
+			timezone_set LIKE ?
+		`, search, search, search, search, search, search, search, search, search)
 	}
 
 	allowedDynamicList := map[string]dto.DynamicSearchDto{
@@ -69,34 +71,42 @@ func (c *customerRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 			Field: "customer_id",
 			Query: " = ?",
 		},
-		"location_code": {
-			Field: "location_code",
+		"customer_code": {
+			Field: "customer_code",
 			Query: " LIKE ?",
 		},
-		"location_name": {
-			Field: "location_name",
+		"customer_name": {
+			Field: "customer_name",
 			Query: " LIKE ?",
 		},
-		"address": {
-			Field: "address",
+		"customer_address": {
+			Field: "customer_address",
 			Query: " LIKE ?",
 		},
-		"target_latitude": {
-			Field: "target_latitude",
+		"customer_latitude": {
+			Field: "customer_latitude",
 			Query: " LIKE ?",
 		},
-		"target_longitude": {
-			Field: "target_longitude",
+		"customer_longitude": {
+			Field: "customer_longitude",
 			Query: " LIKE ?",
 		},
-		"radius_meter": {
-			Field: "radius_meter",
+		"max_radius": {
+			Field: "max_radius",
 			Query: " = ?",
+		},
+		"object_code": {
+			Field: "object_code",
+			Query: " LIKE ?",
+		},
+		"timezone_set": {
+			Field: "timezone_set",
+			Query: " LIKE ?",
 		},
 	}
 
-	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).Find(&dataAkhir.Data).Error
-	return dataAkhir, err
+	err := utils.GetQueryBase(queryParams, modelDb, &result.TotalRecord, &result.TotalPage, &allowedDynamicList).Find(&result.Data).Error
+	return result, err
 }
 
 func NewCustomerRepository(db *gorm.DB) CustomerRepository {

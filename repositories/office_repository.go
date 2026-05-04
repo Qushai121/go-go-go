@@ -58,23 +58,19 @@ func (r *officeRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.
 		modelDb = modelDb.Where(`
 			office_id::text LIKE ? OR
 			company_code LIKE ? OR
+			branch_code LIKE ? OR
 			office_code LIKE ? OR
 			office_name LIKE ? OR
 			office_phone LIKE ? OR
 			office_address LIKE ? OR
-			office_province LIKE ? OR
-			office_city LIKE ? OR
-			office_subdistrict LIKE ? OR
-			office_ward LIKE ? OR
 			office_latitude LIKE ? OR
 			office_longitude LIKE ? OR
 			object_code LIKE ? OR
-			timezone_set LIKE ? OR
-			current_utc_offset LIKE ?
+			timezone_set LIKE ?
 		`,
 			search, search, search, search, search,
 			search, search, search, search, search,
-			search, search, search, search, search,
+			search, search,
 		)
 	}
 
@@ -85,6 +81,10 @@ func (r *officeRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.
 		},
 		"company_code": {
 			Field: "company_code",
+			Query: " LIKE ?",
+		},
+		"branch_code": {
+			Field: "branch_code",
 			Query: " LIKE ?",
 		},
 		"office_code": {
@@ -101,22 +101,6 @@ func (r *officeRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.
 		},
 		"office_address": {
 			Field: "office_address",
-			Query: " LIKE ?",
-		},
-		"office_province": {
-			Field: "office_province",
-			Query: " LIKE ?",
-		},
-		"office_city": {
-			Field: "office_city",
-			Query: " LIKE ?",
-		},
-		"office_subdistrict": {
-			Field: "office_subdistrict",
-			Query: " LIKE ?",
-		},
-		"office_ward": {
-			Field: "office_ward",
 			Query: " LIKE ?",
 		},
 		"office_latitude": {
@@ -137,22 +121,6 @@ func (r *officeRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.
 		},
 		"timezone_set": {
 			Field: "timezone_set",
-			Query: " LIKE ?",
-		},
-		"current_utc_offset": {
-			Field: "current_utc_offset",
-			Query: " LIKE ?",
-		},
-		"office_code_sunfish": {
-			Field: "office_code_sunfish",
-			Query: " LIKE ?",
-		},
-		"office_code_ha": {
-			Field: "office_code_ha",
-			Query: " LIKE ?",
-		},
-		"office_pic": {
-			Field: "office_pic",
 			Query: " LIKE ?",
 		},
 	}

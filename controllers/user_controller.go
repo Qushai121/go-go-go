@@ -89,9 +89,10 @@ func (c *UserController) UpdateUserShift(ctx fiber.Ctx) error {
 	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
-	data.UpdatedBy = ctx.Locals("user_id").(string)
+	userId := ctx.Locals("user_id").(string)
+	data.UpdatedBy = &userId
 
-	realData.UpdatedBy = ctx.Locals("user_id").(string)
+	realData.UpdatedBy = &userId
 	realData.ShiftId = data.ShiftId
 	realData.UserId = data.UserId
 
@@ -133,7 +134,8 @@ func (c *UserController) UpdateUserPicture(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	realData.UpdatedBy = ctx.Locals("user_id").(string)
+	authUserID := ctx.Locals("user_id").(string)
+	realData.UpdatedBy = &authUserID
 	realData.UserId = userId
 
 	if fileUrl != nil {
@@ -150,7 +152,6 @@ func (c *UserController) UpdateUserPicture(ctx fiber.Ctx) error {
 	return utils.Success(ctx, realData)
 }
 
-
 // Find Me godoc
 // @Summary Find Me
 // @Description Get My User Information
@@ -162,7 +163,7 @@ func (c *UserController) UpdateUserPicture(ctx fiber.Ctx) error {
 func (c *UserController) Me(ctx fiber.Ctx) error {
 	userId := ctx.Locals("user_id").(string)
 
-	data, err := c.repo.Me(userId); 
+	data, err := c.repo.Me(userId)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}

@@ -65,21 +65,19 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 			employee_nik LIKE ? OR
 			fullname LIKE ? OR
 			email LIKE ? OR
-			role LIKE ? OR
-			shift_id::text LIKE ? OR
-			profile_picture_url LIKE ? OR
+			company_code LIKE ? OR
+			branch_code LIKE ? OR
+			office_code LIKE ? OR
+			division_code LIKE ? OR
+			department_code LIKE ? OR
+			title_code LIKE ? OR
+			is_active LIKE ? OR
+			is_locked LIKE ? OR
 			created_at::text LIKE ? OR
 			updated_at::text LIKE ?
 		`,
-			search, // user_id
-			search, // employee_nik
-			search, // fullname
-			search, // email
-			search, // role
-			search, // shift_id
-			search, // profile_picture_url
-			search, // created_at
-			search, // updated_at
+			search, search, search, search, search, search, search,
+			search, search, search, search, search, search,
 		)
 	}
 
@@ -100,25 +98,41 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 			Field: "email",
 			Query: " LIKE ?",
 		},
-		"role": {
-			Field: "role",
+		"company_code": {
+			Field: "company_code",
 			Query: " LIKE ?",
 		},
-		"shift_id": {
-			Field: "shift_id",
+		"branch_code": {
+			Field: "branch_code",
+			Query: " LIKE ?",
+		},
+		"office_code": {
+			Field: "office_code",
+			Query: " LIKE ?",
+		},
+		"division_code": {
+			Field: "division_code",
+			Query: " LIKE ?",
+		},
+		"department_code": {
+			Field: "department_code",
+			Query: " LIKE ?",
+		},
+		"title_code": {
+			Field: "title_code",
+			Query: " LIKE ?",
+		},
+		"is_active": {
+			Field: "is_active",
 			Query: " = ?",
 		},
-		"profile_picture_url": {
-			Field: "profile_picture_url",
-			Query: " LIKE ?",
+		"is_locked": {
+			Field: "is_locked",
+			Query: " = ?",
 		},
-		"created_at": {
-			Field: "created_at",
-			Query: " >= ?",
-		},
-		"updated_at": {
-			Field: "updated_at",
-			Query: " <= ?",
+		"need_reset": {
+			Field: "need_reset",
+			Query: " = ?",
 		},
 	}
 

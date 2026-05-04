@@ -7,13 +7,14 @@ import (
 )
 
 type Companies struct {
-	CompaniesId   uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"companies_id"`
-	CompaniesCode string    `json:"companies_code"`
-	CompaniesName string    `json:"companies_name"`
+	CompanyId   uuid.UUID `gorm:"column:company_id;type:uuid;default:uuid_generate_v4();primaryKey" json:"company_id"`
+	CompanyCode string    `gorm:"column:company_code;type:varchar;not null;unique" json:"company_code"`
+	CompanyName string    `gorm:"column:company_name;type:varchar;not null" json:"company_name"`
+	ObjectCode  string    `gorm:"column:object_code;type:varchar(10);default:COMPANY" json:"object_code"`
 
 	base.AuditFields
 }
 
 func (c Companies) TableName() string {
-	return "hrms_companies"
+	return "hrms_company"
 }
