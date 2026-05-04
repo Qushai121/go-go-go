@@ -14,9 +14,7 @@ import (
 
 type WFHRepository interface {
 	Create(data *models.WFH) error
-	FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error)
-	// FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.WFH], error)
-	FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.WFH], error)
+	FindAll(userId *string,queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error)
 	Delete(id string) error
 	Update(data *models.WFH) error
 }
@@ -25,10 +23,18 @@ type wfhRepository struct {
 	db *gorm.DB
 }
 
-func (r *wfhRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error) {
-	var result []wfh.WFHApproval
+func (r *wfhRepository) FindAll(userId *string,queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error) {
+	var data []wfh.WFHApproval
+	var totalRecord int64
+	var totalPage int
 
-	if err := r.db.
+	result := response.PaginateResponseDto[[]wfh.WFHApproval]{
+		Data: data,
+		TotalRecord: totalRecord,
+		TotalPage: totalPage,
+	}
+
+	modelDb := r.db.
 		Table("hrms_wfh w").
 		Select(`
 			w.wfh_id,
@@ -61,43 +67,40 @@ func (r *wfhRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pag
 			w.user_id,
 			w.remarks,
 			ah.approval_header_id
-		`).
-		Scan(&result).Error; 
-		err != nil{
-			return response.PaginateResponseDto[[]wfh.WFHApproval]{},err
-		}
+		`) 
 
-	return response.PaginateResponseDto[[]wfh.WFHApproval]{Data: result},nil
+	if queryParams.Search != nil && *queryParams.Search != "" {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			wfh_id::text LIKE ? OR
+			user_id LIKE ? OR
+			remarks LIKE ? OR
+			start_time LIKE ? OR
+			end_time LIKE ? OR
+			created_at::text LIKE ? OR
+			updated_at::text LIKE ?
+		`, 
+			search, // wfh_id
+			search, // user_id
+			search, // remarks
+			search, // start_time
+			search, // end_time
+			search, // created_at
+			search, // updated_at
+		)
+	}
+
+	if(userId != nil){
+		modelDb = modelDb.Where("user_id = ?", userId);
+	}
+
+	err := utils.GetQuery(queryParams,modelDb,&result.TotalRecord,&result.TotalPage).Find(&result.Data).Error; 
+	return result,err
 }
 
 func NewWFHRepository(db *gorm.DB) WFHRepository {
 	return &wfhRepository{db}
-}
-
-func (r *wfhRepository) FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.WFH], error) {
-	var data []models.WFH
-	var totalRecord int64
-	var totalPage int
-
-	modelDb := r.db.Model(&models.WFH{})
-
-	// default sort
-	if queryParams.SortBy == nil {
-		sort := "wfh_id"
-		queryParams.SortBy = &sort
-	}
-
-	result := response.PaginateResponseDto[[]models.WFH]{
-		Data:        data,
-		TotalRecord: totalRecord,
-		TotalPage:   totalPage,
-	}
-
-	err := utils.GetQuery(queryParams, modelDb, &result.TotalRecord, &result.TotalPage).
-		Where("user_id = ?", userId).
-		Find(&result.Data).Error
-
-	return result, err
 }
 
 func (r *wfhRepository) Create(data *models.WFH) error {

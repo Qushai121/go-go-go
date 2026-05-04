@@ -117,7 +117,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	wfhRoute := api.Group("wfh", middlewares.JWTProtected())
 	wfhRoute.Post("/", wfhControler.Create)
 	wfhRoute.Get("/", wfhControler.FindAll)
-	wfhRoute.Get("/me", wfhControler.FindAll)
+	wfhRoute.Get("/me", wfhControler.FindByUser)
 	// wfhRoute.Put("/", wfhControler.Update)
 	wfhRoute.Delete("/:id", wfhControler.Delete)
 

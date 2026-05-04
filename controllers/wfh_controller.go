@@ -80,7 +80,7 @@ func (c *WFHController) FindAll(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	result, err := c.repo.FindAll(&queryParams)
+	result, err := c.repo.FindAll(nil,&queryParams)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
@@ -110,7 +110,7 @@ func (c *WFHController) FindByUser(ctx fiber.Ctx) error {
 	}
 
 	userId := ctx.Locals("user_id").(string)
-	result, err := c.repo.FindByUser(userId,&queryParams)
+	result, err := c.repo.FindAll(&userId,&queryParams)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
