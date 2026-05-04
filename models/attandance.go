@@ -9,11 +9,12 @@ import (
 type Attendance struct {
 	AttendanceId uuid.UUID `gorm:"column:attendance_id;type:uuid;default:uuid_generate_v4();primaryKey" json:"attendance_id" form:"attendance_id"`
 
-	UserId      uuid.UUID `gorm:"column:user_id;type:uuid;not null;index" json:"user_id" form:"user_id"`
-	CompanyCode string    `gorm:"column:company_code;type:varchar(100);not null" json:"company_code" form:"company_code"`
-	OfficeCode  string    `gorm:"column:office_code;type:varchar(100);not null" json:"office_code" form:"office_code"`
-	LogTime     time.Time `gorm:"column:logtime;type:timestamp;not null" json:"logtime" form:"logtime"`
-	FunctionNo  int       `gorm:"column:functionno;type:int;not null" json:"functionno" form:"functionno"`
+	UserId       uuid.UUID `gorm:"column:user_id;type:uuid;not null;index" json:"user_id" form:"user_id"`
+	CompanyCode  string    `gorm:"column:company_code;type:varchar(100);not null" json:"company_code" form:"company_code"`
+	OfficeCode   string    `gorm:"column:office_code;type:varchar(100);not null" json:"office_code" form:"office_code"`
+	CustomerCode *string   `gorm:"column:customer_code;type:varchar(100)" json:"customer_code" form:"customer_code"`
+	LogTime      time.Time `gorm:"column:logtime;type:timestamp;not null" json:"logtime" form:"logtime"`
+	FunctionNo   int       `gorm:"column:functionno;type:int;not null" json:"functionno" form:"functionno"`
 	ActivityType *string   `gorm:"column:activity_type;type:varchar(100)" json:"activity_type" form:"activity_type"`
 
 	Latitude            *string `gorm:"column:latitude;type:varchar(255)" json:"latitude" form:"latitude"`

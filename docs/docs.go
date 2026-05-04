@@ -617,6 +617,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Customer code",
+                        "name": "customer_code",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
                         "description": "Log time (YYYY-MM-DD HH:mm:ss or RFC3339)",
                         "name": "logtime",
                         "in": "formData",

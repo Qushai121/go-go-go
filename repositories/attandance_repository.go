@@ -68,6 +68,7 @@ func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 			user_id::text LIKE ? OR
 			company_code LIKE ? OR
 			office_code LIKE ? OR
+			customer_code LIKE ? OR
 			logtime::text LIKE ? OR
 			functionno::text LIKE ? OR
 			activity_type LIKE ? OR
@@ -90,6 +91,7 @@ func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 			search, search, search, search, search,
 			search, search, search, search, search,
 			search, search, search, search, search,
+			search, search,
 		)
 	}
 
@@ -144,6 +146,10 @@ func attendanceDynamicSearchFields() map[string]dto.DynamicSearchDto {
 		},
 		"office_code": {
 			Field: "office_code",
+			Query: " LIKE ?",
+		},
+		"location_code": {
+			Field: "location_code",
 			Query: " LIKE ?",
 		},
 		"logtime": {

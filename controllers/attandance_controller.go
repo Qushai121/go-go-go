@@ -8,6 +8,7 @@ import (
 	"hrms_go/repositories"
 	"hrms_go/utils"
 	"strconv"
+	"strings"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -29,6 +30,7 @@ func NewAttendanceController(repo repositories.AttendanceRepository) *Attendance
 // @Param user_id formData string false "User ID (UUID). If empty, taken from auth token."
 // @Param company_code formData string false "Company code"
 // @Param office_code formData string true "Office code"
+// @Param customer_code formData string false "Customer code"
 // @Param logtime formData string true "Log time (YYYY-MM-DD HH:mm:ss or RFC3339)"
 // @Param functionno formData int true "Function number"
 // @Param action_type formData string false "Action type"
@@ -70,7 +72,12 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 		}
 	}
 
-	fileUrl, err := utils.SaveFileToPath(file, "attandance", ctx)
+	employeeNIK := strings.TrimSpace(fmt.Sprint(ctx.Locals("employee_nik")))
+	if employeeNIK == "" || employeeNIK == "<nil>" {
+		return utils.Error(ctx, 400, "employee_nik is missing from token")
+	}
+
+	fileUrl, err := utils.SaveFileToCustomPath(file, fmt.Sprintf("employee_absen/%s/foto", employeeNIK), ctx)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
@@ -113,6 +120,7 @@ func parseAttendanceFormData(ctx fiber.Ctx) (attandance.PostAttandanceDto, error
 		UserId:              ctx.FormValue("user_id"),
 		CompanyCode:         ctx.FormValue("company_code"),
 		OfficeCode:          ctx.FormValue("office_code"),
+		CustomerCode:        ctx.FormValue("customer_code"),
 		LogTime:             ctx.FormValue("logtime"),
 		ActivityType:        ctx.FormValue("activity_type"),
 		ActionType:          ctx.FormValue("action_type"),

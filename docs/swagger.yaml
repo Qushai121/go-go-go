@@ -747,6 +747,10 @@ paths:
         name: office_code
         required: true
         type: string
+      - description: Customer code
+        in: formData
+        name: customer_code
+        type: string
       - description: Log time (YYYY-MM-DD HH:mm:ss or RFC3339)
         in: formData
         name: logtime
