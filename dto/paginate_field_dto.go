@@ -30,6 +30,14 @@ func (d *PaginateFieldDto) GetOffset() *int {
 	if d.Page == nil || d.PerPage == nil {
 		return nil
 	}
+	if *d.PerPage <= 0 {
+		return nil
+	}
+	if *d.Page <= 1 {
+		offset := 0
+		return &offset
+	}
+
 	offset := (*d.Page - 1) * *d.PerPage
 
 	return &offset
@@ -38,6 +46,9 @@ func (d *PaginateFieldDto) GetOffset() *int {
 func (d *PaginateFieldDto) GetSortByWithDefaultId(defaultCol *string) string {
 	if d.SortBy != nil && *d.SortBy != "" {
 		return *d.SortBy
+	}
+	if defaultCol != nil && *defaultCol != "" {
+		return *defaultCol
 	}
 	return ""
 }

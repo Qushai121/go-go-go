@@ -14,7 +14,8 @@ import (
 
 type WFHRepository interface {
 	Create(data *models.WFH) error
-	FindAll(userId *string,queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error)
+	FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error)
+	FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error)
 	Delete(id string) error
 	Update(data *models.WFH) error
 }
@@ -23,15 +24,23 @@ type wfhRepository struct {
 	db *gorm.DB
 }
 
-func (r *wfhRepository) FindAll(userId *string,queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error) {
+func (r *wfhRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error) {
+	return r.findAll(nil, queryParams)
+}
+
+func (r *wfhRepository) FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error) {
+	return r.findAll(&userId, queryParams)
+}
+
+func (r *wfhRepository) findAll(userId *string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]wfh.WFHApproval], error) {
 	var data []wfh.WFHApproval
 	var totalRecord int64
 	var totalPage int
 
 	result := response.PaginateResponseDto[[]wfh.WFHApproval]{
-		Data: data,
+		Data:        data,
 		TotalRecord: totalRecord,
-		TotalPage: totalPage,
+		TotalPage:   totalPage,
 	}
 
 	modelDb := r.db.
@@ -67,20 +76,20 @@ func (r *wfhRepository) FindAll(userId *string,queryParams *dto.PaginateFieldDto
 			w.user_id,
 			w.remarks,
 			ah.approval_header_id
-		`) 
+		`)
 
 	if queryParams.Search != nil && *queryParams.Search != "" {
 		search := "%" + *queryParams.Search + "%"
 
 		modelDb = modelDb.Where(`
-			wfh_id::text LIKE ? OR
-			user_id LIKE ? OR
-			remarks LIKE ? OR
-			start_time LIKE ? OR
-			end_time LIKE ? OR
-			created_at::text LIKE ? OR
-			updated_at::text LIKE ?
-		`, 
+			w.wfh_id::text LIKE ? OR
+			w.user_id::text LIKE ? OR
+			w.remarks LIKE ? OR
+			w.start_time::text LIKE ? OR
+			w.end_time::text LIKE ? OR
+			w.created_at::text LIKE ? OR
+			w.updated_at::text LIKE ?
+		`,
 			search, // wfh_id
 			search, // user_id
 			search, // remarks
@@ -91,35 +100,35 @@ func (r *wfhRepository) FindAll(userId *string,queryParams *dto.PaginateFieldDto
 		)
 	}
 
-	if(userId != nil){
-		modelDb = modelDb.Where("user_id = ?", userId);
+	if userId != nil {
+		modelDb = modelDb.Where("w.user_id = ?", *userId)
 	}
 
 	allowedDynamicList := map[string]dto.DynamicSearchDto{
-		"wfh_id":{
+		"wfh_id": {
 			Field: "w.wfh_id",
 			Query: " = ?",
 		},
-		"start_time":{
+		"start_time": {
 			Field: "w.start_time",
 			Query: " > ?",
 		},
-		"end_time":{
+		"end_time": {
 			Field: "w.end_time",
 			Query: " < ?",
 		},
-		"remarks":{
+		"remarks": {
 			Field: "w.remarks",
-			Query: "LIKE ?",
+			Query: " LIKE ?",
 		},
-		"user_id":{
-			Field: "user_id",
+		"user_id": {
+			Field: "w.user_id",
 			Query: " = ?",
 		},
 	}
 
-	err := utils.GetQueryBase(queryParams,modelDb,&result.TotalRecord,&result.TotalPage,&allowedDynamicList).Find(&result.Data).Error; 
-	return result,err
+	err := utils.GetQueryBase(queryParams, modelDb, &result.TotalRecord, &result.TotalPage, &allowedDynamicList).Find(&result.Data).Error
+	return result, err
 }
 
 func NewWFHRepository(db *gorm.DB) WFHRepository {

@@ -63,7 +63,7 @@ func (c *ApprovalTemplateController) CreateHeader(ctx fiber.Ctx) error {
 func (c *ApprovalTemplateController) FindAllHeader(ctx fiber.Ctx) error {
 	query := dto.PaginateFieldDto{}
 
-	if err := ctx.Bind().Query(&query); err != nil {
+	if err := utils.BindPaginationParams(ctx, &query); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 

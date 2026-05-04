@@ -62,7 +62,7 @@ func (c *UserController) Create(ctx fiber.Ctx) error {
 func (c *UserController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.Bind().Query(&queryParams); err != nil {
+	if err := utils.BindPaginationParams(ctx, &queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 

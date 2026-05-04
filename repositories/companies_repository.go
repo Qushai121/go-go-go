@@ -34,11 +34,10 @@ func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (respon
 	var totalPage int
 	modelDb := c.db.Model(&models.Companies{})
 
-
 	dataAkhir := response.PaginateResponseDto[[]models.Companies]{
-		Data:        	data,
-		TotalRecord: 	totalRecord,
-		TotalPage: 		totalPage,
+		Data:        data,
+		TotalRecord: totalRecord,
+		TotalPage:   totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -55,8 +54,23 @@ func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (respon
 			companies_name LIKE ?
 		`, search, search, search)
 	}
-	
-	if err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error; err != nil {
+
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"companies_id": {
+			Field: "companies_id",
+			Query: " = ?",
+		},
+		"companies_code": {
+			Field: "companies_code",
+			Query: " LIKE ?",
+		},
+		"companies_name": {
+			Field: "companies_name",
+			Query: " LIKE ?",
+		},
+	}
+
+	if err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).Find(&dataAkhir.Data).Error; err != nil {
 		return dataAkhir, err
 	}
 
@@ -64,7 +78,7 @@ func (c *companiesRepository) FindAll(queryParams *dto.PaginateFieldDto) (respon
 }
 
 func (c *companiesRepository) Update(companies *models.Companies) error {
-	return c.db.Model(&models.Companies{}).Where("companies_id = ?",companies.CompaniesId).Updates(&companies).Error
+	return c.db.Model(&models.Companies{}).Where("companies_id = ?", companies.CompaniesId).Updates(&companies).Error
 }
 
 func NewCompaniesRepository(db *gorm.DB) CompaniesRepository {

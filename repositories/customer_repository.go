@@ -25,7 +25,7 @@ func (c *customerRepository) Delete(customerId string) error {
 }
 
 func (c *customerRepository) Update(customer *models.Customer) error {
-	return c.db.Model(&models.Customer{}).Where("customer_id = ?",customer.CustomerId).Updates(&customer).Error
+	return c.db.Model(&models.Customer{}).Where("customer_id = ?", customer.CustomerId).Updates(&customer).Error
 }
 
 func (c *customerRepository) Create(customer *models.Customer) error {
@@ -45,9 +45,9 @@ func (c *customerRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 	}
 
 	dataAkhir := response.PaginateResponseDto[[]models.Customer]{
-		Data:        	data,
-		TotalRecord: 	totalRecord,
-		TotalPage: 		totalPage,
+		Data:        data,
+		TotalRecord: totalRecord,
+		TotalPage:   totalPage,
 	}
 
 	if queryParams.Search != nil && *queryParams.Search != "" {
@@ -63,8 +63,39 @@ func (c *customerRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 			radius_meter::text LIKE ?
 		`, search, search, search, search, search, search, search)
 	}
-	
-	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
+
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"customer_id": {
+			Field: "customer_id",
+			Query: " = ?",
+		},
+		"location_code": {
+			Field: "location_code",
+			Query: " LIKE ?",
+		},
+		"location_name": {
+			Field: "location_name",
+			Query: " LIKE ?",
+		},
+		"address": {
+			Field: "address",
+			Query: " LIKE ?",
+		},
+		"target_latitude": {
+			Field: "target_latitude",
+			Query: " LIKE ?",
+		},
+		"target_longitude": {
+			Field: "target_longitude",
+			Query: " LIKE ?",
+		},
+		"radius_meter": {
+			Field: "radius_meter",
+			Query: " = ?",
+		},
+	}
+
+	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 

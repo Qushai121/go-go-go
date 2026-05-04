@@ -30,11 +30,10 @@ func (r *leaveRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 	var totalRecord int64
 	var totalPage int
 
-
 	dataAkhir := response.PaginateResponseDto[[]models.Leave]{
 		Data:        data,
 		TotalRecord: totalRecord,
-		TotalPage: totalPage,
+		TotalPage:   totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -64,7 +63,54 @@ func (r *leaveRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		)
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"leave_id": {
+			Field: "leave_id",
+			Query: " = ?",
+		},
+		"request_number": {
+			Field: "request_number",
+			Query: " LIKE ?",
+		},
+		"employee_name": {
+			Field: "employee_name",
+			Query: " LIKE ?",
+		},
+		"leave_type": {
+			Field: "leave_type",
+			Query: " LIKE ?",
+		},
+		"start_date": {
+			Field: "start_date",
+			Query: " >= ?",
+		},
+		"end_date": {
+			Field: "end_date",
+			Query: " <= ?",
+		},
+		"req_date": {
+			Field: "req_date",
+			Query: " = ?",
+		},
+		"status": {
+			Field: "status",
+			Query: " LIKE ?",
+		},
+		"message": {
+			Field: "message",
+			Query: " LIKE ?",
+		},
+		"cancellation_reason": {
+			Field: "cancellation_reason",
+			Query: " LIKE ?",
+		},
+		"leave_balance": {
+			Field: "leave_balance",
+			Query: " = ?",
+		},
+	}
+
+	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 

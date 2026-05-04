@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"hrms_go/dto"
 	"hrms_go/dto/attandance"
 	mappers "hrms_go/mapper"
@@ -24,23 +25,24 @@ func NewAttendanceController(repo repositories.AttendanceRepository) *Attendance
 // @Tags Attendance
 // @Accept multipart/form-data
 // @Produce json
-// @Param user_id formData string false "User ID (UUID)"
-// @Param device_id formData string false "Device ID"
-// @Param activity formData string true "Activity" Enums(WFH, VISIT, OFFICE)
-// @Param check_type formData string true "Check type" Enums(1,2)
-// @Param check_description formData string false "Description"
-// @Param shift_code formData string false "Shift code"
-// @Param shift_duration_hours formData int false "Shift duration"
-// @Param date formData string true "Date (YYYY-MM-DD)"
-// @Param time formData string true "Time (HH:mm:ss)"
-// @Param location_code formData string false "Location code"
-// @Param location_name formData string false "Location name"
-// @Param latitude formData number false "Latitude"
-// @Param longitude formData number false "Longitude"
-// @Param gps_accuracy formData number false "GPS accuracy"
-// @Param is_mock_location formData boolean false "Mock location"
-// @Param notes formData string false "Notes"
-// @Param photo_url formData file true "Photo"
+// @Param user_id formData string false "User ID (UUID). If empty, taken from auth token."
+// @Param company_code formData string true "Company code"
+// @Param office_code formData string true "Office code"
+// @Param logtime formData string true "Log time (YYYY-MM-DD HH:mm:ss or RFC3339)"
+// @Param functionno formData int true "Function number"
+// @Param activity_type formData string false "Activity type"
+// @Param latitude formData string false "Latitude"
+// @Param longitude formData string false "Longitude"
+// @Param presentase_kemiripan formData string false "Similarity percentage"
+// @Param is_offline formData string false "Offline flag"
+// @Param distance formData string false "Distance"
+// @Param platforms formData string false "Platform"
+// @Param max_radius formData int false "Max radius"
+// @Param expand_radius formData int false "Expand radius"
+// @Param object_code formData string false "Object code"
+// @Param created_by formData string false "Created by"
+// @Param updated_by formData string false "Updated by"
+// @Param imagepath formData file true "Attendance image"
 // @Success 200 {object} map[string]interface{}
 // @Security BearerAuth
 // @Router /api/attendance [post]
@@ -51,47 +53,66 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	data, err := mappers.ToAttendanceModel(request); 
-	if err != nil{
-		return utils.Error(ctx, 400, err.Error())
+	if request.UserId == "" {
+		if userID := ctx.Locals("user_id"); userID != nil {
+			request.UserId = fmt.Sprint(userID)
+		}
 	}
 
-	file, err := ctx.FormFile("photo_url")
+	if request.CreatedBy == "" {
+		if userID := ctx.Locals("user_id"); userID != nil {
+			request.CreatedBy = fmt.Sprint(userID)
+		}
+	}
+
+	if request.ObjectCode == "" {
+		request.ObjectCode = "ATTENDANCE"
+	}
+
+	file, err := ctx.FormFile("imagepath")
 	if err != nil {
-		return utils.Error(ctx, 400, err.Error())
+		file, err = ctx.FormFile("photo_url")
+		if err != nil {
+			return utils.Error(ctx, 400, "imagepath file is required")
+		}
 	}
 
 	fileUrl, err := utils.SaveFileToPath(file, "attandance", ctx)
 	if err != nil {
+		return utils.Error(ctx, 500, err.Error())
+	}
+	request.ImagePath = *fileUrl
+
+	data, err := mappers.ToAttendanceModel(request)
+	if err != nil {
+		if fileUrl != nil {
+			_ = utils.RemoveFileFromPath(*fileUrl)
+		}
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	if fileUrl != nil {
-		data.PhotoUrl = *fileUrl
+	if data.CompanyCode == "" {
+		if fileUrl != nil {
+			_ = utils.RemoveFileFromPath(*fileUrl)
+		}
+		return utils.Error(ctx, 400, "company_code is required")
 	}
-
-	allowed := map[string]bool{
-		"WFH":    true,
-		"VISIT":  true,
-		"OFFICE": true,
+	if data.OfficeCode == "" {
+		if fileUrl != nil {
+			_ = utils.RemoveFileFromPath(*fileUrl)
+		}
+		return utils.Error(ctx, 400, "office_code is required")
 	}
-
-	if !allowed[data.Activity] {
-		return utils.Error(ctx, 400, "activity must be WFH, VISIT, or OFFICE")
-	}
-
-	allowedCheckType := map[string]bool{
-		"1": true,
-		"2": true,
-	}
-
-	if !allowedCheckType[data.CheckType] {
-		return utils.Error(ctx, 400, "checktype value must be 1 or 2")
+	if data.FunctionNo <= 0 {
+		if fileUrl != nil {
+			_ = utils.RemoveFileFromPath(*fileUrl)
+		}
+		return utils.Error(ctx, 400, "functionno must be greater than 0")
 	}
 
 	if err := c.repo.Create(&data); err != nil {
 		if fileUrl != nil {
-			utils.RemoveFileFromPath(*fileUrl)
+			_ = utils.RemoveFileFromPath(*fileUrl)
 		}
 		return utils.Error(ctx, 500, err.Error())
 	}
@@ -116,7 +137,7 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 func (c *AttendanceController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.Bind().Query(&queryParams); err != nil {
+	if err := utils.BindPaginationParams(ctx, &queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -141,7 +162,7 @@ func (c *AttendanceController) FindAll(ctx fiber.Ctx) error {
 // @Router /api/attendance/me [get]
 func (c *AttendanceController) FindByUser(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
-	if err := ctx.Bind().Query(&queryParams); err != nil {
+	if err := utils.BindPaginationParams(ctx, &queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 

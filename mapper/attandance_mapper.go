@@ -1,91 +1,167 @@
 package mappers
 
 import (
+	"fmt"
 	"hrms_go/dto/attandance"
 	"hrms_go/models"
+	"strconv"
+	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
-// adjust format based on your input (IMPORTANT)
 const (
-	dateFormat     = "2006-01-02"
-	timeFormat     = "15:04:05"
-	dateTimeFormat = "2006-01-02 15:04:05"
+	dateTimeLayout       = "2006-01-02 15:04:05"
+	dateTimeLayoutISO    = time.RFC3339
+	dateTimeLayoutNoZone = "2006-01-02T15:04:05"
 )
 
 func ToAttendanceModel(dto attandance.PostAttandanceDto) (models.Attendance, error) {
 	var result models.Attendance
-	var err error
 
-	// parse date
-	var parsedDate time.Time
-	if dto.Date != "" {
-		parsedDate, err = time.Parse(dateFormat, dto.Date)
-		if err != nil {
-			return result, err
-		}
+	userId, err := parseUUIDField(dto.UserId, "user_id", true)
+	if err != nil {
+		return result, err
 	}
 
-	// parse server timestamp
-	var parsedServerTime time.Time
-	if dto.ServerTimestamp != "" {
-		parsedServerTime, err = time.Parse(dateTimeFormat, dto.ServerTimestamp)
-		if err != nil {
-			return result, err
-		}
+	attendanceId, err := parseUUIDField(dto.AttendanceId, "attendance_id", false)
+	if err != nil {
+		return result, err
+	}
+	if attendanceId == uuid.Nil {
+		attendanceId = uuid.New()
 	}
 
-	// parse created at
-	var createdAt time.Time
-	if dto.CreatedAt != "" {
-		createdAt, err = time.Parse(dateTimeFormat, dto.CreatedAt)
-		if err != nil {
-			return result, err
-		}
+	logTime, err := parseTimeField(dto.LogTime, "logtime", true)
+	if err != nil {
+		return result, err
 	}
 
-	// parse updated at (nullable)
-	var updatedAt *time.Time
-	if dto.UpdatedAt != "" {
-		t, err := time.Parse(dateTimeFormat, dto.UpdatedAt)
-		if err != nil {
-			return result, err
-		}
-		updatedAt = &t
+	maxRadius, err := parseOptionalIntField(dto.MaxRadius, "max_radius")
+	if err != nil {
+		return result, err
+	}
+
+	expandRadius, err := parseOptionalIntField(dto.ExpandRadius, "expand_radius")
+	if err != nil {
+		return result, err
 	}
 
 	result = models.Attendance{
-		AttendanceId: dto.AttendanceId,
-		UserId:       dto.UserId,
-		DeviceId:     dto.DeviceId,
+		AttendanceId: attendanceId,
+		UserId:       userId,
+		CompanyCode:  strings.TrimSpace(dto.CompanyCode),
+		OfficeCode:   strings.TrimSpace(dto.OfficeCode),
+		LogTime:      logTime,
+		FunctionNo:   dto.FunctionNo,
+		ActivityType: toOptionalString(dto.ActivityType),
+		Latitude:     toOptionalString(dto.Latitude),
+		Longitude:    toOptionalString(dto.Longitude),
+		PresentaseKemiripan: toOptionalString(dto.PresentaseKemiripan),
+		ImagePath:    strings.TrimSpace(dto.ImagePath),
+		IsOffline:    toOptionalString(dto.IsOffline),
+		Distance:     toOptionalString(dto.Distance),
+		Platforms:    toOptionalString(dto.Platforms),
+		MaxRadius:    maxRadius,
+		ExpandRadius: expandRadius,
+		ObjectCode:   strings.TrimSpace(dto.ObjectCode),
+		CreatedBy:    strings.TrimSpace(dto.CreatedBy),
+		UpdatedBy:    toOptionalStringPtr(dto.UpdatedBy),
+	}
 
-		CheckType:        dto.CheckType,
-		CheckDescription: dto.CheckDescription,
+	if result.ObjectCode == "" {
+		result.ObjectCode = "ATTENDANCE"
+	}
+	if result.CreatedBy == "" {
+		result.CreatedBy = "system"
+	}
 
-		ShiftCode:          dto.ShiftCode,
-		ShiftDurationHours: dto.ShiftDurationHours,
+	createdAt, err := parseTimeField(dto.CreatedAt, "created_at", false)
+	if err != nil {
+		return result, err
+	}
+	if !createdAt.IsZero() {
+		result.CreatedAt = createdAt
+	}
 
-		Date:            parsedDate,
-		Time:            dto.Time,
-		ServerTimestamp: parsedServerTime,
-
-		LocationCode: dto.LocationCode,
-		LocationName: dto.LocationName,
-
-		Latitude:  dto.Latitude,
-		Longitude: dto.Longitude,
-
-		GpsAccuracy: dto.GpsAccuracy,
-
-		IsMockLocation: dto.IsMockLocation,
-		Activity:       dto.Activity,
-
-		PhotoUrl: dto.PhotoUrl,
-		Notes:    dto.Notes,
-
-		CreatedAt: createdAt,
-		UpdatedAt: updatedAt,
+	updatedAt, err := parseTimeField(dto.UpdatedAt, "updated_at", false)
+	if err != nil {
+		return result, err
+	}
+	if !updatedAt.IsZero() {
+		result.UpdatedAt = &updatedAt
 	}
 
 	return result, nil
+}
+
+func parseUUIDField(value string, fieldName string, required bool) (uuid.UUID, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		if required {
+			return uuid.Nil, fmt.Errorf("%s is required", fieldName)
+		}
+		return uuid.Nil, nil
+	}
+
+	parsed, err := uuid.Parse(value)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("invalid %s", fieldName)
+	}
+
+	return parsed, nil
+}
+
+func parseTimeField(value string, fieldName string, required bool) (time.Time, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		if required {
+			return time.Time{}, fmt.Errorf("%s is required", fieldName)
+		}
+		return time.Time{}, nil
+	}
+
+	layouts := []string{
+		dateTimeLayout,
+		dateTimeLayoutISO,
+		dateTimeLayoutNoZone,
+		"2006-01-02 15:04",
+		"2006-01-02",
+	}
+
+	for _, layout := range layouts {
+		if parsed, err := time.Parse(layout, value); err == nil {
+			return parsed, nil
+		}
+	}
+
+	return time.Time{}, fmt.Errorf("invalid %s", fieldName)
+}
+
+func parseOptionalIntField(value string, fieldName string) (*int, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return nil, nil
+	}
+
+	parsed, err := strconv.Atoi(value)
+	if err != nil {
+		return nil, fmt.Errorf("invalid %s", fieldName)
+	}
+
+	return &parsed, nil
+}
+
+func toOptionalString(value string) *string {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return nil
+	}
+
+	return &value
+}
+
+func toOptionalStringPtr(value string) *string {
+	return toOptionalString(value)
 }

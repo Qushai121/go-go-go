@@ -26,55 +26,51 @@ func (a *approvalRepository) Approve(approvalDetail models.ApprovalDetail) error
 	approvalHeader := models.ApprovalHeader{}
 
 	if err := a.db.Model(&models.ApprovalHeader{}).
-	Where("approval_header_id = ?",approvalDetail.ApprovalHeaderId).
-	First(&approvalHeader).Error;
-	err != nil{
+		Where("approval_header_id = ?", approvalDetail.ApprovalHeaderId).
+		First(&approvalHeader).Error; err != nil {
 		return err
 	}
 
 	approvalTemplateDetailData := models.ApprovalTemplateDetail{}
 	if err := a.db.Model(&models.ApprovalTemplateDetail{}).
-	Where("approval_template_header_id = ?",approvalHeader.ApprovalTemplateHeaderId).
-	Where("approver_by = ?",approvalDetail.ApproverBy).
-	First(&approvalTemplateDetailData).Error;
-	err != nil{
+		Where("approval_template_header_id = ?", approvalHeader.ApprovalTemplateHeaderId).
+		Where("approver_by = ?", approvalDetail.ApproverBy).
+		First(&approvalTemplateDetailData).Error; err != nil {
 		return err
 	}
 
 	existedApprovalDetail := models.ApprovalDetail{}
 	if err := a.db.Model(&models.ApprovalDetail{}).
-	Where("approval_header_id = ?",approvalHeader.ApprovalHeaderId).
-	Where("approver_by = ?",approvalDetail.ApproverBy).
-	First(&existedApprovalDetail).Error;
-	err != nil{
+		Where("approval_header_id = ?", approvalHeader.ApprovalHeaderId).
+		Where("approver_by = ?", approvalDetail.ApproverBy).
+		First(&existedApprovalDetail).Error; err != nil {
 		return a.db.Model(models.ApprovalDetail{}).Create(&approvalDetail).Error
 	}
 
 	return a.db.Model(models.ApprovalDetail{}).
-	Where("approval_header_id = ?",approvalHeader.ApprovalHeaderId).
-	Where("approver_by = ?",approvalDetail.ApproverBy).
-	Updates(map[string]interface{}{
-		"approval_status": approvalDetail.ApprovalStatus,
-		"approver_by":approvalDetail.ApproverBy,
-		"remark":approvalDetail.Remark,
-	}).Error
+		Where("approval_header_id = ?", approvalHeader.ApprovalHeaderId).
+		Where("approver_by = ?", approvalDetail.ApproverBy).
+		Updates(map[string]interface{}{
+			"approval_status": approvalDetail.ApprovalStatus,
+			"approver_by":     approvalDetail.ApproverBy,
+			"remark":          approvalDetail.Remark,
+		}).Error
 }
 
-func CreateApproval(db *gorm.DB,createApprovalDto approval.CreateApprovalDto) (models.ApprovalHeader, error) {
+func CreateApproval(db *gorm.DB, createApprovalDto approval.CreateApprovalDto) (models.ApprovalHeader, error) {
 	approvalTemplateHeader := models.ApprovalTemplateHeader{}
 
 	if err := db.Model(models.ApprovalTemplateHeader{}).
-	Where("template_type = ?",createApprovalDto.TemplateType).
-	First(&approvalTemplateHeader).Error;
-	err != nil{
+		Where("template_type = ?", createApprovalDto.TemplateType).
+		First(&approvalTemplateHeader).Error; err != nil {
 		return models.ApprovalHeader{}, err
 	}
 
-	approval,err := mappers.ToApprovalHeader(createApprovalDto,approvalTemplateHeader)
-	if err != nil{
+	approval, err := mappers.ToApprovalHeader(createApprovalDto, approvalTemplateHeader)
+	if err != nil {
 		return models.ApprovalHeader{}, err
-	} 
-	
+	}
+
 	if err := db.Create(&approval).Error; err != nil {
 		return models.ApprovalHeader{}, err
 	}
@@ -117,12 +113,12 @@ func (a *approvalRepository) Detail(approvalHeaderId string) (response.PaginateR
 		Scan(&data).Error
 
 	dataAkhir := response.PaginateResponseDto[[]approval.ApprovalDetailResponseDto]{
-		Data:        	data,
-		TotalRecord: 	totalRecord,
-		TotalPage: 		totalPage,
+		Data:        data,
+		TotalRecord: totalRecord,
+		TotalPage:   totalPage,
 	}
 
-	return dataAkhir,err
+	return dataAkhir, err
 }
 
 func (a *approvalRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.ApprovalHeader], error) {
@@ -133,9 +129,9 @@ func (a *approvalRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 	modelDb := a.db.Model(&models.ApprovalHeader{})
 
 	dataAkhir := response.PaginateResponseDto[[]models.ApprovalHeader]{
-		Data:        	data,
-		TotalRecord: 	totalRecord,
-		TotalPage: 		totalPage,
+		Data:        data,
+		TotalRecord: totalRecord,
+		TotalPage:   totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -159,7 +155,34 @@ func (a *approvalRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 		)
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Joins("ApprovalTemplateHeader").Find(&dataAkhir.Data).Error
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"approval_header_id": {
+			Field: "approval_header_id",
+			Query: " = ?",
+		},
+		"approval_template_header_id": {
+			Field: "approval_template_header_id",
+			Query: " = ?",
+		},
+		"approval_doc_id": {
+			Field: "approval_doc_id",
+			Query: " = ?",
+		},
+		"requester_by": {
+			Field: "requester_by",
+			Query: " = ?",
+		},
+		"created_by": {
+			Field: "created_by",
+			Query: " LIKE ?",
+		},
+		"updated_by": {
+			Field: "updated_by",
+			Query: " LIKE ?",
+		},
+	}
+
+	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).Joins("ApprovalTemplateHeader").Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 

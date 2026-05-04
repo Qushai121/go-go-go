@@ -66,16 +66,35 @@ func (r *approvalTemplateRepository) FindAllHeader(query *dto.PaginateFieldDto) 
 		`, search, search, search, search)
 	}
 
-	result :=  response.PaginateResponseDto[[]models.ApprovalTemplateHeader]{
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"approval_template_header_id": {
+			Field: "approval_template_header_id",
+			Query: " = ?",
+		},
+		"template_type": {
+			Field: "template_type",
+			Query: " LIKE ?",
+		},
+		"created_by": {
+			Field: "created_by",
+			Query: " LIKE ?",
+		},
+		"updated_by": {
+			Field: "updated_by",
+			Query: " LIKE ?",
+		},
+	}
+
+	result := response.PaginateResponseDto[[]models.ApprovalTemplateHeader]{
 		Data:        data,
 		TotalRecord: total,
 		TotalPage:   totalPage,
 	}
 
-	err := utils.GetQuery(query, db, &result.TotalRecord, &result.TotalPage).
+	err := utils.GetQueryBase(query, db, &result.TotalRecord, &result.TotalPage, &allowedDynamicList).
 		Find(&result.Data).Error
 
-	return result,err
+	return result, err
 }
 
 func (r *approvalTemplateRepository) CreateDetail(data *models.ApprovalTemplateDetail) error {
@@ -85,8 +104,7 @@ func (r *approvalTemplateRepository) CreateDetail(data *models.ApprovalTemplateD
 		Where("approval_template_header_id = ?", data.ApprovalTemplateHeaderId).
 		Where("(approver_by = ? OR sequence_number = ?)", data.ApproverBy, data.SequenceNumber).
 		Order("sequence_number ASC").
-		Count(&existing).Error; 
-		err != nil {
+		Count(&existing).Error; err != nil {
 		return err
 	}
 

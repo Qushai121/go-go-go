@@ -69,7 +69,7 @@ func (c *SubmissionController) Create(ctx fiber.Ctx) error {
 func (c *SubmissionController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.Bind().Query(&queryParams); err != nil {
+	if err := utils.BindPaginationParams(ctx, &queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
@@ -92,7 +92,7 @@ func (c *SubmissionController) FindAll(ctx fiber.Ctx) error {
 func (c *SubmissionController) FindByUser(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 
-	if err := ctx.Bind().Query(&queryParams); err != nil {
+	if err := utils.BindPaginationParams(ctx, &queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 

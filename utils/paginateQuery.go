@@ -1,42 +1,53 @@
 package utils
 
 import (
-	"encoding/json"
 	"hrms_go/dto"
-	"log"
 	"math"
+	"strconv"
+	"strings"
 
+	"github.com/gofiber/fiber/v3"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
-func GetQuery(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64,totalPage *int) *gorm.DB {
-	return GetQueryBase(queryParams,query,totalRecord,totalPage,nil);
-}
+func BindPaginationParams(ctx fiber.Ctx, queryParams *dto.PaginateFieldDto) error {
+	if err := ctx.Bind().Query(queryParams); err != nil {
+		return err
+	}
 
-func GetQueryBase(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64,totalPage *int,allowedField *map[string]dto.DynamicSearchDto) *gorm.DB {
-	
-	if queryParams.DynamicFieldSearch != nil && allowedField != nil {
-		var filters []dto.DynamicSearchFieldDto
+	if raw := ctx.Get("pageNo"); raw != "" {
+		if value, err := strconv.Atoi(raw); err == nil && value > 0 {
+			queryParams.Page = &value
+		}
+	}
+	if raw := ctx.Get("pageSize"); raw != "" {
+		if value, err := strconv.Atoi(raw); err == nil && value > 0 {
+			queryParams.PerPage = &value
+		}
+	}
 
-		err := json.Unmarshal([]byte(*queryParams.DynamicFieldSearch), &filters)
-		if err != nil {
-			log.Println("JSON parse error:", err)
-		} else {
-			for _, f := range filters {
-				fieldConfig, ok := (*allowedField)[f.Field]
-				if !ok {
-					continue // skip invalid field
-				}
-				log.Println("data1",fieldConfig.Field + fieldConfig.Query);
-				log.Println("data2",f.Value);
-
-				query.Where(fieldConfig.Field + fieldConfig.Query,f.Value)
+	if queryParams.Page == nil {
+		if raw := ctx.Get("page"); raw != "" {
+			if value, err := strconv.Atoi(raw); err == nil && value > 0 {
+				queryParams.Page = &value
 			}
 		}
 	}
 
+	if queryParams.PerPage == nil {
+		if raw := ctx.Get("per_page"); raw != "" {
+			if value, err := strconv.Atoi(raw); err == nil && value > 0 {
+				queryParams.PerPage = &value
+			}
+		}
+	}
 
+	return nil
+}
+
+func GetQuery(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64,totalPage *int) *gorm.DB {
+	
 	if queryParams.SortBy != nil {
 		query = query.Order(clause.OrderByColumn{
 			Column: clause.Column{
@@ -61,6 +72,48 @@ func GetQueryBase(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord
 		query = query.Where("created_at <= ?", *queryParams.EndDate)
 	}
 	
+	if offset != nil && queryParams.PerPage != nil {
+		query = query.Limit(*queryParams.PerPage).Offset(*offset)
+	}
+
+	return query
+}
+
+func GetQueryBase(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64, totalPage *int, allowedDynamicList *map[string]dto.DynamicSearchDto) *gorm.DB {
+	if queryParams.SortBy != nil {
+		query = query.Order(clause.OrderByColumn{
+			Column: clause.Column{
+				Name: queryParams.GetSortByWithDefaultId(queryParams.SortBy),
+			},
+			Desc: queryParams.GetSortOrderBool(),
+		})
+	}
+
+	if allowedDynamicList != nil && queryParams.DynamicFieldSearch != nil && *queryParams.DynamicFieldSearch != "" && queryParams.Search != nil && *queryParams.Search != "" {
+		if dynamicField, ok := (*allowedDynamicList)[*queryParams.DynamicFieldSearch]; ok {
+			searchValue := *queryParams.Search
+			if strings.Contains(strings.ToUpper(dynamicField.Query), "LIKE") {
+				searchValue = "%" + searchValue + "%"
+			}
+			query = query.Where(dynamicField.Field+dynamicField.Query, searchValue)
+		}
+	}
+
+	query.Count(totalRecord)
+	offset := queryParams.GetOffset()
+
+	if totalRecord != nil && totalPage != nil && queryParams.PerPage != nil && *queryParams.PerPage > 0 {
+		*totalPage = int(math.Ceil(float64(*totalRecord) / float64(*queryParams.PerPage)))
+	}
+
+	if queryParams.StartDate != nil && queryParams.EndDate != nil {
+		query = query.Where("created_at BETWEEN ? AND ?", *queryParams.StartDate, *queryParams.EndDate)
+	} else if queryParams.StartDate != nil {
+		query = query.Where("created_at >= ?", *queryParams.StartDate)
+	} else if queryParams.EndDate != nil {
+		query = query.Where("created_at <= ?", *queryParams.EndDate)
+	}
+
 	if offset != nil && queryParams.PerPage != nil {
 		query = query.Limit(*queryParams.PerPage).Offset(*offset)
 	}

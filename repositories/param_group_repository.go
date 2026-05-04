@@ -44,7 +44,7 @@ func (r *paramGroupRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 	dataAkhir := response.PaginateResponseDto[[]models.ParamGroup]{
 		Data:        data,
 		TotalRecord: totalRecord,
-		TotalPage: totalPage,
+		TotalPage:   totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -62,7 +62,22 @@ func (r *paramGroupRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 		`, search, search, search)
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"paramgroup_id": {
+			Field: "paramgroup_id",
+			Query: " = ?",
+		},
+		"paramgroup_code": {
+			Field: "paramgroup_code",
+			Query: " LIKE ?",
+		},
+		"paramgroup_name": {
+			Field: "paramgroup_name",
+			Query: " LIKE ?",
+		},
+	}
+
+	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).Find(&dataAkhir.Data).Error
 
 	return dataAkhir, err
 }

@@ -44,7 +44,7 @@ func (r *settingRepository) FindAll(queryParams *dto.PaginateFieldDto) (response
 	dataAkhir := response.PaginateResponseDto[[]models.Setting]{
 		Data:        data,
 		TotalRecord: totalRecord,
-		TotalPage: totalPage,
+		TotalPage:   totalPage,
 	}
 
 	if queryParams.SortBy == nil {
@@ -64,7 +64,30 @@ func (r *settingRepository) FindAll(queryParams *dto.PaginateFieldDto) (response
 		`, search, search, search, search, search)
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"setting_id": {
+			Field: "setting_id",
+			Query: " = ?",
+		},
+		"setting_name": {
+			Field: "setting_name",
+			Query: " LIKE ?",
+		},
+		"setting_value": {
+			Field: "setting_value",
+			Query: " LIKE ?",
+		},
+		"created_at": {
+			Field: "created_at",
+			Query: " >= ?",
+		},
+		"updated_at": {
+			Field: "updated_at",
+			Query: " <= ?",
+		},
+	}
+
+	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).Find(&dataAkhir.Data).Error
 
 	return dataAkhir, err
 }

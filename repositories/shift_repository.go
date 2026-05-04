@@ -33,14 +33,14 @@ func (s *shiftRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 	dataAkhir := response.PaginateResponseDto[[]models.Shift]{
 		Data:        data,
 		TotalRecord: totalRecord,
-		TotalPage: totalPage,
+		TotalPage:   totalPage,
 	}
 
 	if queryParams.SortBy == nil {
 		sort := "shift_id"
 		queryParams.SortBy = &sort
 	}
-	
+
 	if queryParams.Search != nil && *queryParams.Search != "" {
 		search := "%" + *queryParams.Search + "%"
 
@@ -55,7 +55,38 @@ func (s *shiftRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.P
 		`, search, search, search, search, search, search, search)
 	}
 
-	err := utils.GetQuery(queryParams, modelDb, &dataAkhir.TotalRecord,&dataAkhir.TotalPage).Find(&dataAkhir.Data).Error
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"shift_id": {
+			Field: "shift_id",
+			Query: " = ?",
+		},
+		"shift_code": {
+			Field: "shift_code",
+			Query: " LIKE ?",
+		},
+		"shift_name": {
+			Field: "shift_name",
+			Query: " LIKE ?",
+		},
+		"shift_duration": {
+			Field: "shift_duration",
+			Query: " = ?",
+		},
+		"start_time": {
+			Field: "start_time",
+			Query: " >= ?",
+		},
+		"end_time": {
+			Field: "end_time",
+			Query: " <= ?",
+		},
+		"grace_period": {
+			Field: "grace_period",
+			Query: " = ?",
+		},
+	}
+
+	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).Find(&dataAkhir.Data).Error
 	return dataAkhir, err
 }
 
@@ -64,7 +95,7 @@ func (c *shiftRepository) Delete(shiftId string) error {
 }
 
 func (c *shiftRepository) Update(shift *models.Shift) error {
-	return c.db.Model(&models.Shift{}).Where("shift_id = ?",shift.ShiftId).Updates(&shift).Error
+	return c.db.Model(&models.Shift{}).Where("shift_id = ?", shift.ShiftId).Updates(&shift).Error
 }
 
 func NewShiftRepository(db *gorm.DB) ShiftRepository {

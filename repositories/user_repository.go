@@ -26,8 +26,8 @@ type userRepository struct {
 // Me implements [UserRepository].
 func (r *userRepository) Me(userId string) (*models.User, error) {
 	var data = models.User{}
-	err := r.db.Model(models.User{}).Where("user_id = ?",userId).Find(&data).Error
-	return &data,err
+	err := r.db.Model(models.User{}).Where("user_id = ?", userId).Find(&data).Error
+	return &data, err
 }
 
 // Count implements [UserRepository].
@@ -50,7 +50,7 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 		sort := "user_id"
 		queryParams.SortBy = &sort
 	}
-	
+
 	result := response.PaginateResponseDto[[]models.User]{
 		Data:        data,
 		TotalRecord: totalRecord,
@@ -70,7 +70,7 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 			profile_picture_url LIKE ? OR
 			created_at::text LIKE ? OR
 			updated_at::text LIKE ?
-		`, 
+		`,
 			search, // user_id
 			search, // employee_nik
 			search, // fullname
@@ -82,8 +82,47 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 			search, // updated_at
 		)
 	}
-	
-	err := utils.GetQuery(queryParams, modelDb, &result.TotalRecord, &result.TotalPage).Find(&result.Data).Error
+
+	allowedDynamicList := map[string]dto.DynamicSearchDto{
+		"user_id": {
+			Field: "user_id",
+			Query: " = ?",
+		},
+		"employee_nik": {
+			Field: "employee_nik",
+			Query: " LIKE ?",
+		},
+		"fullname": {
+			Field: "fullname",
+			Query: " LIKE ?",
+		},
+		"email": {
+			Field: "email",
+			Query: " LIKE ?",
+		},
+		"role": {
+			Field: "role",
+			Query: " LIKE ?",
+		},
+		"shift_id": {
+			Field: "shift_id",
+			Query: " = ?",
+		},
+		"profile_picture_url": {
+			Field: "profile_picture_url",
+			Query: " LIKE ?",
+		},
+		"created_at": {
+			Field: "created_at",
+			Query: " >= ?",
+		},
+		"updated_at": {
+			Field: "updated_at",
+			Query: " <= ?",
+		},
+	}
+
+	err := utils.GetQueryBase(queryParams, modelDb, &result.TotalRecord, &result.TotalPage, &allowedDynamicList).Find(&result.Data).Error
 
 	return result, err
 }
