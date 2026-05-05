@@ -13,6 +13,9 @@ type UserCompany struct {
 	ObjectCode    string    `gorm:"column:object_code;type:varchar(10);default:USER_COMPANY" json:"object_code"`
 	TimezoneSet   string    `gorm:"column:timezone_set;type:varchar(50);default:SE Asia Standard Time" json:"timezone_set"`
 
+	CompanyId   *uuid.UUID `gorm:"->;column:company_id;-:migration" json:"company_id,omitempty"`
+	CompanyName string     `gorm:"->;column:company_name;-:migration" json:"company_name,omitempty"`
+
 	base.AuditFields
 }
 

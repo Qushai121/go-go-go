@@ -13,6 +13,13 @@ type UserCustomer struct {
 	ObjectCode     string    `gorm:"column:object_code;type:varchar(10);default:USER_CUSTOMER" json:"object_code"`
 	TimezoneSet    string    `gorm:"column:timezone_set;type:varchar(50);default:SE Asia Standard Time" json:"timezone_set"`
 
+	CustomerId        *uuid.UUID `gorm:"->;column:customer_id;-:migration" json:"customer_id,omitempty"`
+	CustomerName      string     `gorm:"->;column:customer_name;-:migration" json:"customer_name,omitempty"`
+	CustomerAddress   string     `gorm:"->;column:customer_address;-:migration" json:"customer_address,omitempty"`
+	CustomerLatitude  string     `gorm:"->;column:customer_latitude;-:migration" json:"customer_latitude,omitempty"`
+	CustomerLongitude string     `gorm:"->;column:customer_longitude;-:migration" json:"customer_longitude,omitempty"`
+	MaxRadius         int        `gorm:"->;column:max_radius;-:migration" json:"max_radius,omitempty"`
+
 	base.AuditFields
 }
 

@@ -31,6 +31,10 @@ type User struct {
 
 	Role string `gorm:"-" json:"role,omitempty"`
 
+	UserCompany  []UserCompany  `gorm:"-" json:"user_company,omitempty"`
+	UserOffice   []UserOffice   `gorm:"-" json:"user_office,omitempty"`
+	UserCustomer []UserCustomer `gorm:"-" json:"user_customer,omitempty"`
+
 	ShiftId           uuid.UUID `gorm:"-" json:"shift_id,omitempty"`
 	ProfilePictureUrl string    `gorm:"-" json:"profile_picture_url,omitempty"`
 

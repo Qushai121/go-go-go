@@ -15,6 +15,14 @@ type UserOffice struct {
 	ObjectCode   string    `gorm:"column:object_code;type:varchar(10);default:USER_OFFICE" json:"object_code"`
 	TimezoneSet  string    `gorm:"column:timezone_set;type:varchar(50);default:SE Asia Standard Time" json:"timezone_set"`
 
+	OfficeId        *uuid.UUID `gorm:"->;column:office_id;-:migration" json:"office_id,omitempty"`
+	OfficeName      string     `gorm:"->;column:office_name;-:migration" json:"office_name,omitempty"`
+	OfficePhone     string     `gorm:"->;column:office_phone;-:migration" json:"office_phone,omitempty"`
+	OfficeAddress   string     `gorm:"->;column:office_address;-:migration" json:"office_address,omitempty"`
+	OfficeLatitude  string     `gorm:"->;column:office_latitude;-:migration" json:"office_latitude,omitempty"`
+	OfficeLongitude string     `gorm:"->;column:office_longitude;-:migration" json:"office_longitude,omitempty"`
+	MaxRadius       int        `gorm:"->;column:max_radius;-:migration" json:"max_radius,omitempty"`
+
 	base.AuditFields
 }
 

@@ -4835,8 +4835,26 @@
                 "updated_by": {
                     "type": "string"
                 },
+                "user_company": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserCompany"
+                    }
+                },
+                "user_customer": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserCustomer"
+                    }
+                },
                 "user_id": {
                     "type": "string"
+                },
+                "user_office": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserOffice"
+                    }
                 },
                 "usergroup_id": {
                     "type": "string"
@@ -4847,6 +4865,12 @@
             "type": "object",
             "properties": {
                 "company_code": {
+                    "type": "string"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "company_name": {
                     "type": "string"
                 },
                 "created_at": {
@@ -4884,11 +4908,29 @@
                 "created_by": {
                     "type": "string"
                 },
+                "customer_address": {
+                    "type": "string"
+                },
                 "customer_code": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "customer_latitude": {
+                    "type": "string"
+                },
+                "customer_longitude": {
+                    "type": "string"
+                },
+                "customer_name": {
                     "type": "string"
                 },
                 "employee_nik": {
                     "type": "string"
+                },
+                "max_radius": {
+                    "type": "integer"
                 },
                 "object_code": {
                     "type": "string"
@@ -4960,10 +5002,31 @@
                 "employee_nik": {
                     "type": "string"
                 },
+                "max_radius": {
+                    "type": "integer"
+                },
                 "object_code": {
                     "type": "string"
                 },
+                "office_address": {
+                    "type": "string"
+                },
                 "office_code": {
+                    "type": "string"
+                },
+                "office_id": {
+                    "type": "string"
+                },
+                "office_latitude": {
+                    "type": "string"
+                },
+                "office_longitude": {
+                    "type": "string"
+                },
+                "office_name": {
+                    "type": "string"
+                },
+                "office_phone": {
                     "type": "string"
                 },
                 "timezone_set": {

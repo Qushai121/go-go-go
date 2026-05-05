@@ -31,14 +31,49 @@ func normalizeResponseData(data interface{}) interface{} {
 			return fiber.Map{}
 		}
 		return data
-	case reflect.String, reflect.Bool,
-		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
-		reflect.Float32, reflect.Float64:
-		return fiber.Map{"message": data}
 	default:
 		return data
 	}
+}
+
+func extractResponseMessage(data interface{}) string {
+	if data == nil {
+		return "Success"
+	}
+
+	value := reflect.ValueOf(data)
+	for value.Kind() == reflect.Ptr || value.Kind() == reflect.Interface {
+		if value.IsNil() {
+			return "Success"
+		}
+		value = value.Elem()
+	}
+
+	if value.Kind() == reflect.String {
+		return value.String()
+	}
+
+	return "Success"
+}
+
+func normalizeSuccessData(data interface{}) interface{} {
+	if data == nil {
+		return fiber.Map{}
+	}
+
+	value := reflect.ValueOf(data)
+	for value.Kind() == reflect.Ptr || value.Kind() == reflect.Interface {
+		if value.IsNil() {
+			return fiber.Map{}
+		}
+		value = value.Elem()
+	}
+
+	if value.Kind() == reflect.String {
+		return fiber.Map{}
+	}
+
+	return normalizeResponseData(data)
 }
 
 func isPaginatedResponse(data interface{}) bool {
@@ -134,9 +169,10 @@ func Success(ctx fiber.Ctx, data interface{}) error {
 	}
 
 	return ctx.Status(200).JSON(fiber.Map{
-		"status": 200,
-		"error":  nil,
-		"data":   normalizeResponseData(data),
+		"status":  200,
+		"message": extractResponseMessage(data),
+		"error":   nil,
+		"data":    normalizeSuccessData(data),
 	})
 }
 

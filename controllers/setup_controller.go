@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"hrms_go/models"
 	"hrms_go/repositories"
 	"hrms_go/utils"
@@ -40,8 +39,6 @@ func (c *SetupController) InitAdmin(ctx fiber.Ctx) error {
 
 	user.Password = strings.TrimSpace(user.Password)
 
-	fmt.Println(user.Password)
-
 	hashed, _ := utils.HashPassword(user.Password)
 	user.Password = hashed
 	user.Role = "SUPERADMIN"
@@ -51,7 +48,5 @@ func (c *SetupController) InitAdmin(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
-	return utils.Success(ctx, fiber.Map{
-		"message": "admin created",
-	})
+	return utils.Success(ctx, "admin created")
 }
