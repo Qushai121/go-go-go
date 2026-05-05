@@ -59,11 +59,11 @@ func (c *CompaniesController) FindAll(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	shift, err := c.repo.FindAll(&queryParams)
+	companies, err := c.repo.FindAll(&queryParams)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
-	return utils.Success(ctx, shift)
+	return utils.Success(ctx, companies)
 }
 
 // Update Company godoc

@@ -73,36 +73,6 @@ func (c *UserController) FindAll(ctx fiber.Ctx) error {
 	return utils.Success(ctx, users)
 }
 
-// Update User Shift godoc
-// @Summary Update user shift
-// @Description Update shift for a user
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Param request body models.User true "User shift data"
-// @Success 200 {object} map[string]interface{}
-// @Security BearerAuth
-// @Router /api/users/update-shift [post]
-func (c *UserController) UpdateUserShift(ctx fiber.Ctx) error {
-	var data models.User
-	realData := models.User{}
-	if err := ctx.Bind().Body(&data); err != nil {
-		return utils.Error(ctx, 400, err.Error())
-	}
-	userId := ctx.Locals("user_id").(string)
-	data.UpdatedBy = &userId
-
-	realData.UpdatedBy = &userId
-	realData.ShiftId = data.ShiftId
-	realData.UserId = data.UserId
-
-	if err := c.repo.Update(&realData); err != nil {
-		return utils.Error(ctx, 500, err.Error())
-	}
-
-	return utils.Success(ctx, data)
-}
-
 // Update User Picture godoc
 // @Summary Update user profile picture
 // @Description Upload and update user profile picture

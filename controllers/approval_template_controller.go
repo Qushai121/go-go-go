@@ -108,7 +108,7 @@ func (c *ApprovalTemplateController) UpdateHeader(ctx fiber.Ctx) error {
 	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
-	
+
 	isAllowedType := checkAllowedTemplateType(data.TemplateType)
 	if isAllowedType == false {
 		return utils.Error(ctx, 422, "invalid template type")
@@ -152,7 +152,7 @@ func (c *ApprovalTemplateController) CreateDetail(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	body, err := mappers.ToApprovalTemplateDetail(req);
+	body, err := mappers.ToApprovalTemplateDetail(req)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
@@ -232,10 +232,6 @@ func (c *ApprovalTemplateController) DeleteDetail(ctx fiber.Ctx) error {
 	return utils.Success(ctx, "deleted")
 }
 
-func checkAllowedTemplateType(templateType string) bool  {
-	allowedTemplateType := map[string]bool{
-		"WFH":true,
-	}
-
-	return allowedTemplateType[templateType];
+func checkAllowedTemplateType(templateType string) bool {
+	return false
 }
