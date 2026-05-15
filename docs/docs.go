@@ -53,6 +53,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -360,6 +366,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -556,6 +568,24 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by activity type",
+                        "name": "activity_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by logtime from date/time",
+                        "name": "logtime",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -704,6 +734,42 @@ const docTemplate = `{
                 "summary": "Get current user attendance",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by activity type",
+                        "name": "activity_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by logtime from date/time",
+                        "name": "logtime",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -712,7 +778,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Items per page",
-                        "name": "limit",
+                        "name": "per_page",
                         "in": "query"
                     }
                 ],
@@ -735,6 +801,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Get list of branches with pagination",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -759,6 +828,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -869,6 +944,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Delete branch by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -931,6 +1009,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -1068,6 +1152,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -1216,6 +1306,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Get list of departments with pagination",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1240,6 +1333,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -1350,6 +1449,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Delete department by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1385,6 +1487,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Get list of divisions with pagination",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1409,6 +1514,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -1519,6 +1630,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Delete division by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1616,6 +1730,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -1794,6 +1914,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -1928,6 +2054,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -2144,6 +2276,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number",
                         "name": "page",
@@ -2324,6 +2462,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Get list of titles with pagination",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -2348,6 +2489,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -2458,6 +2605,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Delete title by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -2492,12 +2642,15 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get list of user company mappings with pagination",
+                "description": "Get list of user companies with pagination",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "UserCompany"
+                    "User Company"
                 ],
                 "summary": "Get all user companies",
                 "parameters": [
@@ -2517,6 +2670,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -2548,7 +2707,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update existing user company mapping",
+                "description": "Update existing user company",
                 "consumes": [
                     "application/json"
                 ],
@@ -2556,12 +2715,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserCompany"
+                    "User Company"
                 ],
                 "summary": "Update user company",
                 "parameters": [
                     {
-                        "description": "User company data",
+                        "description": "User Company data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2586,7 +2745,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create new user company mapping",
+                "description": "Create new user company",
                 "consumes": [
                     "application/json"
                 ],
@@ -2594,12 +2753,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserCompany"
+                    "User Company"
                 ],
                 "summary": "Create user company",
                 "parameters": [
                     {
-                        "description": "User company data",
+                        "description": "User Company data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2626,18 +2785,21 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Delete user company mapping by ID",
+                "description": "Delete user company by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "UserCompany"
+                    "User Company"
                 ],
                 "summary": "Delete user company",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User company ID",
+                        "description": "User Company ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2661,12 +2823,15 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get list of user customer mappings with pagination",
+                "description": "Get list of user customers with pagination",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "UserCustomer"
+                    "User Customer"
                 ],
                 "summary": "Get all user customers",
                 "parameters": [
@@ -2686,6 +2851,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -2717,7 +2888,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update existing user customer mapping",
+                "description": "Update existing user customer",
                 "consumes": [
                     "application/json"
                 ],
@@ -2725,12 +2896,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserCustomer"
+                    "User Customer"
                 ],
                 "summary": "Update user customer",
                 "parameters": [
                     {
-                        "description": "User customer data",
+                        "description": "User Customer data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2755,7 +2926,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create new user customer mapping",
+                "description": "Create new user customer",
                 "consumes": [
                     "application/json"
                 ],
@@ -2763,12 +2934,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserCustomer"
+                    "User Customer"
                 ],
                 "summary": "Create user customer",
                 "parameters": [
                     {
-                        "description": "User customer data",
+                        "description": "User Customer data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2795,18 +2966,21 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Delete user customer mapping by ID",
+                "description": "Delete user customer by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "UserCustomer"
+                    "User Customer"
                 ],
                 "summary": "Delete user customer",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User customer ID",
+                        "description": "User Customer ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2830,12 +3004,15 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get list of user office mappings with pagination",
+                "description": "Get list of user offices with pagination",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "UserOffice"
+                    "User Office"
                 ],
                 "summary": "Get all user offices",
                 "parameters": [
@@ -2855,6 +3032,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -2886,7 +3069,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update existing user office mapping",
+                "description": "Update existing user office",
                 "consumes": [
                     "application/json"
                 ],
@@ -2894,12 +3077,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserOffice"
+                    "User Office"
                 ],
                 "summary": "Update user office",
                 "parameters": [
                     {
-                        "description": "User office data",
+                        "description": "User Office data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2924,7 +3107,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create new user office mapping",
+                "description": "Create new user office",
                 "consumes": [
                     "application/json"
                 ],
@@ -2932,12 +3115,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserOffice"
+                    "User Office"
                 ],
                 "summary": "Create user office",
                 "parameters": [
                     {
-                        "description": "User office data",
+                        "description": "User Office data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2964,18 +3147,21 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Delete user office mapping by ID",
+                "description": "Delete user office by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "UserOffice"
+                    "User Office"
                 ],
                 "summary": "Delete user office",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User office ID",
+                        "description": "User Office ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3000,11 +3186,14 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Get list of user groups with pagination",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "UserGroup"
+                    "User Group"
                 ],
                 "summary": "Get all user groups",
                 "parameters": [
@@ -3024,6 +3213,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -3063,12 +3258,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserGroup"
+                    "User Group"
                 ],
                 "summary": "Update user group",
                 "parameters": [
                     {
-                        "description": "User group data",
+                        "description": "User Group data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -3101,12 +3296,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserGroup"
+                    "User Group"
                 ],
                 "summary": "Create user group",
                 "parameters": [
                     {
-                        "description": "User group data",
+                        "description": "User Group data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -3134,17 +3329,20 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Delete user group by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "UserGroup"
+                    "User Group"
                 ],
                 "summary": "Delete user group",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User group ID",
+                        "description": "User Group ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3196,6 +3394,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search keyword",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
                         "in": "query"
                     },
                     {
@@ -4124,7 +4328,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "127.0.0.1:7725",
+	Host:             "127.0.0.1:7701",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "HRMS API",

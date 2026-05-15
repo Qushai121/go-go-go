@@ -43,11 +43,13 @@ func BindPaginationParams(ctx fiber.Ctx, queryParams *dto.PaginateFieldDto) erro
 		}
 	}
 
+	queryParams.Filters = ctx.Queries()
+
 	return nil
 }
 
-func GetQuery(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64,totalPage *int) *gorm.DB {
-	
+func GetQuery(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *int64, totalPage *int) *gorm.DB {
+
 	if queryParams.SortBy != nil {
 		query = query.Order(clause.OrderByColumn{
 			Column: clause.Column{
@@ -58,7 +60,7 @@ func GetQuery(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *in
 	}
 
 	query.Count(totalRecord)
-	offset := queryParams.GetOffset();
+	offset := queryParams.GetOffset()
 
 	if totalRecord != nil && totalPage != nil && queryParams.PerPage != nil && *queryParams.PerPage > 0 {
 		*totalPage = int(math.Ceil(float64(*totalRecord) / float64(*queryParams.PerPage)))
@@ -71,7 +73,7 @@ func GetQuery(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord *in
 	} else if queryParams.EndDate != nil {
 		query = query.Where("created_at <= ?", *queryParams.EndDate)
 	}
-	
+
 	if offset != nil && queryParams.PerPage != nil {
 		query = query.Limit(*queryParams.PerPage).Offset(*offset)
 	}
@@ -91,11 +93,15 @@ func GetQueryBase(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord
 
 	if allowedDynamicList != nil && queryParams.DynamicFieldSearch != nil && *queryParams.DynamicFieldSearch != "" && queryParams.Search != nil && *queryParams.Search != "" {
 		if dynamicField, ok := (*allowedDynamicList)[*queryParams.DynamicFieldSearch]; ok {
-			searchValue := *queryParams.Search
-			if strings.Contains(strings.ToUpper(dynamicField.Query), "LIKE") {
-				searchValue = "%" + searchValue + "%"
+			query = applyDynamicSearch(query, dynamicField, *queryParams.Search)
+		}
+	}
+
+	if allowedDynamicList != nil && len(queryParams.Filters) > 0 {
+		for fieldName, dynamicField := range *allowedDynamicList {
+			if value := queryParams.Filters[fieldName]; value != "" {
+				query = applyDynamicSearch(query, dynamicField, value)
 			}
-			query = query.Where(dynamicField.Field+dynamicField.Query, searchValue)
 		}
 	}
 
@@ -119,4 +125,13 @@ func GetQueryBase(queryParams *dto.PaginateFieldDto, query *gorm.DB, totalRecord
 	}
 
 	return query
+}
+
+func applyDynamicSearch(query *gorm.DB, dynamicField dto.DynamicSearchDto, value string) *gorm.DB {
+	searchValue := value
+	if strings.Contains(strings.ToUpper(dynamicField.Query), "LIKE") {
+		searchValue = "%" + searchValue + "%"
+	}
+
+	return query.Where(dynamicField.Field+dynamicField.Query, searchValue)
 }

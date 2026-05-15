@@ -17,6 +17,16 @@ func NewUserGroupController(repo repositories.UserGroupRepository) *UserGroupCon
 	return &UserGroupController{repo}
 }
 
+// Create User Group godoc
+// @Summary Create user group
+// @Description Create new user group
+// @Tags User Group
+// @Accept json
+// @Produce json
+// @Param request body models.UserGroup true "User Group data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/usergroup [post]
 func (c *UserGroupController) Create(ctx fiber.Ctx) error {
 	var data models.UserGroup
 	if err := ctx.Bind().Body(&data); err != nil {
@@ -29,6 +39,21 @@ func (c *UserGroupController) Create(ctx fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
+// Get All User Group godoc
+// @Summary Get all user groups
+// @Description Get list of user groups with pagination
+// @Tags User Group
+// @Accept json
+// @Produce json
+// @Param sort_order query string false "Sort order (asc/desc)"
+// @Param sort_by query string false "Sort by column"
+// @Param search query string false "Search keyword"
+// @Param field_search query string false "Field name for dynamic search"
+// @Param page query int false "Page number"
+// @Param per_page query int false "Items per page"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/usergroup [get]
 func (c *UserGroupController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 	if err := utils.BindPaginationParams(ctx, &queryParams); err != nil {
@@ -41,6 +66,16 @@ func (c *UserGroupController) FindAll(ctx fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
+// Update User Group godoc
+// @Summary Update user group
+// @Description Update existing user group
+// @Tags User Group
+// @Accept json
+// @Produce json
+// @Param request body models.UserGroup true "User Group data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/usergroup [put]
 func (c *UserGroupController) Update(ctx fiber.Ctx) error {
 	var data models.UserGroup
 	if err := ctx.Bind().Body(&data); err != nil {
@@ -54,6 +89,16 @@ func (c *UserGroupController) Update(ctx fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
+// Delete User Group godoc
+// @Summary Delete user group
+// @Description Delete user group by ID
+// @Tags User Group
+// @Accept json
+// @Produce json
+// @Param id path string true "User Group ID"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/usergroup/{id} [delete]
 func (c *UserGroupController) Delete(ctx fiber.Ctx) error {
 	if err := c.repo.Delete(ctx.Params("id")); err != nil {
 		return utils.Error(ctx, 500, err.Error())

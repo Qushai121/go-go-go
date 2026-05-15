@@ -56,7 +56,7 @@ func (r *approvalTemplateRepository) FindAllHeader(query *dto.PaginateFieldDto) 
 
 	db := r.db.Model(&models.ApprovalTemplateHeader{})
 
-	if query.Search != nil && *query.Search != "" {
+	if query.Search != nil && *query.Search != "" && (query.DynamicFieldSearch == nil || *query.DynamicFieldSearch == "") {
 		search := "%" + *query.Search + "%"
 		db = db.Where(`
 			approval_template_header_id::text LIKE ? OR

@@ -15,12 +15,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// http://127.0.0.1:7725/swagger/index.html
+// http://127.0.0.1:7701/swagger/index.html
 
 // @title HRMS API
 // @version 1.0
 // @description This is HRMS API documentation
-// @host 127.0.0.1:7725
+// @host 127.0.0.1:7701
 // @BasePath /
 // @securityDefinitions.apikey BearerAuth
 // @in header
@@ -35,7 +35,7 @@ func main() {
 
 	app := fiber.New()
 	app.Get("/swagger/*", swaggo.HandlerDefault)
-	app.Use("/uploads",static.New("./uploads"))
+	app.Use("/uploads", static.New("./uploads"))
 	routes.Setup(app, db)
 
 	log.Fatal(app.Listen(":" + os.Getenv("APP_PORT")))

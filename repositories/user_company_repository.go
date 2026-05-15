@@ -47,7 +47,7 @@ func (r *userCompanyRepository) FindAll(queryParams *dto.PaginateFieldDto) (resp
 		sort := "user_company_id"
 		queryParams.SortBy = &sort
 	}
-	if queryParams.Search != nil && *queryParams.Search != "" {
+	if queryParams.Search != nil && *queryParams.Search != "" && (queryParams.DynamicFieldSearch == nil || *queryParams.DynamicFieldSearch == "") {
 		search := "%" + *queryParams.Search + "%"
 		modelDb = modelDb.Where(`
 			user_company_id::text LIKE ? OR employee_nik LIKE ? OR company_code LIKE ? OR

@@ -50,7 +50,7 @@ func (c *customerRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 		TotalPage:   totalPage,
 	}
 
-	if queryParams.Search != nil && *queryParams.Search != "" {
+	if queryParams.Search != nil && *queryParams.Search != "" && (queryParams.DynamicFieldSearch == nil || *queryParams.DynamicFieldSearch == "") {
 		search := "%" + *queryParams.Search + "%"
 
 		modelDb = modelDb.Where(`

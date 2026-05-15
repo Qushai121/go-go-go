@@ -17,6 +17,16 @@ func NewUserCustomerController(repo repositories.UserCustomerRepository) *UserCu
 	return &UserCustomerController{repo}
 }
 
+// Create User Customer godoc
+// @Summary Create user customer
+// @Description Create new user customer
+// @Tags User Customer
+// @Accept json
+// @Produce json
+// @Param request body models.UserCustomer true "User Customer data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/user-customer [post]
 func (c *UserCustomerController) Create(ctx fiber.Ctx) error {
 	var data models.UserCustomer
 	if err := ctx.Bind().Body(&data); err != nil {
@@ -29,6 +39,21 @@ func (c *UserCustomerController) Create(ctx fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
+// Get All User Customer godoc
+// @Summary Get all user customers
+// @Description Get list of user customers with pagination
+// @Tags User Customer
+// @Accept json
+// @Produce json
+// @Param sort_order query string false "Sort order (asc/desc)"
+// @Param sort_by query string false "Sort by column"
+// @Param search query string false "Search keyword"
+// @Param field_search query string false "Field name for dynamic search"
+// @Param page query int false "Page number"
+// @Param per_page query int false "Items per page"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/user-customer [get]
 func (c *UserCustomerController) FindAll(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
 	if err := utils.BindPaginationParams(ctx, &queryParams); err != nil {
@@ -41,6 +66,16 @@ func (c *UserCustomerController) FindAll(ctx fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
+// Update User Customer godoc
+// @Summary Update user customer
+// @Description Update existing user customer
+// @Tags User Customer
+// @Accept json
+// @Produce json
+// @Param request body models.UserCustomer true "User Customer data"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/user-customer [put]
 func (c *UserCustomerController) Update(ctx fiber.Ctx) error {
 	var data models.UserCustomer
 	if err := ctx.Bind().Body(&data); err != nil {
@@ -54,6 +89,16 @@ func (c *UserCustomerController) Update(ctx fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
+// Delete User Customer godoc
+// @Summary Delete user customer
+// @Description Delete user customer by ID
+// @Tags User Customer
+// @Accept json
+// @Produce json
+// @Param id path string true "User Customer ID"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/user-customer/{id} [delete]
 func (c *UserCustomerController) Delete(ctx fiber.Ctx) error {
 	if err := c.repo.Delete(ctx.Params("id")); err != nil {
 		return utils.Error(ctx, 500, err.Error())

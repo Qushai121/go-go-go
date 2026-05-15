@@ -52,7 +52,7 @@ func (r *paramGroupRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 		queryParams.SortBy = &sort
 	}
 
-	if queryParams.Search != nil && *queryParams.Search != "" {
+	if queryParams.Search != nil && *queryParams.Search != "" && (queryParams.DynamicFieldSearch == nil || *queryParams.DynamicFieldSearch == "") {
 		search := "%" + *queryParams.Search + "%"
 
 		modelDb = modelDb.Where(`

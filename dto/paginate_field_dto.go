@@ -9,6 +9,7 @@ type PaginateFieldDto struct {
 	StartDate          *string `query:"start_date"`
 	EndDate            *string `query:"end_date"`
 	DynamicFieldSearch *string `query:"field_search"`
+	Filters            map[string]string
 }
 
 func (d *PaginateFieldDto) GetSortOrderBool() bool {

@@ -47,7 +47,7 @@ func (r *divisionRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 		sort := "division_id"
 		queryParams.SortBy = &sort
 	}
-	if queryParams.Search != nil && *queryParams.Search != "" {
+	if queryParams.Search != nil && *queryParams.Search != "" && (queryParams.DynamicFieldSearch == nil || *queryParams.DynamicFieldSearch == "") {
 		search := "%" + *queryParams.Search + "%"
 		modelDb = modelDb.Where(`
 			division_id::text LIKE ? OR company_code LIKE ? OR branch_code LIKE ? OR

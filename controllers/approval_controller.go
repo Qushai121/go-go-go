@@ -14,7 +14,7 @@ type ApprovalController struct {
 	repo repositories.ApprovalRepository
 }
 
-func NewApprovalController(repo repositories.ApprovalRepository) *ApprovalController  {
+func NewApprovalController(repo repositories.ApprovalRepository) *ApprovalController {
 	return &ApprovalController{repo}
 }
 
@@ -27,6 +27,7 @@ func NewApprovalController(repo repositories.ApprovalRepository) *ApprovalContro
 // @Param sort_order query string false "Sort order (asc/desc)"
 // @Param sort_by query string false "Sort by column"
 // @Param search query string false "Search keyword"
+// @Param field_search query string false "Field name for dynamic search"
 // @Param page query int false "Page number"
 // @Param per_page query int false "Items per page"
 // @Success 200 {object} map[string]interface{}
@@ -107,10 +108,10 @@ func (c *ApprovalController) Approve(ctx fiber.Ctx) error {
 
 	isValidStatus := CheckApprovalStatus(body.ApprovalStatus)
 	if isValidStatus {
-		return utils.Error(ctx,422,"invalid approval status")
+		return utils.Error(ctx, 422, "invalid approval status")
 	}
 
-	data,err := mappers.ToApprovalDetail(body);
+	data, err := mappers.ToApprovalDetail(body)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
@@ -121,7 +122,6 @@ func (c *ApprovalController) Approve(ctx fiber.Ctx) error {
 
 	return utils.Success(ctx, "approval updated")
 }
-
 
 func CheckApprovalStatus(status string) bool {
 	switch status {

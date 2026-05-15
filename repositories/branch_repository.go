@@ -49,7 +49,7 @@ func (r *branchRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.
 		queryParams.SortBy = &sort
 	}
 
-	if queryParams.Search != nil && *queryParams.Search != "" {
+	if queryParams.Search != nil && *queryParams.Search != "" && (queryParams.DynamicFieldSearch == nil || *queryParams.DynamicFieldSearch == "") {
 		search := "%" + *queryParams.Search + "%"
 		modelDb = modelDb.Where(`
 			branch_id::text LIKE ? OR
