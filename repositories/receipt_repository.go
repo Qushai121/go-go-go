@@ -259,7 +259,7 @@ func (r *receiptRepository) FindAll(queryParams *dto.PaginateFieldDto) (response
 	var totalPage int
 
 	modelDb := r.db.Model(&models.ReceiptHeader{}).
-		Select("hrms_receipt_header.*").
+		Select(receiptHeaderSelectColumns()).
 		Joins("LEFT JOIN hrms_submission s ON s.receipt_id = hrms_receipt_header.receipt_id")
 	dataAkhir := response.PaginateResponseDto[[]models.ReceiptHeader]{
 		Data:        data,
@@ -313,7 +313,7 @@ func (r *receiptRepository) FindDraftDetails(queryParams *dto.PaginateFieldDto, 
 	var totalPage int
 
 	modelDb := r.db.Model(&models.ReceiptDetail{}).
-		Select("hrms_receipt_detail.*").
+		Select(receiptDetailSelectColumns()).
 		Joins("LEFT JOIN hrms_receipt_header rh ON rh.receipt_id = hrms_receipt_detail.receipt_id").
 		Where("rh.receipt_id IS NULL")
 
@@ -538,6 +538,38 @@ func (r *receiptRepository) refreshHeaderTotal(tx *gorm.DB, receiptId string) er
 		"total_receipt":        totalReceipt,
 		"total_amount_receipt": totalAmount,
 	}).Error
+}
+
+func receiptHeaderSelectColumns() string {
+	return `
+		hrms_receipt_header.receipt_id,
+		hrms_receipt_header.employee_nik,
+		hrms_receipt_header.receipt_create_date,
+		hrms_receipt_header.total_receipt,
+		hrms_receipt_header.total_amount_receipt,
+		hrms_receipt_header.object_code,
+		hrms_receipt_header.created_by,
+		hrms_receipt_header.created_at,
+		hrms_receipt_header.updated_by,
+		hrms_receipt_header.updated_at
+	`
+}
+
+func receiptDetailSelectColumns() string {
+	return `
+		hrms_receipt_detail.receipt_detail_id,
+		hrms_receipt_detail.receipt_id,
+		hrms_receipt_detail.receipt_date,
+		hrms_receipt_detail.receipt_type,
+		hrms_receipt_detail.receipt_amount,
+		hrms_receipt_detail.receipt_description,
+		hrms_receipt_detail.receipt_image,
+		hrms_receipt_detail.object_code,
+		hrms_receipt_detail.created_by,
+		hrms_receipt_detail.created_at,
+		hrms_receipt_detail.updated_by,
+		hrms_receipt_detail.updated_at
+	`
 }
 
 func NewReceiptRepository(db *gorm.DB) ReceiptRepository {
