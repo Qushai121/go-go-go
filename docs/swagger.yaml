@@ -512,6 +512,70 @@ definitions:
       user_office_id:
         type: string
     type: object
+  receipt.CreateReceiptDetailDto:
+    properties:
+      receipt_amount:
+        type: number
+      receipt_date:
+        type: string
+      receipt_description:
+        type: string
+      receipt_image:
+        type: string
+      receipt_type:
+        type: string
+    type: object
+  receipt.CreateReceiptRequestDto:
+    properties:
+      details:
+        items:
+          $ref: '#/definitions/receipt.CreateReceiptDetailDto'
+        type: array
+      employee_nik:
+        type: string
+      receipt_create_date:
+        type: string
+    type: object
+  receipt.SubmitReceiptRequestDto:
+    properties:
+      employee_nik:
+        type: string
+      receipt_create_date:
+        type: string
+      receipt_detail_ids:
+        items:
+          type: string
+        type: array
+    type: object
+  receipt.UpdateReceiptDetailDto:
+    properties:
+      receipt_amount:
+        type: number
+      receipt_date:
+        type: string
+      receipt_description:
+        type: string
+      receipt_image:
+        type: string
+      receipt_type:
+        type: string
+    type: object
+  receipt.UpdateReceiptHeaderDto:
+    properties:
+      employee_nik:
+        type: string
+      receipt_create_date:
+        type: string
+    type: object
+  receipt.UpdateReceiptSubmissionDto:
+    properties:
+      approvalheader_id:
+        type: string
+      current_step:
+        type: integer
+      status:
+        type: string
+    type: object
 host: 127.0.0.1:7701
 info:
   contact: {}
@@ -1933,6 +1997,448 @@ paths:
       summary: Delete param
       tags:
       - Param
+  /api/receipt:
+    get:
+      consumes:
+      - application/json
+      description: Get list of receipts with pagination and search
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Field name for dynamic search
+        in: query
+        name: field_search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all receipts
+      tags:
+      - Receipt
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      description: Create receipt header, details, and submission in one transaction
+      parameters:
+      - description: Receipt payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/receipt.CreateReceiptRequestDto'
+      - description: Employee NIK. If empty, taken from auth token.
+        in: formData
+        name: employee_nik
+        type: string
+      - description: Receipt create date (RFC3339 or YYYY-MM-DD HH:mm:ss)
+        in: formData
+        name: receipt_create_date
+        type: string
+      - description: JSON array of receipt details
+        in: formData
+        name: details
+        type: string
+      - description: Receipt image for detail index 0
+        in: formData
+        name: receipt_image_0
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create receipt with details and submission
+      tags:
+      - Receipt
+  /api/receipt/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete receipt header with details and submission
+      parameters:
+      - description: Receipt ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete receipt
+      tags:
+      - Receipt
+    get:
+      consumes:
+      - application/json
+      description: Get receipt header with receipt details and submission
+      parameters:
+      - description: Receipt ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get receipt detail
+      tags:
+      - Receipt
+    put:
+      consumes:
+      - application/json
+      description: Update receipt header basic data
+      parameters:
+      - description: Receipt ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Receipt header payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/receipt.UpdateReceiptHeaderDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update receipt header
+      tags:
+      - Receipt
+  /api/receipt/{id}/detail:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      description: Add receipt detail and recalculate header totals
+      parameters:
+      - description: Receipt ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Receipt detail payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/receipt.CreateReceiptDetailDto'
+      - description: Receipt date (RFC3339 or YYYY-MM-DD HH:mm:ss)
+        in: formData
+        name: receipt_date
+        type: string
+      - description: Receipt type
+        in: formData
+        name: receipt_type
+        type: string
+      - description: Receipt amount
+        in: formData
+        name: receipt_amount
+        type: number
+      - description: Receipt description
+        in: formData
+        name: receipt_description
+        type: string
+      - description: Employee NIK. If empty, taken from auth token.
+        in: formData
+        name: employee_nik
+        type: string
+      - description: Receipt image
+        in: formData
+        name: receipt_image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create receipt detail into existing receipt
+      tags:
+      - Receipt
+  /api/receipt/{id}/submission:
+    put:
+      consumes:
+      - application/json
+      description: Update submission status, current step, and approval header
+      parameters:
+      - description: Receipt ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Receipt submission payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/receipt.UpdateReceiptSubmissionDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update receipt submission workflow
+      tags:
+      - Receipt
+  /api/receipt/detail:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      description: Add draft receipt detail before creating receipt header
+      parameters:
+      - description: Receipt detail payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/receipt.CreateReceiptDetailDto'
+      - description: Receipt date (RFC3339 or YYYY-MM-DD HH:mm:ss)
+        in: formData
+        name: receipt_date
+        type: string
+      - description: Receipt type
+        in: formData
+        name: receipt_type
+        type: string
+      - description: Receipt amount
+        in: formData
+        name: receipt_amount
+        type: number
+      - description: Receipt description
+        in: formData
+        name: receipt_description
+        type: string
+      - description: Employee NIK. If empty, taken from auth token.
+        in: formData
+        name: employee_nik
+        type: string
+      - description: Receipt image
+        in: formData
+        name: receipt_image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create receipt detail
+      tags:
+      - Receipt
+  /api/receipt/detail/{detail_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete receipt detail and recalculate header totals
+      parameters:
+      - description: Receipt Detail ID
+        in: path
+        name: detail_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete receipt detail
+      tags:
+      - Receipt
+    put:
+      consumes:
+      - application/json
+      - multipart/form-data
+      description: Update receipt detail and recalculate header totals
+      parameters:
+      - description: Receipt Detail ID
+        in: path
+        name: detail_id
+        required: true
+        type: string
+      - description: Receipt detail payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/receipt.UpdateReceiptDetailDto'
+      - description: Receipt date (RFC3339 or YYYY-MM-DD HH:mm:ss)
+        in: formData
+        name: receipt_date
+        type: string
+      - description: Receipt type
+        in: formData
+        name: receipt_type
+        type: string
+      - description: Receipt amount
+        in: formData
+        name: receipt_amount
+        type: number
+      - description: Receipt description
+        in: formData
+        name: receipt_description
+        type: string
+      - description: Employee NIK. If empty, taken from auth token.
+        in: formData
+        name: employee_nik
+        type: string
+      - description: Receipt image
+        in: formData
+        name: receipt_image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update receipt detail
+      tags:
+      - Receipt
+  /api/receipt/detail/draft:
+    get:
+      consumes:
+      - application/json
+      description: Get receipt details that have not been submitted into receipt header
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Field name for dynamic search
+        in: query
+        name: field_search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get draft receipt details
+      tags:
+      - Receipt
+  /api/receipt/submit:
+    post:
+      consumes:
+      - application/json
+      description: Create receipt header and submission from selected draft receipt
+        details
+      parameters:
+      - description: Submit receipt payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/receipt.SubmitReceiptRequestDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Submit selected receipt details
+      tags:
+      - Receipt
   /api/setting:
     get:
       consumes:

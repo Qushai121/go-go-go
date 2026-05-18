@@ -2232,6 +2232,690 @@
                 }
             }
         },
+        "/api/receipt": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of receipts with pagination and search",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Get all receipts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create receipt header, details, and submission in one transaction",
+                "consumes": [
+                    "application/json",
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Create receipt with details and submission",
+                "parameters": [
+                    {
+                        "description": "Receipt payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/receipt.CreateReceiptRequestDto"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Employee NIK. If empty, taken from auth token.",
+                        "name": "employee_nik",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt create date (RFC3339 or YYYY-MM-DD HH:mm:ss)",
+                        "name": "receipt_create_date",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "JSON array of receipt details",
+                        "name": "details",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Receipt image for detail index 0",
+                        "name": "receipt_image_0",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/receipt/detail": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Add draft receipt detail before creating receipt header",
+                "consumes": [
+                    "application/json",
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Create receipt detail",
+                "parameters": [
+                    {
+                        "description": "Receipt detail payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/receipt.CreateReceiptDetailDto"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt date (RFC3339 or YYYY-MM-DD HH:mm:ss)",
+                        "name": "receipt_date",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt type",
+                        "name": "receipt_type",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Receipt amount",
+                        "name": "receipt_amount",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt description",
+                        "name": "receipt_description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Employee NIK. If empty, taken from auth token.",
+                        "name": "employee_nik",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Receipt image",
+                        "name": "receipt_image",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/receipt/detail/draft": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get receipt details that have not been submitted into receipt header",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Get draft receipt details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/receipt/detail/{detail_id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update receipt detail and recalculate header totals",
+                "consumes": [
+                    "application/json",
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Update receipt detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Receipt Detail ID",
+                        "name": "detail_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Receipt detail payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/receipt.UpdateReceiptDetailDto"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt date (RFC3339 or YYYY-MM-DD HH:mm:ss)",
+                        "name": "receipt_date",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt type",
+                        "name": "receipt_type",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Receipt amount",
+                        "name": "receipt_amount",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt description",
+                        "name": "receipt_description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Employee NIK. If empty, taken from auth token.",
+                        "name": "employee_nik",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Receipt image",
+                        "name": "receipt_image",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete receipt detail and recalculate header totals",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Delete receipt detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Receipt Detail ID",
+                        "name": "detail_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/receipt/submit": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create receipt header and submission from selected draft receipt details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Submit selected receipt details",
+                "parameters": [
+                    {
+                        "description": "Submit receipt payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/receipt.SubmitReceiptRequestDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/receipt/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get receipt header with receipt details and submission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Get receipt detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Receipt ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update receipt header basic data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Update receipt header",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Receipt ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Receipt header payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/receipt.UpdateReceiptHeaderDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete receipt header with details and submission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Delete receipt",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Receipt ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/receipt/{id}/detail": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Add receipt detail and recalculate header totals",
+                "consumes": [
+                    "application/json",
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Create receipt detail into existing receipt",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Receipt ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Receipt detail payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/receipt.CreateReceiptDetailDto"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt date (RFC3339 or YYYY-MM-DD HH:mm:ss)",
+                        "name": "receipt_date",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt type",
+                        "name": "receipt_type",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Receipt amount",
+                        "name": "receipt_amount",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Receipt description",
+                        "name": "receipt_description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Employee NIK. If empty, taken from auth token.",
+                        "name": "employee_nik",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Receipt image",
+                        "name": "receipt_image",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/receipt/{id}/submission": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update submission status, current step, and approval header",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Receipt"
+                ],
+                "summary": "Update receipt submission workflow",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Receipt ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Receipt submission payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/receipt.UpdateReceiptSubmissionDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/setting": {
             "get": {
                 "security": [
@@ -4305,6 +4989,105 @@
                     "type": "string"
                 },
                 "user_office_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "receipt.CreateReceiptDetailDto": {
+            "type": "object",
+            "properties": {
+                "receipt_amount": {
+                    "type": "number"
+                },
+                "receipt_date": {
+                    "type": "string"
+                },
+                "receipt_description": {
+                    "type": "string"
+                },
+                "receipt_image": {
+                    "type": "string"
+                },
+                "receipt_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "receipt.CreateReceiptRequestDto": {
+            "type": "object",
+            "properties": {
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/receipt.CreateReceiptDetailDto"
+                    }
+                },
+                "employee_nik": {
+                    "type": "string"
+                },
+                "receipt_create_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "receipt.SubmitReceiptRequestDto": {
+            "type": "object",
+            "properties": {
+                "employee_nik": {
+                    "type": "string"
+                },
+                "receipt_create_date": {
+                    "type": "string"
+                },
+                "receipt_detail_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "receipt.UpdateReceiptDetailDto": {
+            "type": "object",
+            "properties": {
+                "receipt_amount": {
+                    "type": "number"
+                },
+                "receipt_date": {
+                    "type": "string"
+                },
+                "receipt_description": {
+                    "type": "string"
+                },
+                "receipt_image": {
+                    "type": "string"
+                },
+                "receipt_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "receipt.UpdateReceiptHeaderDto": {
+            "type": "object",
+            "properties": {
+                "employee_nik": {
+                    "type": "string"
+                },
+                "receipt_create_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "receipt.UpdateReceiptSubmissionDto": {
+            "type": "object",
+            "properties": {
+                "approvalheader_id": {
+                    "type": "string"
+                },
+                "current_step": {
+                    "type": "integer"
+                },
+                "status": {
                     "type": "string"
                 }
             }

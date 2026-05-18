@@ -3,5 +3,6 @@ package constant
 type ApprovalTemplateTypeConstant string
 
 const (
-	WFH ApprovalTemplateTypeConstant = "WFH"
+	WFH     ApprovalTemplateTypeConstant = "WFH"
+	RECEIPT ApprovalTemplateTypeConstant = "RECEIPT"
 )

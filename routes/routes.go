@@ -28,6 +28,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	departmentRepo := repositories.NewDepartmentRepository(db)
 	titleRepo := repositories.NewTitleRepository(db)
 	userGroupRepo := repositories.NewUserGroupRepository(db)
+	receiptRepo := repositories.NewReceiptRepository(db)
 
 	auth := controllers.NewAuthController(repo)
 	user := controllers.NewUserController(repo)
@@ -49,6 +50,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	departmentController := controllers.NewDepartmentController(departmentRepo)
 	titleController := controllers.NewTitleController(titleRepo)
 	userGroupController := controllers.NewUserGroupController(userGroupRepo)
+	receiptController := controllers.NewReceiptController(receiptRepo)
 
 	api := app.Group("/api")
 
@@ -148,6 +150,20 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	userGroup.Get("/", userGroupController.FindAll)
 	userGroup.Put("/", userGroupController.Update)
 	userGroup.Delete("/:id", userGroupController.Delete)
+
+	receipt := api.Group("/receipt", middlewares.JWTProtected())
+	receipt.Post("/", receiptController.Create)
+	receipt.Get("/", receiptController.FindAll)
+	receipt.Post("/submit", receiptController.Submit)
+	receipt.Post("/detail", receiptController.CreateDraftDetail)
+	receipt.Get("/detail/draft", receiptController.FindDraftDetails)
+	receipt.Post("/:id/detail", receiptController.CreateDetail)
+	receipt.Put("/detail/:detail_id", receiptController.UpdateDetail)
+	receipt.Delete("/detail/:detail_id", receiptController.DeleteDetail)
+	receipt.Put("/:id/submission", receiptController.UpdateSubmission)
+	receipt.Get("/:id", receiptController.Detail)
+	receipt.Put("/:id", receiptController.UpdateHeader)
+	receipt.Delete("/:id", receiptController.Delete)
 
 	approval := api.Group("/approval", middlewares.JWTProtected())
 	approval.Get("/", approvalController.FindAll)
