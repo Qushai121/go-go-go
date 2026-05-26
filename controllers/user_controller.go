@@ -5,6 +5,7 @@ import (
 	"hrms_go/models"
 	"hrms_go/repositories"
 	"hrms_go/utils"
+	"mime/multipart"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
@@ -100,6 +101,10 @@ func (c *UserController) UpdateUserPicture(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
+	if _, err := utils.VerifyFaceImage(file); err != nil {
+		return utils.Error(ctx, 422, err.Error())
+	}
+
 	targetUser, err := c.repo.FindByID(userId.String())
 	if err != nil {
 		return utils.Error(ctx, 404, "user not found")
@@ -128,6 +133,42 @@ func (c *UserController) UpdateUserPicture(ctx fiber.Ctx) error {
 	return utils.Success(ctx, realData)
 }
 
+// Verify User Face godoc
+// @Summary Verify face image
+// @Description Verify face image without saving user profile picture or attendance
+// @Tags Users
+// @Accept multipart/form-data
+// @Produce json
+// @Param image formData file true "Face image file"
+// @Param nik formData string false "Employee NIK. If filled, image will be matched against registered face data."
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/users/verify-face [post]
+func (c *UserController) VerifyFace(ctx fiber.Ctx) error {
+	file, err := firstFormFile(ctx, "image", "profile_picture_url", "photo_url", "imagepath")
+	if err != nil {
+		return utils.Error(ctx, 400, "image file is required")
+	}
+
+	nik := ctx.FormValue("nik")
+	var result *utils.FaceServiceResult
+	if nik != "" {
+		result, err = utils.VerifyFaceByNIK(file, nik)
+	} else {
+		result, err = utils.VerifyFaceImage(file)
+	}
+
+	if err != nil {
+		status := 422
+		if result != nil && result.Status > 0 {
+			status = result.Status
+		}
+		return utils.Error(ctx, status, err.Error())
+	}
+
+	return utils.Success(ctx, result)
+}
+
 // Find Me godoc
 // @Summary Find Me
 // @Description Get My User Information
@@ -144,4 +185,16 @@ func (c *UserController) Me(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 500, err.Error())
 	}
 	return utils.Success(ctx, data)
+}
+
+func firstFormFile(ctx fiber.Ctx, keys ...string) (*multipart.FileHeader, error) {
+	var lastErr error
+	for _, key := range keys {
+		file, err := ctx.FormFile(key)
+		if err == nil {
+			return file, nil
+		}
+		lastErr = err
+	}
+	return nil, lastErr
 }

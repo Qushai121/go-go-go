@@ -78,6 +78,14 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 	}
 	request.CreatedBy = employeeNIK
 
+	faceResult, err := utils.VerifyFaceByNIK(file, employeeNIK)
+	if err != nil {
+		return utils.Error(ctx, 422, err.Error())
+	}
+	if similarity := utils.FaceSimilarityPercentage(faceResult); similarity != "" {
+		request.PresentaseKemiripan = similarity
+	}
+
 	fileUrl, err := utils.SaveFileToCustomPath(file, fmt.Sprintf("employee_absen/%s/foto", employeeNIK), ctx)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
