@@ -35,7 +35,7 @@ type User struct {
 	UserOffice   []UserOffice   `gorm:"-" json:"user_office,omitempty"`
 	UserCustomer []UserCustomer `gorm:"-" json:"user_customer,omitempty"`
 
-	ProfilePictureUrl string `gorm:"-" json:"profile_picture_url,omitempty"`
+	ProfilePictureUrl string `gorm:"column:profile_picture_url;type:text" json:"profile_picture_url,omitempty"`
 
 	CreatedAt time.Time  `gorm:"column:created_at;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt *time.Time `gorm:"column:updated_at" json:"updated_at"`

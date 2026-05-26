@@ -55,8 +55,8 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 	}
 
 	if request.CreatedBy == "" {
-		if userID := ctx.Locals("user_id"); userID != nil {
-			request.CreatedBy = fmt.Sprint(userID)
+		if employeeNIK := ctx.Locals("employee_nik"); employeeNIK != nil {
+			request.CreatedBy = fmt.Sprint(employeeNIK)
 		}
 	}
 
@@ -76,6 +76,7 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 	if employeeNIK == "" || employeeNIK == "<nil>" {
 		return utils.Error(ctx, 400, "employee_nik is missing from token")
 	}
+	request.CreatedBy = employeeNIK
 
 	fileUrl, err := utils.SaveFileToCustomPath(file, fmt.Sprintf("employee_absen/%s/foto", employeeNIK), ctx)
 	if err != nil {

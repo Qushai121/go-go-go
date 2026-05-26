@@ -61,6 +61,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	users.Post("/", user.Create)
 	users.Get("/", user.FindAll)
 	users.Get("/me", user.Me)
+	users.Post("/update-profile-picture", user.UpdateUserPicture)
 
 	customerRoute := api.Group("/customer", middlewares.JWTProtected())
 	customerRoute.Post("/", customer.Create)

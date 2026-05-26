@@ -159,13 +159,13 @@ func (c *ApprovalTemplateController) CreateDetail(ctx fiber.Ctx) error {
 	}
 
 	if body.CreatedBy == "" {
-		userIdVal := ctx.Locals("user_id")
+		employeeNIKVal := ctx.Locals("employee_nik")
 
-		userId, ok := userIdVal.(string)
+		employeeNIK, ok := employeeNIKVal.(string)
 		if !ok {
 			return utils.Error(ctx, 401, "unauthorized")
 		}
-		body.CreatedBy = userId
+		body.CreatedBy = employeeNIK
 	}
 
 	if err := c.repo.CreateDetail(body); err != nil {

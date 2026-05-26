@@ -54,7 +54,7 @@ func (c *ReceiptController) Create(ctx fiber.Ctx) error {
 	}
 
 	userId := getStringLocal(ctx, "user_id")
-	createdBy := userId
+	createdBy := getStringLocal(ctx, "employee_nik")
 	if createdBy == "" {
 		createdBy = req.EmployeeNik
 	}
@@ -120,7 +120,7 @@ func (c *ReceiptController) FindDraftDetails(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	data, err := c.repo.FindDraftDetails(&queryParams, getStringLocal(ctx, "user_id"))
+	data, err := c.repo.FindDraftDetails(&queryParams, getStringLocal(ctx, "employee_nik"))
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
@@ -154,7 +154,7 @@ func (c *ReceiptController) Submit(ctx fiber.Ctx) error {
 	}
 
 	userId := getStringLocal(ctx, "user_id")
-	createdBy := userId
+	createdBy := getStringLocal(ctx, "employee_nik")
 	if createdBy == "" {
 		createdBy = req.EmployeeNik
 	}
@@ -207,8 +207,8 @@ func (c *ReceiptController) UpdateHeader(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	userId := getStringLocal(ctx, "user_id")
-	data, err := c.repo.UpdateHeader(id, req, userId)
+	employeeNIK := getStringLocal(ctx, "employee_nik")
+	data, err := c.repo.UpdateHeader(id, req, employeeNIK)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
@@ -242,7 +242,7 @@ func (c *ReceiptController) UpdateSubmission(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 422, "current_step must be greater than 0")
 	}
 
-	data, err := c.repo.UpdateSubmission(id, req, getStringLocal(ctx, "user_id"))
+	data, err := c.repo.UpdateSubmission(id, req, getStringLocal(ctx, "employee_nik"))
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
@@ -297,7 +297,7 @@ func (c *ReceiptController) CreateDraftDetail(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 422, err.Error())
 	}
 
-	createdBy := getStringLocal(ctx, "user_id")
+	createdBy := getStringLocal(ctx, "employee_nik")
 	if createdBy == "" {
 		createdBy = getReceiptEmployeeNik(ctx)
 	}
@@ -340,7 +340,7 @@ func (c *ReceiptController) CreateDetail(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 422, err.Error())
 	}
 
-	data, err := c.repo.CreateDetail(id, req, getStringLocal(ctx, "user_id"))
+	data, err := c.repo.CreateDetail(id, req, getStringLocal(ctx, "employee_nik"))
 	if err != nil {
 		removeSavedFile(savedFile)
 		return utils.Error(ctx, 500, err.Error())
@@ -378,7 +378,7 @@ func (c *ReceiptController) UpdateDetail(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 422, err.Error())
 	}
 
-	data, err := c.repo.UpdateDetail(id, req, getStringLocal(ctx, "user_id"))
+	data, err := c.repo.UpdateDetail(id, req, getStringLocal(ctx, "employee_nik"))
 	if err != nil {
 		removeSavedFile(savedFile)
 		return utils.Error(ctx, 500, err.Error())

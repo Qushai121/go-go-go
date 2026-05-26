@@ -12,6 +12,7 @@ import (
 type UserRepository interface {
 	Create(user *models.User) error
 	FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.User], error)
+	FindByID(userId string) (*models.User, error)
 	FindByEmail(email string) (*models.User, error)
 	Count() (int64, error)
 	Update(body *models.User) error
@@ -146,6 +147,12 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 	return result, err
 }
 
+func (r *userRepository) FindByID(userId string) (*models.User, error) {
+	var user models.User
+	err := r.db.Where("user_id = ?", userId).First(&user).Error
+	return &user, err
+}
+
 // FindByEmail implements [UserRepository].
 func (r *userRepository) FindByEmail(email string) (*models.User, error) {
 	var user models.User
@@ -215,7 +222,6 @@ func (r *userRepository) Update(body *models.User) error {
 func (r *userRepository) UpdateProfilePicture(body *models.User) error {
 	var user models.User
 
-	// 1. Get existing user
 	if err := r.db.
 		Select("profile_picture_url").
 		Where("user_id = ?", body.UserId).
@@ -223,12 +229,20 @@ func (r *userRepository) UpdateProfilePicture(body *models.User) error {
 		return err
 	}
 
-	// 2. Remove old image if exists
-	if user.ProfilePictureUrl != "" {
-		utils.RemoveFileFromPath(user.ProfilePictureUrl)
+	if err := r.db.Model(&models.User{}).
+		Where("user_id = ?", body.UserId).
+		Updates(map[string]interface{}{
+			"profile_picture_url": body.ProfilePictureUrl,
+			"updated_by":          body.UpdatedBy,
+		}).Error; err != nil {
+		return err
 	}
 
-	return r.db.Model(&models.User{}).Where("user_id = ?", body.UserId).Updates(body).Error
+	if user.ProfilePictureUrl != "" && user.ProfilePictureUrl != body.ProfilePictureUrl {
+		_ = utils.RemoveFileFromPath(user.ProfilePictureUrl)
+	}
+
+	return nil
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {

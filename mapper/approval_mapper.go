@@ -27,7 +27,7 @@ func ToApprovalTemplateDetail(dto approval.PostCreateApprovalTemplateDetailDto) 
 	}, nil
 }
 
-func ToApprovalDetail(dto approval.PostApproveDto) (models.ApprovalDetail,error)  {
+func ToApprovalDetail(dto approval.PostApproveDto) (models.ApprovalDetail, error) {
 	approvalHeaderId, err := uuid.Parse(dto.ApprovalHeaderId)
 	if err != nil {
 		return models.ApprovalDetail{}, err
@@ -39,19 +39,19 @@ func ToApprovalDetail(dto approval.PostApproveDto) (models.ApprovalDetail,error)
 	}
 
 	remark := ""
-	if dto.Remark != nil{
+	if dto.Remark != nil {
 		remark = *dto.Remark
 	}
 
 	return models.ApprovalDetail{
 		ApprovalHeaderId: approvalHeaderId,
-		ApprovalStatus: constant.ApprovalStatus(dto.ApprovalStatus),
-		ApproverBy: approverBy,
-		Remark: remark,
-	},nil
+		ApprovalStatus:   constant.ApprovalStatus(dto.ApprovalStatus),
+		ApproverBy:       approverBy,
+		Remark:           remark,
+	}, nil
 }
 
-func ToApprovalHeader(dto approval.CreateApprovalDto,approvalTemplateHeader models.ApprovalTemplateHeader) (models.ApprovalHeader,error)  {
+func ToApprovalHeader(dto approval.CreateApprovalDto, approvalTemplateHeader models.ApprovalTemplateHeader) (models.ApprovalHeader, error) {
 	requesterBy, err := uuid.Parse(dto.RequesterBy)
 	if err != nil {
 		return models.ApprovalHeader{}, err
@@ -59,10 +59,10 @@ func ToApprovalHeader(dto approval.CreateApprovalDto,approvalTemplateHeader mode
 
 	return models.ApprovalHeader{
 		ApprovalTemplateHeaderId: approvalTemplateHeader.ApprovalTemplateHeaderId,
-		ApprovalDocId: dto.ApprovalDocId,
-		RequesterBy: requesterBy,
+		ApprovalDocId:            dto.ApprovalDocId,
+		RequesterBy:              requesterBy,
 		AuditFields: base.AuditFields{
-			CreatedBy: dto.RequesterBy,
+			CreatedBy: dto.CreatedBy,
 		},
-	},nil
+	}, nil
 }

@@ -34,7 +34,7 @@ func (c *ParamGroupController) Create(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	userId := ctx.Locals("user_id").(string)
+	userId := ctx.Locals("employee_nik").(string)
 	data.CreatedBy = userId
 
 	if err := c.repo.Create(&data); err != nil {
@@ -91,7 +91,7 @@ func (c *ParamGroupController) Update(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	userId := ctx.Locals("user_id").(string)
+	userId := ctx.Locals("employee_nik").(string)
 	data.UpdatedBy = &userId
 
 	if err := c.repo.Update(&data); err != nil {

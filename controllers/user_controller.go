@@ -100,13 +100,18 @@ func (c *UserController) UpdateUserPicture(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	fileUrl, err := utils.SaveFileToPath(file, "user", ctx)
+	targetUser, err := c.repo.FindByID(userId.String())
+	if err != nil {
+		return utils.Error(ctx, 404, "user not found")
+	}
+
+	fileUrl, err := utils.SaveFileToCustomPath(file, "profile-picture/"+targetUser.EmployeeNIK, ctx)
 	if err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	authUserID := ctx.Locals("user_id").(string)
-	realData.UpdatedBy = &authUserID
+	authEmployeeNIK := ctx.Locals("employee_nik").(string)
+	realData.UpdatedBy = &authEmployeeNIK
 	realData.UserId = userId
 
 	if fileUrl != nil {

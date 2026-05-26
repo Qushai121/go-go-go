@@ -54,6 +54,7 @@ func (a *approvalRepository) Approve(approvalDetail models.ApprovalDetail) error
 			"approval_status": approvalDetail.ApprovalStatus,
 			"approver_by":     approvalDetail.ApproverBy,
 			"remark":          approvalDetail.Remark,
+			"updated_by":      approvalDetail.UpdatedBy,
 		}).Error
 }
 

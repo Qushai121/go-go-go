@@ -29,7 +29,7 @@ func (c *CompaniesController) Create(ctx fiber.Ctx) error {
 	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
-	data.CreatedBy = ctx.Locals("user_id").(string)
+	data.CreatedBy = ctx.Locals("employee_nik").(string)
 
 	if err := c.repo.Create(&data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
@@ -83,7 +83,7 @@ func (c *CompaniesController) Update(ctx fiber.Ctx) error {
 	if err := ctx.Bind().Body(&data); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
-	userId := ctx.Locals("user_id").(string)
+	userId := ctx.Locals("employee_nik").(string)
 	data.UpdatedBy = &userId
 
 	if err := c.repo.Update(&data); err != nil {

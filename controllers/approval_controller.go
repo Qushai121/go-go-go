@@ -116,6 +116,10 @@ func (c *ApprovalController) Approve(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 500, err.Error())
 	}
 
+	employeeNIK := ctx.Locals("employee_nik").(string)
+	data.CreatedBy = employeeNIK
+	data.UpdatedBy = &employeeNIK
+
 	if err := c.repo.Approve(data); err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}

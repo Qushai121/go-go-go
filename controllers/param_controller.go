@@ -34,7 +34,7 @@ func (c *ParamController) Create(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	userId := ctx.Locals("user_id").(string)
+	userId := ctx.Locals("employee_nik").(string)
 	param.CreatedBy = userId
 
 	if err := c.repo.Create(&param); err != nil {
@@ -91,7 +91,7 @@ func (c *ParamController) Update(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	userId := ctx.Locals("user_id").(string)
+	userId := ctx.Locals("employee_nik").(string)
 	data.UpdatedBy = &userId
 
 	if err := c.repo.Update(&data); err != nil {

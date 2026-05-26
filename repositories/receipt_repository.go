@@ -113,6 +113,7 @@ func (r *receiptRepository) Create(req receiptDto.CreateReceiptRequestDto, creat
 			approvalHeader, err := CreateApproval(tx, approval.CreateApprovalDto{
 				TemplateType:  constant.RECEIPT,
 				RequesterBy:   requesterBy,
+				CreatedBy:     createdBy,
 				ApprovalDocId: submission.SubmissionId,
 			})
 			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -227,6 +228,7 @@ func (r *receiptRepository) Submit(req receiptDto.SubmitReceiptRequestDto, creat
 			approvalHeader, err := CreateApproval(tx, approval.CreateApprovalDto{
 				TemplateType:  constant.RECEIPT,
 				RequesterBy:   requesterBy,
+				CreatedBy:     createdBy,
 				ApprovalDocId: submission.SubmissionId,
 			})
 			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {

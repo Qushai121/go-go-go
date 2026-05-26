@@ -34,7 +34,7 @@ func (c *SettingController) Create(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	userId := ctx.Locals("user_id").(string)
+	userId := ctx.Locals("employee_nik").(string)
 	setting.CreatedBy = userId
 
 	if err := c.repo.Create(&setting); err != nil {
@@ -91,7 +91,7 @@ func (c *SettingController) Update(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	userId := ctx.Locals("user_id").(string)
+	userId := ctx.Locals("employee_nik").(string)
 	data.UpdatedBy = &userId
 
 	if err := c.repo.Update(&data); err != nil {
