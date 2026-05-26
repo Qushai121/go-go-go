@@ -11,6 +11,7 @@ import (
 
 	"github.com/gofiber/contrib/v3/swaggo"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/static"
 	"github.com/joho/godotenv"
 )
@@ -34,6 +35,23 @@ func main() {
 	}
 
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{
+			fiber.MethodGet,
+			fiber.MethodPost,
+			fiber.MethodPut,
+			fiber.MethodDelete,
+			fiber.MethodPatch,
+			fiber.MethodOptions,
+		},
+		AllowHeaders: []string{
+			fiber.HeaderOrigin,
+			fiber.HeaderContentType,
+			fiber.HeaderAccept,
+			fiber.HeaderAuthorization,
+		},
+	}))
 	app.Get("/swagger/*", swaggo.HandlerDefault)
 	app.Use("/uploads", static.New("./uploads"))
 	routes.Setup(app, db)
