@@ -100,7 +100,7 @@ func postFaceServiceMultipart(path string, file *multipart.FileHeader, fields ma
 
 	var result FaceServiceResult
 	if err := json.Unmarshal(respBody, &result); err != nil {
-		return nil, fmt.Errorf("invalid face service response: %w", err)
+		return nil, fmt.Errorf("invalid face service response from %s: status %d, body %q: %w", req.URL.String(), resp.StatusCode, previewResponseBody(respBody), err)
 	}
 
 	if result.Status == 0 {
@@ -115,6 +115,17 @@ func postFaceServiceMultipart(path string, file *multipart.FileHeader, fields ma
 	}
 
 	return &result, nil
+}
+
+func previewResponseBody(body []byte) string {
+	const maxPreviewLength = 200
+
+	preview := strings.TrimSpace(string(body))
+	if len(preview) > maxPreviewLength {
+		return preview[:maxPreviewLength] + "..."
+	}
+
+	return preview
 }
 
 func faceServiceTimeout() time.Duration {
