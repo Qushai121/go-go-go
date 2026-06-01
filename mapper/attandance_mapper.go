@@ -52,6 +52,7 @@ func ToAttendanceModel(dto attandance.PostAttandanceDto) (models.Attendance, err
 		AttendanceId:        attendanceId,
 		UserId:              userId,
 		CompanyCode:         strings.TrimSpace(dto.CompanyCode),
+		BranchCode:          strings.TrimSpace(dto.BranchCode),
 		OfficeCode:          strings.TrimSpace(dto.OfficeCode),
 		CustomerCode:        toOptionalString(dto.CustomerCode),
 		LogTime:             logTime,

@@ -128,6 +128,7 @@ func parseAttendanceFormData(ctx fiber.Ctx) (attandance.PostAttandanceDto, error
 		AttendanceId:        ctx.FormValue("attendance_id"),
 		UserId:              ctx.FormValue("user_id"),
 		CompanyCode:         ctx.FormValue("company_code"),
+		BranchCode:          ctx.FormValue("branch_code"),
 		OfficeCode:          ctx.FormValue("office_code"),
 		CustomerCode:        ctx.FormValue("customer_code"),
 		LogTime:             ctx.FormValue("logtime"),

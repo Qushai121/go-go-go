@@ -11,6 +11,7 @@ type Attendance struct {
 
 	UserId       uuid.UUID `gorm:"column:user_id;type:uuid;not null;index" json:"user_id" form:"user_id"`
 	CompanyCode  string    `gorm:"column:company_code;type:varchar(100);not null" json:"company_code" form:"company_code"`
+	BranchCode   string    `gorm:"column:branch_code;type:varchar(100)" json:"branch_code" form:"branch_code"`
 	OfficeCode   string    `gorm:"column:office_code;type:varchar(100);not null" json:"office_code" form:"office_code"`
 	CustomerCode *string   `gorm:"column:customer_code;type:varchar(100)" json:"customer_code" form:"customer_code"`
 	LogTime      time.Time `gorm:"column:logtime;type:timestamp;not null" json:"logtime" form:"logtime"`

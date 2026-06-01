@@ -5,6 +5,7 @@ type PostAttandanceDto struct {
 	UserId       string `json:"user_id" form:"user_id"`
 
 	CompanyCode  string `json:"company_code" form:"company_code"`
+	BranchCode   string `json:"branch_code" form:"branch_code"`
 	OfficeCode   string `json:"office_code" form:"office_code"`
 	CustomerCode string `json:"customer_code" form:"customer_code"`
 	LogTime      string `json:"logtime" form:"logtime"`

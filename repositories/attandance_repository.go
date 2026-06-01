@@ -6,6 +6,7 @@ import (
 	"hrms_go/dto/response"
 	"hrms_go/models"
 	"hrms_go/utils"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -22,6 +23,10 @@ type attendanceRepository struct {
 
 func (r *attendanceRepository) Create(attendance *models.Attendance) error {
 	var count int64
+
+	if err := r.fillBranchCodeFromOffice(attendance); err != nil {
+		return err
+	}
 
 	err := r.db.Model(&models.Attendance{}).
 		Where("user_id = ? AND company_code = ? AND office_code = ? AND logtime = ? AND functionno = ?",
@@ -40,6 +45,43 @@ func (r *attendanceRepository) Create(attendance *models.Attendance) error {
 	}
 
 	return r.db.Create(attendance).Error
+}
+
+func (r *attendanceRepository) fillBranchCodeFromOffice(attendance *models.Attendance) error {
+	if strings.TrimSpace(attendance.BranchCode) != "" {
+		return nil
+	}
+
+	if strings.TrimSpace(attendance.OfficeCode) == "" {
+		return fmt.Errorf("office_code is required")
+	}
+
+	type officeBranchResult struct {
+		BranchCode string `gorm:"column:branch_code"`
+	}
+
+	var result officeBranchResult
+
+	query := r.db.
+		Table("hrms_office").
+		Select("branch_code").
+		Where("office_code = ?", attendance.OfficeCode)
+
+	if strings.TrimSpace(attendance.CompanyCode) != "" {
+		query = query.Where("company_code = ?", attendance.CompanyCode)
+	}
+
+	err := query.Limit(1).Take(&result).Error
+	if err != nil {
+		return fmt.Errorf("failed to get branch_code from office: %w", err)
+	}
+
+	if strings.TrimSpace(result.BranchCode) == "" {
+		return fmt.Errorf("branch_code not found for office_code %s", attendance.OfficeCode)
+	}
+
+	attendance.BranchCode = result.BranchCode
+	return nil
 }
 
 func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Attendance], error) {
@@ -63,11 +105,17 @@ func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 	if queryParams.Search != nil && *queryParams.Search != "" && (queryParams.DynamicFieldSearch == nil || *queryParams.DynamicFieldSearch == "") {
 		search := "%" + *queryParams.Search + "%"
 
+		args := make([]interface{}, 23)
+		for i := range args {
+			args[i] = search
+		}
+
 		modelDb = modelDb.Where(`
 			attendance_id::text LIKE ? OR
 			user_id::text LIKE ? OR
 			company_code LIKE ? OR
 			office_code LIKE ? OR
+			branch_code LIKE ? OR
 			customer_code LIKE ? OR
 			logtime::text LIKE ? OR
 			functionno::text LIKE ? OR
@@ -86,18 +134,14 @@ func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 			updated_at::text LIKE ? OR
 			created_by LIKE ? OR
 			updated_by LIKE ?
-		`,
-			search, search, search, search, search,
-			search, search, search, search, search,
-			search, search, search, search, search,
-			search, search, search, search, search,
-			search, search,
-		)
+		`, args...)
 	}
 
 	allowedDynamicList := attendanceDynamicSearchFields()
 
-	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).Find(&dataAkhir.Data).Error
+	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).
+		Find(&dataAkhir.Data).Error
+
 	return dataAkhir, err
 }
 
@@ -148,8 +192,12 @@ func attendanceDynamicSearchFields() map[string]dto.DynamicSearchDto {
 			Field: "office_code",
 			Query: " LIKE ?",
 		},
-		"location_code": {
-			Field: "location_code",
+		"branch_code": {
+			Field: "branch_code",
+			Query: " LIKE ?",
+		},
+		"customer_code": {
+			Field: "customer_code",
 			Query: " LIKE ?",
 		},
 		"logtime": {
