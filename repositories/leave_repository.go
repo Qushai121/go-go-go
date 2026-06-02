@@ -14,6 +14,7 @@ import (
 
 type LeaveRepository interface {
 	AddCuti(data []models.LeaveHistory) error
+	FindCuti(employeeNik string, startDate string, endDate string) ([]models.LeaveHistory, error)
 }
 
 type leaveRepository struct {
@@ -220,4 +221,65 @@ func calculateCalendarDays(leaveStart time.Time, leaveEnd time.Time) int {
 func dateOnly(value time.Time) time.Time {
 	year, month, day := value.Date()
 	return time.Date(year, month, day, 0, 0, 0, 0, value.Location())
+}
+
+func (r *leaveRepository) FindCuti(employeeNik string, startDate string, endDate string) ([]models.LeaveHistory, error) {
+	var data []models.LeaveHistory
+
+	query := r.db.Model(&models.LeaveHistory{})
+
+	employeeNik = strings.TrimSpace(employeeNik)
+	startDate = strings.TrimSpace(startDate)
+	endDate = strings.TrimSpace(endDate)
+
+	if employeeNik != "" {
+		query = query.Where("employee_nik = ?", employeeNik)
+	}
+
+	if startDate != "" && endDate != "" {
+		start, err := time.Parse("2006-01-02", startDate)
+		if err != nil {
+			return nil, errors.New("format start_date harus YYYY-MM-DD")
+		}
+
+		end, err := time.Parse("2006-01-02", endDate)
+		if err != nil {
+			return nil, errors.New("format end_date harus YYYY-MM-DD")
+		}
+
+		if end.Before(start) {
+			return nil, errors.New("end_date tidak boleh lebih kecil dari start_date")
+		}
+
+		// Ambil cuti yang overlap dengan range tanggal.
+		// Contoh:
+		// cuti 2026-06-03 s/d 2026-06-05
+		// akan muncul saat filter 2026-06-01 s/d 2026-06-30.
+		query = query.Where(`
+			CAST(leave_start AS date) <= CAST(? AS date)
+			AND CAST(leave_end AS date) >= CAST(? AS date)
+		`, endDate, startDate)
+	} else if startDate != "" {
+		_, err := time.Parse("2006-01-02", startDate)
+		if err != nil {
+			return nil, errors.New("format start_date harus YYYY-MM-DD")
+		}
+
+		query = query.Where("CAST(leave_end AS date) >= CAST(? AS date)", startDate)
+	} else if endDate != "" {
+		_, err := time.Parse("2006-01-02", endDate)
+		if err != nil {
+			return nil, errors.New("format end_date harus YYYY-MM-DD")
+		}
+
+		query = query.Where("CAST(leave_start AS date) <= CAST(? AS date)", endDate)
+	}
+
+	if err := query.
+		Order("leave_start DESC").
+		Find(&data).Error; err != nil {
+		return nil, fmt.Errorf("Failed to get cuti. %w", err)
+	}
+
+	return data, nil
 }

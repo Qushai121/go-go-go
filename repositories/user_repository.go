@@ -255,6 +255,17 @@ func (r *userRepository) loadUserMappings(user *models.User) error {
 		return err
 	}
 
+	if err := r.db.Table("hrms_leave_balance hlb").
+		Select(`
+		hlb.*
+	`).
+		Where("hlb.employee_nik = ?", user.EmployeeNIK).
+		Where("CURRENT_DATE BETWEEN hlb.leave_period_start AND hlb.leave_period_end").
+		Order("hlb.leave_period_start DESC").
+		Find(&user.UserLeaveBalance).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 

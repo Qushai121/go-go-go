@@ -176,6 +176,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	// Tambahan route Leave / Cuti
 	leave := api.Group("/leave", middlewares.JWTProtected())
 	leave.Post("/cuti", leaveController.AddCuti)
+	leave.Get("/cuti", leaveController.FindCuti)
 
 	approval := api.Group("/approval", middlewares.JWTProtected())
 	approval.Get("/", approvalController.FindAll)

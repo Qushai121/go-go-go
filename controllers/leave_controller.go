@@ -74,3 +74,28 @@ func (c *LeaveController) AddCuti(ctx fiber.Ctx) error {
 		"message": "Cuti berhasil ditambahkan",
 	})
 }
+
+// Get Cuti godoc
+// @Summary Get cuti
+// @Description Get cuti by employee_nik and date range
+// @Tags Leave
+// @Accept json
+// @Produce json
+// @Param employee_nik query string false "Employee NIK"
+// @Param start_date query string false "Start date YYYY-MM-DD"
+// @Param end_date query string false "End date YYYY-MM-DD"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/leave/cuti [get]
+func (c *LeaveController) FindCuti(ctx fiber.Ctx) error {
+	employeeNik := strings.TrimSpace(ctx.Query("employee_nik"))
+	startDate := strings.TrimSpace(ctx.Query("start_date"))
+	endDate := strings.TrimSpace(ctx.Query("end_date"))
+
+	data, err := c.repo.FindCuti(employeeNik, startDate, endDate)
+	if err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	return utils.Success(ctx, data)
+}
