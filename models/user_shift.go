@@ -6,6 +6,8 @@ type UserShiftMapping struct {
 	WeekStartDate time.Time `gorm:"column:week_start_date" json:"week_start_date"`
 	WeekEndDate   time.Time `gorm:"column:week_end_date" json:"week_end_date"`
 
+	ShiftDate time.Time `gorm:"column:shift_date" json:"shift_date"`
+
 	EmployeeNIK string `gorm:"column:employee_nik" json:"employee_nik"`
 
 	ShiftName        string `gorm:"column:shift_name" json:"shift_name"`
