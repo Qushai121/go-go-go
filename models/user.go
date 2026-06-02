@@ -31,9 +31,10 @@ type User struct {
 
 	Role string `gorm:"-" json:"role,omitempty"`
 
-	UserCompany  []UserCompany  `gorm:"-" json:"user_company,omitempty"`
-	UserOffice   []UserOffice   `gorm:"-" json:"user_office,omitempty"`
-	UserCustomer []UserCustomer `gorm:"-" json:"user_customer,omitempty"`
+	UserCompany  []UserCompany      `gorm:"-" json:"user_company,omitempty"`
+	UserOffice   []UserOffice       `gorm:"-" json:"user_office,omitempty"`
+	UserCustomer []UserCustomer     `gorm:"-" json:"user_customer,omitempty"`
+	UserShift    []UserShiftMapping `gorm:"-" json:"user_shift"`
 
 	ProfilePictureUrl string `gorm:"column:profile_picture_url;type:text" json:"profile_picture_url,omitempty"`
 
