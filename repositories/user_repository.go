@@ -220,6 +220,9 @@ func (r *userRepository) loadUserMappings(user *models.User) error {
 		Select(`
 		hsep.week_start_date AS week_start_date,
 		hsep.week_end_date AS week_end_date,
+
+		(hsep.week_start_date + (hes.weekday_id - 1))::date AS shift_date,
+
 		hes.employee_nik AS employee_nik,
 		hs.shift_name AS shift_name,
 		hs.is_active AS is_active,
@@ -244,8 +247,7 @@ func (r *userRepository) loadUserMappings(user *models.User) error {
 		Where("hes.employee_nik = ?", user.EmployeeNIK).
 		Where("CURRENT_DATE BETWEEN hsep.week_start_date AND hsep.week_end_date").
 		Order(`
-		hsep.week_start_date ASC,
-		hes.weekday_id ASC,
+		shift_date ASC,
 		hes.start_time ASC,
 		hes.event_code ASC
 	`).
