@@ -30,6 +30,9 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	userGroupRepo := repositories.NewUserGroupRepository(db)
 	receiptRepo := repositories.NewReceiptRepository(db)
 
+	// Tambahan Leave / Cuti
+	leaveRepo := repositories.NewLeaveRepository(db)
+
 	auth := controllers.NewAuthController(repo)
 	user := controllers.NewUserController(repo)
 	setup := controllers.NewSetupController(repo)
@@ -51,6 +54,9 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	titleController := controllers.NewTitleController(titleRepo)
 	userGroupController := controllers.NewUserGroupController(userGroupRepo)
 	receiptController := controllers.NewReceiptController(receiptRepo)
+
+	// Tambahan Leave / Cuti
+	leaveController := controllers.NewLeaveController(leaveRepo)
 
 	api := app.Group("/api")
 
@@ -167,6 +173,10 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	receipt.Put("/:id", receiptController.UpdateHeader)
 	receipt.Delete("/:id", receiptController.Delete)
 
+	// Tambahan route Leave / Cuti
+	leave := api.Group("/leave", middlewares.JWTProtected())
+	leave.Post("/cuti", leaveController.AddCuti)
+
 	approval := api.Group("/approval", middlewares.JWTProtected())
 	approval.Get("/", approvalController.FindAll)
 	approval.Get("/:id", approvalController.Detail)
@@ -186,5 +196,4 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	template.Get("/detail/:header_id", approvalTemplateController.FindDetailByHeader)
 	template.Put("/detail/:id", approvalTemplateController.UpdateDetail)
 	template.Delete("/detail/:id", approvalTemplateController.DeleteDetail)
-
 }
