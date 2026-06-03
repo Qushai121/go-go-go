@@ -1,4 +1,4 @@
-package attandance
+package response
 
 import "time"
 
