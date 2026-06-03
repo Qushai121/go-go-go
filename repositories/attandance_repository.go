@@ -14,7 +14,7 @@ import (
 type AttendanceRepository interface {
 	Create(attendance *models.Attendance) error
 	FindAll(queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Attendance], error)
-	FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Attendance], error)
+	FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]response.AttendanceMeResponseDto], error)
 }
 
 type attendanceRepository struct {
@@ -145,33 +145,169 @@ func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 	return dataAkhir, err
 }
 
-func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]models.Attendance], error) {
-	var data []models.Attendance
+func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.PaginateFieldDto) (response.PaginateResponseDto[[]response.AttendanceMeResponseDto], error) {
+	var data []response.AttendanceMeResponseDto
 	var totalRecord int64
 	var totalPage int
 
-	modelDb := r.db.Model(&models.Attendance{}).
-		Where("user_id = ?", userId).
-		Preload("User")
+	modelDb := r.db.
+		Table("hrms_attendance AS a").
+		Select(`
+			a.attendance_id::text AS attendance_id,
+			a.user_id::text AS user_id,
+			COALESCE(a.company_code, '') AS company_code,
+			COALESCE(a.branch_code, '') AS branch_code,
+			COALESCE(b.branch_name, '') AS branch_name,
+			COALESCE(a.office_code, '') AS office_code,
+			COALESCE(o.office_name, '') AS office_name,
+			COALESCE(a.customer_code, '') AS customer_code,
+			COALESCE(c.customer_name, '') AS customer_name,
+			a.logtime AS logtime,
+			a.functionno AS functionno,
+			COALESCE(a.activity_type, '') AS activity_type,
+			COALESCE(a.action_type, '') AS action_type,
+			COALESCE(a.latitude, '') AS latitude,
+			COALESCE(a.longitude, '') AS longitude,
+			COALESCE(a.presentase_kemiripan, '') AS presentase_kemiripan,
+			COALESCE(a.imagepath, '') AS imagepath,
+			COALESCE(a.is_offline, '') AS is_offline,
+			COALESCE(a.distance, '') AS distance,
+			COALESCE(a.platforms, '') AS platforms,
+			COALESCE(a.max_radius::text, '') AS max_radius,
+			COALESCE(a.expand_radius::text, '') AS expand_radius,
+			COALESCE(a.object_code, '') AS object_code,
+			a.created_at AS created_at,
+			a.updated_at AS updated_at,
+			COALESCE(a.created_by, '') AS created_by,
+			COALESCE(a.updated_by, '') AS updated_by
+		`).
+		Joins(`
+			LEFT JOIN hrms_branch b
+				ON b.company_code = a.company_code
+				AND b.branch_code = a.branch_code
+		`).
+		Joins(`
+			LEFT JOIN hrms_office o
+				ON o.company_code = a.company_code
+				AND o.branch_code = a.branch_code
+				AND o.office_code = a.office_code
+		`).
+		Joins(`
+			LEFT JOIN hrms_customer c
+				ON c.customer_code = a.customer_code
+		`).
+		Where("a.user_id = ?", userId)
 
-	dataAkhir := response.PaginateResponseDto[[]models.Attendance]{
+	dataAkhir := response.PaginateResponseDto[[]response.AttendanceMeResponseDto]{
 		Data:        data,
 		TotalRecord: totalRecord,
 		TotalPage:   totalPage,
 	}
 
 	if queryParams.SortBy == nil {
-		sort := "attendance_id"
+		sort := "a.logtime"
 		queryParams.SortBy = &sort
 	}
 
-	allowedDynamicList := attendanceDynamicSearchFields()
+	if queryParams.Search != nil && *queryParams.Search != "" && (queryParams.DynamicFieldSearch == nil || *queryParams.DynamicFieldSearch == "") {
+		search := "%" + *queryParams.Search + "%"
+
+		modelDb = modelDb.Where(`
+			a.attendance_id::text ILIKE ? OR
+			a.user_id::text ILIKE ? OR
+			a.company_code ILIKE ? OR
+			a.branch_code ILIKE ? OR
+			b.branch_name ILIKE ? OR
+			a.office_code ILIKE ? OR
+			o.office_name ILIKE ? OR
+			a.customer_code ILIKE ? OR
+			c.customer_name ILIKE ? OR
+			a.logtime::text ILIKE ? OR
+			a.functionno::text ILIKE ? OR
+			a.activity_type ILIKE ? OR
+			a.action_type ILIKE ? OR
+			a.latitude ILIKE ? OR
+			a.longitude ILIKE ? OR
+			a.presentase_kemiripan ILIKE ? OR
+			a.imagepath ILIKE ? OR
+			a.is_offline ILIKE ? OR
+			a.distance ILIKE ? OR
+			a.platforms ILIKE ? OR
+			a.object_code ILIKE ? OR
+			a.created_by ILIKE ? OR
+			a.updated_by ILIKE ?
+		`,
+			search, search, search, search, search,
+			search, search, search, search, search,
+			search, search, search, search, search,
+			search, search, search, search, search,
+			search, search, search,
+		)
+	}
+
+	allowedDynamicList := attendanceMeDynamicSearchFields()
 
 	err := utils.GetQueryBase(queryParams, modelDb, &dataAkhir.TotalRecord, &dataAkhir.TotalPage, &allowedDynamicList).
-		Where("user_id = ?", userId).
 		Find(&dataAkhir.Data).Error
 
 	return dataAkhir, err
+}
+
+func attendanceMeDynamicSearchFields() map[string]dto.DynamicSearchDto {
+	return map[string]dto.DynamicSearchDto{
+		"attendance_id": {
+			Field: "a.attendance_id",
+			Query: " = ?",
+		},
+		"user_id": {
+			Field: "a.user_id",
+			Query: " = ?",
+		},
+		"company_code": {
+			Field: "a.company_code",
+			Query: " ILIKE ?",
+		},
+		"branch_code": {
+			Field: "a.branch_code",
+			Query: " ILIKE ?",
+		},
+		"branch_name": {
+			Field: "b.branch_name",
+			Query: " ILIKE ?",
+		},
+		"office_code": {
+			Field: "a.office_code",
+			Query: " ILIKE ?",
+		},
+		"office_name": {
+			Field: "o.office_name",
+			Query: " ILIKE ?",
+		},
+		"customer_code": {
+			Field: "a.customer_code",
+			Query: " ILIKE ?",
+		},
+		"customer_name": {
+			Field: "c.customer_name",
+			Query: " ILIKE ?",
+		},
+		"logtime": {
+			Field: "a.logtime",
+			Query: " >= ?",
+		},
+		"functionno": {
+			Field: "a.functionno",
+			Query: " = ?",
+		},
+		"activity_type": {
+			Field: "a.activity_type",
+			Query: " ILIKE ?",
+		},
+		"action_type": {
+			Field: "a.action_type",
+			Query: " ILIKE ?",
+		},
+	}
 }
 
 func attendanceDynamicSearchFields() map[string]dto.DynamicSearchDto {
