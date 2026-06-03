@@ -44,8 +44,42 @@ func (c *LeaveController) AddCuti(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, "Request body harus object, bukan array")
 	}
 
-	if err := json.Unmarshal([]byte(body), &request); err != nil {
-		return utils.Error(ctx, 400, "Format JSON tidak valid")
+	decoder := json.NewDecoder(strings.NewReader(body))
+	decoder.UseNumber()
+
+	if err := decoder.Decode(&request); err != nil {
+		// fallback khusus kalau employee_nik dikirim sebagai number
+		var raw map[string]interface{}
+
+		decoderRaw := json.NewDecoder(strings.NewReader(body))
+		decoderRaw.UseNumber()
+
+		if errRaw := decoderRaw.Decode(&raw); errRaw != nil {
+			return utils.Error(ctx, 400, "Format JSON tidak valid")
+		}
+
+		// convert employee_nik ke string kalau bentuknya number/string
+		if val, ok := raw["employee_nik"]; ok && val != nil {
+			switch v := val.(type) {
+			case json.Number:
+				raw["employee_nik"] = v.String()
+			case float64:
+				raw["employee_nik"] = fmt.Sprintf("%.0f", v)
+			case string:
+				raw["employee_nik"] = strings.TrimSpace(v)
+			default:
+				raw["employee_nik"] = fmt.Sprint(v)
+			}
+		}
+
+		fixedBody, errMarshal := json.Marshal(raw)
+		if errMarshal != nil {
+			return utils.Error(ctx, 400, "Format JSON tidak valid")
+		}
+
+		if errFixed := json.Unmarshal(fixedBody, &request); errFixed != nil {
+			return utils.Error(ctx, 400, errFixed.Error())
+		}
 	}
 
 	employeeNik := strings.TrimSpace(fmt.Sprint(ctx.Locals("employee_nik")))
@@ -57,6 +91,10 @@ func (c *LeaveController) AddCuti(ctx fiber.Ctx) error {
 		if strings.TrimSpace(request.EmployeeNik) == "" {
 			request.EmployeeNik = employeeNik
 		}
+	}
+
+	if strings.TrimSpace(request.EmployeeNik) == "" {
+		return utils.Error(ctx, 400, "NIK karyawan wajib diisi")
 	}
 
 	if err := c.repo.AddCuti(request); err != nil {
