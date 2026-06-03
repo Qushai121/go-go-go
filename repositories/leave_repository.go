@@ -3,6 +3,7 @@ package repositories
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 
 type LeaveRepository interface {
 	AddCuti(data []models.LeaveHistory) error
-	FindCuti(employeeNik string, startDate string, endDate string) ([]models.LeaveHistory, error)
+	FindCuti(filter models.LeaveHistoryFilter) ([]models.LeaveHistory, error)
 }
 
 type leaveRepository struct {
@@ -223,60 +224,245 @@ func dateOnly(value time.Time) time.Time {
 	return time.Date(year, month, day, 0, 0, 0, 0, value.Location())
 }
 
-func (r *leaveRepository) FindCuti(employeeNik string, startDate string, endDate string) ([]models.LeaveHistory, error) {
+func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.LeaveHistory, error) {
 	var data []models.LeaveHistory
 
 	query := r.db.Model(&models.LeaveHistory{})
 
-	employeeNik = strings.TrimSpace(employeeNik)
-	startDate = strings.TrimSpace(startDate)
-	endDate = strings.TrimSpace(endDate)
-
-	if employeeNik != "" {
-		query = query.Where("employee_nik = ?", employeeNik)
+	trim := func(value string) string {
+		return strings.TrimSpace(value)
 	}
 
-	if startDate != "" && endDate != "" {
-		start, err := time.Parse("2006-01-02", startDate)
-		if err != nil {
-			return nil, errors.New("format start_date harus YYYY-MM-DD")
+	parseDate := func(value string, fieldName string) error {
+		value = trim(value)
+		if value == "" {
+			return nil
 		}
 
-		end, err := time.Parse("2006-01-02", endDate)
-		if err != nil {
-			return nil, errors.New("format end_date harus YYYY-MM-DD")
+		if _, err := time.Parse("2006-01-02", value); err != nil {
+			return fmt.Errorf("format %s harus YYYY-MM-DD", fieldName)
 		}
+
+		return nil
+	}
+
+	parseInt := func(value string, fieldName string) (int, error) {
+		value = trim(value)
+		if value == "" {
+			return 0, nil
+		}
+
+		result, err := strconv.Atoi(value)
+		if err != nil {
+			return 0, fmt.Errorf("%s harus angka", fieldName)
+		}
+
+		return result, nil
+	}
+
+	filter.LeaveHistoryId = trim(filter.LeaveHistoryId)
+	filter.EmployeeNik = trim(filter.EmployeeNik)
+	filter.LeaveType = trim(filter.LeaveType)
+	filter.StartDate = trim(filter.StartDate)
+	filter.EndDate = trim(filter.EndDate)
+	filter.LeaveStart = trim(filter.LeaveStart)
+	filter.LeaveEnd = trim(filter.LeaveEnd)
+	filter.TotalDays = trim(filter.TotalDays)
+	filter.Remarks = trim(filter.Remarks)
+	filter.Location = trim(filter.Location)
+	filter.LeaveYear = trim(filter.LeaveYear)
+	filter.Status = trim(filter.Status)
+	filter.CurrentStep = trim(filter.CurrentStep)
+	filter.ApprovalHeaderId = trim(filter.ApprovalHeaderId)
+	filter.ObjectCode = trim(filter.ObjectCode)
+	filter.CreatedAt = trim(filter.CreatedAt)
+	filter.UpdatedAt = trim(filter.UpdatedAt)
+	filter.CreatedBy = trim(filter.CreatedBy)
+	filter.UpdatedBy = trim(filter.UpdatedBy)
+	filter.CreatedAtStart = trim(filter.CreatedAtStart)
+	filter.CreatedAtEnd = trim(filter.CreatedAtEnd)
+	filter.UpdatedAtStart = trim(filter.UpdatedAtStart)
+	filter.UpdatedAtEnd = trim(filter.UpdatedAtEnd)
+
+	if filter.LeaveHistoryId != "" {
+		leaveHistoryId, err := uuid.Parse(filter.LeaveHistoryId)
+		if err != nil {
+			return nil, errors.New("leave_history_id tidak valid")
+		}
+
+		query = query.Where("leave_history_id = ?", leaveHistoryId)
+	}
+
+	if filter.EmployeeNik != "" {
+		query = query.Where("employee_nik = ?", filter.EmployeeNik)
+	}
+
+	if filter.LeaveType != "" {
+		query = query.Where("leave_type = ?", filter.LeaveType)
+	}
+
+	if filter.StartDate != "" && filter.EndDate != "" {
+		if err := parseDate(filter.StartDate, "start_date"); err != nil {
+			return nil, err
+		}
+
+		if err := parseDate(filter.EndDate, "end_date"); err != nil {
+			return nil, err
+		}
+
+		start, _ := time.Parse("2006-01-02", filter.StartDate)
+		end, _ := time.Parse("2006-01-02", filter.EndDate)
 
 		if end.Before(start) {
 			return nil, errors.New("end_date tidak boleh lebih kecil dari start_date")
 		}
 
-		// Ambil cuti yang overlap dengan range tanggal.
-		// Contoh:
-		// cuti 2026-06-03 s/d 2026-06-05
-		// akan muncul saat filter 2026-06-01 s/d 2026-06-30.
 		query = query.Where(`
 			CAST(leave_start AS date) <= CAST(? AS date)
 			AND CAST(leave_end AS date) >= CAST(? AS date)
-		`, endDate, startDate)
-	} else if startDate != "" {
-		_, err := time.Parse("2006-01-02", startDate)
-		if err != nil {
-			return nil, errors.New("format start_date harus YYYY-MM-DD")
+		`, filter.EndDate, filter.StartDate)
+
+	} else if filter.StartDate != "" {
+		if err := parseDate(filter.StartDate, "start_date"); err != nil {
+			return nil, err
 		}
 
-		query = query.Where("CAST(leave_end AS date) >= CAST(? AS date)", startDate)
-	} else if endDate != "" {
-		_, err := time.Parse("2006-01-02", endDate)
-		if err != nil {
-			return nil, errors.New("format end_date harus YYYY-MM-DD")
+		query = query.Where("CAST(leave_end AS date) >= CAST(? AS date)", filter.StartDate)
+
+	} else if filter.EndDate != "" {
+		if err := parseDate(filter.EndDate, "end_date"); err != nil {
+			return nil, err
 		}
 
-		query = query.Where("CAST(leave_start AS date) <= CAST(? AS date)", endDate)
+		query = query.Where("CAST(leave_start AS date) <= CAST(? AS date)", filter.EndDate)
+	}
+
+	if filter.LeaveStart != "" {
+		if err := parseDate(filter.LeaveStart, "leave_start"); err != nil {
+			return nil, err
+		}
+
+		query = query.Where("CAST(leave_start AS date) = CAST(? AS date)", filter.LeaveStart)
+	}
+
+	if filter.LeaveEnd != "" {
+		if err := parseDate(filter.LeaveEnd, "leave_end"); err != nil {
+			return nil, err
+		}
+
+		query = query.Where("CAST(leave_end AS date) = CAST(? AS date)", filter.LeaveEnd)
+	}
+
+	if filter.TotalDays != "" {
+		totalDays, err := parseInt(filter.TotalDays, "total_days")
+		if err != nil {
+			return nil, err
+		}
+
+		query = query.Where("total_days = ?", totalDays)
+	}
+
+	if filter.Remarks != "" {
+		query = query.Where("remarks ILIKE ?", "%"+filter.Remarks+"%")
+	}
+
+	if filter.Location != "" {
+		query = query.Where("location ILIKE ?", "%"+filter.Location+"%")
+	}
+
+	if filter.LeaveYear != "" {
+		leaveYear, err := parseInt(filter.LeaveYear, "leave_year")
+		if err != nil {
+			return nil, err
+		}
+
+		query = query.Where("leave_year = ?", leaveYear)
+	}
+
+	if filter.Status != "" {
+		query = query.Where("status = ?", filter.Status)
+	}
+
+	if filter.CurrentStep != "" {
+		currentStep, err := parseInt(filter.CurrentStep, "current_step")
+		if err != nil {
+			return nil, err
+		}
+
+		query = query.Where("current_step = ?", currentStep)
+	}
+
+	if filter.ApprovalHeaderId != "" {
+		approvalHeaderId, err := uuid.Parse(filter.ApprovalHeaderId)
+		if err != nil {
+			return nil, errors.New("approvalheader_id tidak valid")
+		}
+
+		query = query.Where("approvalheader_id = ?", approvalHeaderId)
+	}
+
+	if filter.ObjectCode != "" {
+		query = query.Where("object_code = ?", filter.ObjectCode)
+	}
+
+	if filter.CreatedAt != "" {
+		if err := parseDate(filter.CreatedAt, "created_at"); err != nil {
+			return nil, err
+		}
+
+		query = query.Where("CAST(created_at AS date) = CAST(? AS date)", filter.CreatedAt)
+	}
+
+	if filter.UpdatedAt != "" {
+		if err := parseDate(filter.UpdatedAt, "updated_at"); err != nil {
+			return nil, err
+		}
+
+		query = query.Where("CAST(updated_at AS date) = CAST(? AS date)", filter.UpdatedAt)
+	}
+
+	if filter.CreatedBy != "" {
+		query = query.Where("created_by = ?", filter.CreatedBy)
+	}
+
+	if filter.UpdatedBy != "" {
+		query = query.Where("updated_by = ?", filter.UpdatedBy)
+	}
+
+	if filter.CreatedAtStart != "" {
+		if err := parseDate(filter.CreatedAtStart, "created_at_start"); err != nil {
+			return nil, err
+		}
+
+		query = query.Where("CAST(created_at AS date) >= CAST(? AS date)", filter.CreatedAtStart)
+	}
+
+	if filter.CreatedAtEnd != "" {
+		if err := parseDate(filter.CreatedAtEnd, "created_at_end"); err != nil {
+			return nil, err
+		}
+
+		query = query.Where("CAST(created_at AS date) <= CAST(? AS date)", filter.CreatedAtEnd)
+	}
+
+	if filter.UpdatedAtStart != "" {
+		if err := parseDate(filter.UpdatedAtStart, "updated_at_start"); err != nil {
+			return nil, err
+		}
+
+		query = query.Where("CAST(updated_at AS date) >= CAST(? AS date)", filter.UpdatedAtStart)
+	}
+
+	if filter.UpdatedAtEnd != "" {
+		if err := parseDate(filter.UpdatedAtEnd, "updated_at_end"); err != nil {
+			return nil, err
+		}
+
+		query = query.Where("CAST(updated_at AS date) <= CAST(? AS date)", filter.UpdatedAtEnd)
 	}
 
 	if err := query.
-		Order("leave_start DESC").
+		Order("leave_start DESC, created_at DESC").
 		Find(&data).Error; err != nil {
 		return nil, fmt.Errorf("Failed to get cuti. %w", err)
 	}

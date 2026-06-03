@@ -33,6 +33,45 @@ type LeaveHistory struct {
 	UpdatedBy *string `gorm:"column:updated_by;type:varchar(100)" json:"updated_by" form:"updated_by"`
 }
 
+type LeaveHistoryFilter struct {
+	LeaveHistoryId string `json:"leave_history_id" query:"leave_history_id" form:"leave_history_id"`
+
+	EmployeeNik string `json:"employee_nik" query:"employee_nik" form:"employee_nik"`
+	LeaveType   string `json:"leave_type" query:"leave_type" form:"leave_type"`
+
+	// Filter overlap cuti berdasarkan range tanggal
+	StartDate string `json:"start_date" query:"start_date" form:"start_date"`
+	EndDate   string `json:"end_date" query:"end_date" form:"end_date"`
+
+	// Filter tanggal exact dari kolom leave_start dan leave_end
+	LeaveStart string `json:"leave_start" query:"leave_start" form:"leave_start"`
+	LeaveEnd   string `json:"leave_end" query:"leave_end" form:"leave_end"`
+
+	TotalDays string `json:"total_days" query:"total_days" form:"total_days"`
+	Remarks   string `json:"remarks" query:"remarks" form:"remarks"`
+	Location  string `json:"location" query:"location" form:"location"`
+
+	LeaveYear string `json:"leave_year" query:"leave_year" form:"leave_year"`
+	Status    string `json:"status" query:"status" form:"status"`
+
+	CurrentStep      string `json:"current_step" query:"current_step" form:"current_step"`
+	ApprovalHeaderId string `json:"approvalheader_id" query:"approvalheader_id" form:"approvalheader_id"`
+
+	ObjectCode string `json:"object_code" query:"object_code" form:"object_code"`
+
+	CreatedAt string `json:"created_at" query:"created_at" form:"created_at"`
+	UpdatedAt string `json:"updated_at" query:"updated_at" form:"updated_at"`
+
+	CreatedBy string `json:"created_by" query:"created_by" form:"created_by"`
+	UpdatedBy string `json:"updated_by" query:"updated_by" form:"updated_by"`
+
+	// Opsional range audit date
+	CreatedAtStart string `json:"created_at_start" query:"created_at_start" form:"created_at_start"`
+	CreatedAtEnd   string `json:"created_at_end" query:"created_at_end" form:"created_at_end"`
+	UpdatedAtStart string `json:"updated_at_start" query:"updated_at_start" form:"updated_at_start"`
+	UpdatedAtEnd   string `json:"updated_at_end" query:"updated_at_end" form:"updated_at_end"`
+}
+
 func (LeaveHistory) TableName() string {
 	return "hrms_leave_history"
 }
