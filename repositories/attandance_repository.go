@@ -165,7 +165,6 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 			a.logtime AS logtime,
 			a.functionno AS functionno,
 			COALESCE(a.activity_type, '') AS activity_type,
-			COALESCE(a.action_type, '') AS action_type,
 			COALESCE(a.latitude, '') AS latitude,
 			COALESCE(a.longitude, '') AS longitude,
 			COALESCE(a.presentase_kemiripan, '') AS presentase_kemiripan,
@@ -225,7 +224,6 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 			a.logtime::text ILIKE ? OR
 			a.functionno::text ILIKE ? OR
 			a.activity_type ILIKE ? OR
-			a.action_type ILIKE ? OR
 			a.latitude ILIKE ? OR
 			a.longitude ILIKE ? OR
 			a.presentase_kemiripan ILIKE ? OR
