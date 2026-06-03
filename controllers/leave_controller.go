@@ -33,7 +33,7 @@ func NewLeaveController(repo repositories.LeaveRepository) *LeaveController {
 // @Security BearerAuth
 // @Router /api/leave/cuti [post]
 func (c *LeaveController) AddCuti(ctx fiber.Ctx) error {
-	var request []models.LeaveHistory
+	var request models.LeaveHistory
 
 	body := strings.TrimSpace(string(ctx.Body()))
 	if body == "" {
@@ -41,28 +41,21 @@ func (c *LeaveController) AddCuti(ctx fiber.Ctx) error {
 	}
 
 	if strings.HasPrefix(body, "[") {
-		if err := json.Unmarshal([]byte(body), &request); err != nil {
-			return utils.Error(ctx, 400, "Format JSON tidak valid")
-		}
-	} else {
-		var single models.LeaveHistory
-		if err := json.Unmarshal([]byte(body), &single); err != nil {
-			return utils.Error(ctx, 400, "Format JSON tidak valid")
-		}
+		return utils.Error(ctx, 400, "Request body harus object, bukan array")
+	}
 
-		request = append(request, single)
+	if err := json.Unmarshal([]byte(body), &request); err != nil {
+		return utils.Error(ctx, 400, "Format JSON tidak valid")
 	}
 
 	employeeNik := strings.TrimSpace(fmt.Sprint(ctx.Locals("employee_nik")))
 	if employeeNik != "" && employeeNik != "<nil>" {
-		for i := range request {
-			if strings.TrimSpace(request[i].CreatedBy) == "" {
-				request[i].CreatedBy = employeeNik
-			}
+		if strings.TrimSpace(request.CreatedBy) == "" {
+			request.CreatedBy = employeeNik
+		}
 
-			if strings.TrimSpace(request[i].EmployeeNik) == "" {
-				request[i].EmployeeNik = employeeNik
-			}
+		if strings.TrimSpace(request.EmployeeNik) == "" {
+			request.EmployeeNik = employeeNik
 		}
 	}
 

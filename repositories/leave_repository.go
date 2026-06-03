@@ -14,7 +14,7 @@ import (
 )
 
 type LeaveRepository interface {
-	AddCuti(data []models.LeaveHistory) error
+	AddCuti(data models.LeaveHistory) error
 	FindCuti(filter models.LeaveHistoryFilter) ([]models.LeaveHistory, error)
 }
 
@@ -28,7 +28,7 @@ func NewLeaveRepository(db *gorm.DB) LeaveRepository {
 	}
 }
 
-func (r *leaveRepository) AddCuti(data []models.LeaveHistory) error {
+func (r *leaveRepository) AddCuti(item models.LeaveHistory) error {
 	tx := r.db.Begin()
 	if tx.Error != nil {
 		return fmt.Errorf("Failed to add cuti. %w", tx.Error)
@@ -41,131 +41,124 @@ func (r *leaveRepository) AddCuti(data []models.LeaveHistory) error {
 		}
 	}()
 
-	if data == nil || len(data) == 0 {
+	employeeNik := strings.TrimSpace(item.EmployeeNik)
+	leaveType := strings.ToUpper(strings.TrimSpace(item.LeaveType))
+
+	if employeeNik == "" {
 		tx.Rollback()
-		return errors.New("Failed to add cuti. Harus ada yang dikirim!")
+		return errors.New("Failed to add cuti. NIK karyawan wajib diisi.")
 	}
 
-	for _, item := range data {
-		employeeNik := strings.TrimSpace(item.EmployeeNik)
-		leaveType := strings.ToUpper(strings.TrimSpace(item.LeaveType))
+	if leaveType == "" {
+		tx.Rollback()
+		return errors.New("Failed to add cuti. Tipe cuti wajib diisi.")
+	}
 
-		if employeeNik == "" {
-			tx.Rollback()
-			return errors.New("Failed to add cuti. NIK karyawan wajib diisi.")
-		}
+	if item.LeaveStart.IsZero() {
+		tx.Rollback()
+		return errors.New("Failed to add cuti. Tanggal mulai cuti wajib diisi.")
+	}
 
-		if leaveType == "" {
-			tx.Rollback()
-			return errors.New("Failed to add cuti. Tipe cuti wajib diisi.")
-		}
+	if item.LeaveEnd.IsZero() {
+		tx.Rollback()
+		return errors.New("Failed to add cuti. Tanggal akhir cuti wajib diisi.")
+	}
 
-		if item.LeaveStart.IsZero() {
-			tx.Rollback()
-			return errors.New("Failed to add cuti. Tanggal mulai cuti wajib diisi.")
-		}
+	if dateOnly(item.LeaveEnd).Before(dateOnly(item.LeaveStart)) {
+		tx.Rollback()
+		return errors.New("Failed to add cuti. Tanggal akhir cuti tidak boleh lebih kecil dari tanggal mulai.")
+	}
 
-		if item.LeaveEnd.IsZero() {
-			tx.Rollback()
-			return errors.New("Failed to add cuti. Tanggal akhir cuti wajib diisi.")
-		}
+	totalDays := item.TotalDays
 
-		if dateOnly(item.LeaveEnd).Before(dateOnly(item.LeaveStart)) {
-			tx.Rollback()
-			return errors.New("Failed to add cuti. Tanggal akhir cuti tidak boleh lebih kecil dari tanggal mulai.")
-		}
-
-		totalDays := item.TotalDays
-
-		if leaveType == "CUTI" {
-			calcTotalDays, err := calculateLeaveTotalDays(tx, employeeNik, item.LeaveStart, item.LeaveEnd)
-			if err != nil {
-				tx.Rollback()
-				return fmt.Errorf("Failed to add cuti. %w", err)
-			}
-
-			totalDays = calcTotalDays
-		}
-
-		if leaveType != "CUTI" && totalDays <= 0 {
-			totalDays = calculateCalendarDays(item.LeaveStart, item.LeaveEnd)
-		}
-
-		leaveYear := item.LeaveYear
-		if leaveYear <= 0 {
-			leaveYear = item.LeaveStart.Year()
-		}
-
-		currentStep := item.CurrentStep
-		if currentStep <= 0 {
-			currentStep = 1
-		}
-
-		objectCode := strings.TrimSpace(item.ObjectCode)
-		if objectCode == "" {
-			objectCode = "LEAVE_HISTORY"
-		}
-
-		createdAt := item.CreatedAt
-		if createdAt.IsZero() {
-			createdAt = time.Now()
-		}
-
-		createdBy := strings.TrimSpace(item.CreatedBy)
-		if createdBy == "" {
-			createdBy = "System"
-		}
-
-		leaveHistory := models.LeaveHistory{
-			LeaveHistoryId:   uuid.New(),
-			EmployeeNik:      employeeNik,
-			LeaveType:        leaveType,
-			LeaveStart:       item.LeaveStart,
-			LeaveEnd:         item.LeaveEnd,
-			TotalDays:        totalDays,
-			Remarks:          item.Remarks,
-			Location:         item.Location,
-			LeaveYear:        leaveYear,
-			Status:           "A",
-			CurrentStep:      currentStep,
-			ApprovalHeaderId: item.ApprovalHeaderId,
-			ObjectCode:       objectCode,
-			CreatedAt:        createdAt,
-			CreatedBy:        createdBy,
-		}
-
-		if leaveHistory.LeaveType == "CUTI" {
-			calendarDays := calculateCalendarDays(leaveHistory.LeaveStart, leaveHistory.LeaveEnd)
-
-			if calendarDays <= 0 {
-				tx.Rollback()
-				return errors.New("Failed to add cuti. Total hari cuti tidak valid.")
-			}
-
-			err := tx.Exec(`
-				CALL public.sp_deduct_leave(
-					CAST(? AS varchar),
-					CAST(? AS date),
-					CAST(? AS integer),
-					CAST(? AS varchar)
-				)
-			`,
-				leaveHistory.EmployeeNik,
-				leaveHistory.LeaveStart.Format("2006-01-02"),
-				calendarDays,
-				leaveHistory.CreatedBy,
-			).Error
-
-			if err != nil {
-				tx.Rollback()
-				return fmt.Errorf("Failed to add cuti. %w", err)
-			}
-		}
-
-		if err := tx.Create(&leaveHistory).Error; err != nil {
+	if leaveType == "CUTI" {
+		calcTotalDays, err := calculateLeaveTotalDays(tx, employeeNik, item.LeaveStart, item.LeaveEnd)
+		if err != nil {
 			tx.Rollback()
 			return fmt.Errorf("Failed to add cuti. %w", err)
 		}
+
+		totalDays = calcTotalDays
+	}
+
+	if leaveType != "CUTI" && totalDays <= 0 {
+		totalDays = calculateCalendarDays(item.LeaveStart, item.LeaveEnd)
+	}
+
+	leaveYear := item.LeaveYear
+	if leaveYear <= 0 {
+		leaveYear = item.LeaveStart.Year()
+	}
+
+	currentStep := item.CurrentStep
+	if currentStep <= 0 {
+		currentStep = 1
+	}
+
+	objectCode := strings.TrimSpace(item.ObjectCode)
+	if objectCode == "" {
+		objectCode = "LEAVE_HISTORY"
+	}
+
+	createdAt := item.CreatedAt
+	if createdAt.IsZero() {
+		createdAt = time.Now()
+	}
+
+	createdBy := strings.TrimSpace(item.CreatedBy)
+	if createdBy == "" {
+		createdBy = "System"
+	}
+
+	leaveHistory := models.LeaveHistory{
+		LeaveHistoryId:   uuid.New(),
+		EmployeeNik:      employeeNik,
+		LeaveType:        leaveType,
+		LeaveStart:       item.LeaveStart,
+		LeaveEnd:         item.LeaveEnd,
+		TotalDays:        totalDays,
+		Remarks:          item.Remarks,
+		Location:         item.Location,
+		LeaveYear:        leaveYear,
+		Status:           "A",
+		CurrentStep:      currentStep,
+		ApprovalHeaderId: item.ApprovalHeaderId,
+		ObjectCode:       objectCode,
+		CreatedAt:        createdAt,
+		CreatedBy:        createdBy,
+	}
+
+	if leaveHistory.LeaveType == "CUTI" {
+		calendarDays := calculateCalendarDays(leaveHistory.LeaveStart, leaveHistory.LeaveEnd)
+
+		if calendarDays <= 0 {
+			tx.Rollback()
+			return errors.New("Failed to add cuti. Total hari cuti tidak valid.")
+		}
+
+		err := tx.Exec(`
+			CALL public.sp_deduct_leave(
+				CAST(? AS varchar),
+				CAST(? AS date),
+				CAST(? AS integer),
+				CAST(? AS varchar)
+			)
+		`,
+			leaveHistory.EmployeeNik,
+			leaveHistory.LeaveStart.Format("2006-01-02"),
+			calendarDays,
+			leaveHistory.CreatedBy,
+		).Error
+
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("Failed to add cuti. %w", err)
+		}
+	}
+
+	if err := tx.Create(&leaveHistory).Error; err != nil {
+		tx.Rollback()
+		return fmt.Errorf("Failed to add cuti. %w", err)
 	}
 
 	if err := tx.Commit().Error; err != nil {
