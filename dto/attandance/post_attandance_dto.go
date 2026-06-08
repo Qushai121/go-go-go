@@ -8,7 +8,7 @@ type PostAttandanceDto struct {
 	SiteType     string `json:"site_type" form:"site_type"`
 	SiteCode     string `json:"site_code" form:"site_code"`
 	LogTime      string `json:"logtime" form:"logtime"`
-	FunctionNo   int    `json:"functionno" form:"functionno"`
+	FunctionNo   string `json:"functionno" form:"functionno"`
 	ActivityType string `json:"activity_type" form:"activity_type"`
 	ActionType   string `json:"action_type" form:"action_type"`
 
