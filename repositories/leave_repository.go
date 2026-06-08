@@ -248,7 +248,13 @@ func dateOnly(value time.Time) time.Time {
 func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.LeaveHistory, error) {
 	var data []models.LeaveHistory
 
-	query := r.db.Model(&models.LeaveHistory{})
+	query := r.db.
+		Table("hrms_leave_history lh").
+		Select(`
+			lh.*,
+			COALESCE(lt.leave_type_name, '') AS leave_type_name
+		`).
+		Joins("LEFT JOIN hrms_leave_type lt ON lt.leave_type_id = lh.leave_type_id")
 
 	trim := func(value string) string {
 		return strings.TrimSpace(value)
@@ -313,11 +319,11 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, errors.New("leave_history_id tidak valid")
 		}
 
-		query = query.Where("leave_history_id = ?", leaveHistoryId)
+		query = query.Where("lh.leave_history_id = ?", leaveHistoryId)
 	}
 
 	if filter.EmployeeNik != "" {
-		query = query.Where("employee_nik = ?", filter.EmployeeNik)
+		query = query.Where("lh.employee_nik = ?", filter.EmployeeNik)
 	}
 
 	if filter.LeaveTypeId != "" {
@@ -326,11 +332,15 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, errors.New("leave_type_id tidak valid")
 		}
 
-		query = query.Where("leave_type_id = ?", leaveTypeId)
+		query = query.Where("lh.leave_type_id = ?", leaveTypeId)
 	}
 
 	if filter.LeaveType != "" {
-		query = query.Where("leave_type = ?", filter.LeaveType)
+		query = query.Where(`
+			lh.leave_type ILIKE ?
+			OR lt.leave_type_code ILIKE ?
+			OR lt.leave_type_name ILIKE ?
+		`, "%"+filter.LeaveType+"%", "%"+filter.LeaveType+"%", "%"+filter.LeaveType+"%")
 	}
 
 	if filter.StartDate != "" && filter.EndDate != "" {
@@ -350,8 +360,8 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 		}
 
 		query = query.Where(`
-			CAST(leave_start AS date) <= CAST(? AS date)
-			AND CAST(leave_end AS date) >= CAST(? AS date)
+			CAST(lh.leave_start AS date) <= CAST(? AS date)
+			AND CAST(lh.leave_end AS date) >= CAST(? AS date)
 		`, filter.EndDate, filter.StartDate)
 
 	} else if filter.StartDate != "" {
@@ -359,14 +369,14 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("CAST(leave_end AS date) >= CAST(? AS date)", filter.StartDate)
+		query = query.Where("CAST(lh.leave_end AS date) >= CAST(? AS date)", filter.StartDate)
 
 	} else if filter.EndDate != "" {
 		if err := parseDate(filter.EndDate, "end_date"); err != nil {
 			return nil, err
 		}
 
-		query = query.Where("CAST(leave_start AS date) <= CAST(? AS date)", filter.EndDate)
+		query = query.Where("CAST(lh.leave_start AS date) <= CAST(? AS date)", filter.EndDate)
 	}
 
 	if filter.LeaveDate != "" {
@@ -374,7 +384,7 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("COALESCE(leave_date::date, leave_start::date) = CAST(? AS date)", filter.LeaveDate)
+		query = query.Where("COALESCE(lh.leave_date::date, lh.leave_start::date) = CAST(? AS date)", filter.LeaveDate)
 	}
 
 	if filter.LeaveStart != "" {
@@ -382,7 +392,7 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("CAST(leave_start AS date) = CAST(? AS date)", filter.LeaveStart)
+		query = query.Where("CAST(lh.leave_start AS date) = CAST(? AS date)", filter.LeaveStart)
 	}
 
 	if filter.LeaveEnd != "" {
@@ -390,7 +400,7 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("CAST(leave_end AS date) = CAST(? AS date)", filter.LeaveEnd)
+		query = query.Where("CAST(lh.leave_end AS date) = CAST(? AS date)", filter.LeaveEnd)
 	}
 
 	if filter.TotalDays != "" {
@@ -399,15 +409,15 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("total_days = ?", totalDays)
+		query = query.Where("lh.total_days = ?", totalDays)
 	}
 
 	if filter.Remarks != "" {
-		query = query.Where("remarks ILIKE ?", "%"+filter.Remarks+"%")
+		query = query.Where("lh.remarks ILIKE ?", "%"+filter.Remarks+"%")
 	}
 
 	if filter.Location != "" {
-		query = query.Where("location ILIKE ?", "%"+filter.Location+"%")
+		query = query.Where("lh.location ILIKE ?", "%"+filter.Location+"%")
 	}
 
 	if filter.LeaveYear != "" {
@@ -416,11 +426,11 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("leave_year = ?", leaveYear)
+		query = query.Where("lh.leave_year = ?", leaveYear)
 	}
 
 	if filter.Status != "" {
-		query = query.Where("status = ?", filter.Status)
+		query = query.Where("lh.status = ?", filter.Status)
 	}
 
 	if filter.CurrentStep != "" {
@@ -429,7 +439,7 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("current_step = ?", currentStep)
+		query = query.Where("lh.current_step = ?", currentStep)
 	}
 
 	if filter.ApprovalHeaderId != "" {
@@ -438,11 +448,11 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, errors.New("approvalheader_id tidak valid")
 		}
 
-		query = query.Where("approvalheader_id = ?", approvalHeaderId)
+		query = query.Where("lh.approvalheader_id = ?", approvalHeaderId)
 	}
 
 	if filter.ObjectCode != "" {
-		query = query.Where("object_code = ?", filter.ObjectCode)
+		query = query.Where("lh.object_code = ?", filter.ObjectCode)
 	}
 
 	if filter.CreatedAt != "" {
@@ -450,7 +460,7 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("CAST(created_at AS date) = CAST(? AS date)", filter.CreatedAt)
+		query = query.Where("CAST(lh.created_at AS date) = CAST(? AS date)", filter.CreatedAt)
 	}
 
 	if filter.UpdatedAt != "" {
@@ -458,15 +468,15 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("CAST(updated_at AS date) = CAST(? AS date)", filter.UpdatedAt)
+		query = query.Where("CAST(lh.updated_at AS date) = CAST(? AS date)", filter.UpdatedAt)
 	}
 
 	if filter.CreatedBy != "" {
-		query = query.Where("created_by = ?", filter.CreatedBy)
+		query = query.Where("lh.created_by = ?", filter.CreatedBy)
 	}
 
 	if filter.UpdatedBy != "" {
-		query = query.Where("updated_by = ?", filter.UpdatedBy)
+		query = query.Where("lh.updated_by = ?", filter.UpdatedBy)
 	}
 
 	if filter.CreatedAtStart != "" {
@@ -474,7 +484,7 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("CAST(created_at AS date) >= CAST(? AS date)", filter.CreatedAtStart)
+		query = query.Where("CAST(lh.created_at AS date) >= CAST(? AS date)", filter.CreatedAtStart)
 	}
 
 	if filter.CreatedAtEnd != "" {
@@ -482,7 +492,7 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("CAST(created_at AS date) <= CAST(? AS date)", filter.CreatedAtEnd)
+		query = query.Where("CAST(lh.created_at AS date) <= CAST(? AS date)", filter.CreatedAtEnd)
 	}
 
 	if filter.UpdatedAtStart != "" {
@@ -490,7 +500,7 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("CAST(updated_at AS date) >= CAST(? AS date)", filter.UpdatedAtStart)
+		query = query.Where("CAST(lh.updated_at AS date) >= CAST(? AS date)", filter.UpdatedAtStart)
 	}
 
 	if filter.UpdatedAtEnd != "" {
@@ -498,11 +508,11 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 			return nil, err
 		}
 
-		query = query.Where("CAST(updated_at AS date) <= CAST(? AS date)", filter.UpdatedAtEnd)
+		query = query.Where("CAST(lh.updated_at AS date) <= CAST(? AS date)", filter.UpdatedAtEnd)
 	}
 
 	if err := query.
-		Order("leave_start DESC, created_at DESC").
+		Order("lh.leave_start DESC, lh.created_at DESC").
 		Find(&data).Error; err != nil {
 		return nil, fmt.Errorf("Failed to get cuti. %w", err)
 	}
