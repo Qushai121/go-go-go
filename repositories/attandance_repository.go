@@ -187,9 +187,13 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 				AND s.site_code = a.site_code
 		`).
 		Joins(`
+			LEFT JOIN hrms_parg pg
+				ON pg.paramgroup_code = 'EVENT_CODE'
+				AND pg.company_code = a.company_code
+		`).
+		Joins(`
 			LEFT JOIN hrms_par p
-				ON p.paramgroup_code = 'EVENT_CODE'
-				AND p.company_code = a.company_code
+				ON p.paramgroup_id = pg.paramgroup_id
 				AND (
 					UPPER(TRIM(p.param_code)) = UPPER(TRIM(a.functionno::text))
 					OR UPPER(TRIM(p.param_code)) = UPPER(CONCAT('F', TRIM(a.functionno::text)))
