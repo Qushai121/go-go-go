@@ -17,7 +17,6 @@ func NewAuthController(repo repositories.UserRepository) *AuthController {
 	return &AuthController{repo}
 }
 
-
 // Login godoc
 // @Summary Login
 // @Description Login

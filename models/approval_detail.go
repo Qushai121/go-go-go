@@ -15,7 +15,7 @@ type ApprovalDetail struct {
 	ApprovalStatus constant.ApprovalStatus `gorm:"column:approval_status;type:varchar(50)"`
 
 	ApproverBy uuid.UUID `gorm:"column:approver_by;type:uuid"`
-	Approver       User      `gorm:"foreignKey:ApproverBy;references:UserId"`
+	Approver   User      `gorm:"foreignKey:ApproverBy;references:UserId"`
 
 	Remark string `gorm:"column:remark;type:varchar(255)"`
 

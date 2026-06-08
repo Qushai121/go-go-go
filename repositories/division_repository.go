@@ -50,21 +50,19 @@ func (r *divisionRepository) FindAll(queryParams *dto.PaginateFieldDto) (respons
 	if queryParams.Search != nil && *queryParams.Search != "" && (queryParams.DynamicFieldSearch == nil || *queryParams.DynamicFieldSearch == "") {
 		search := "%" + *queryParams.Search + "%"
 		modelDb = modelDb.Where(`
-			division_id::text LIKE ? OR company_code LIKE ? OR branch_code LIKE ? OR
-			office_code LIKE ? OR division_code LIKE ? OR division_name LIKE ? OR
-			object_code LIKE ? OR timezone_set LIKE ?
-		`, search, search, search, search, search, search, search, search)
+			division_id::text ILIKE ? OR company_code ILIKE ? OR
+			division_code ILIKE ? OR division_name ILIKE ? OR
+			object_code ILIKE ? OR timezone_set ILIKE ?
+		`, search, search, search, search, search, search)
 	}
 
 	allowedDynamicList := map[string]dto.DynamicSearchDto{
 		"division_id":   {Field: "division_id", Query: " = ?"},
-		"company_code":  {Field: "company_code", Query: " LIKE ?"},
-		"branch_code":   {Field: "branch_code", Query: " LIKE ?"},
-		"office_code":   {Field: "office_code", Query: " LIKE ?"},
-		"division_code": {Field: "division_code", Query: " LIKE ?"},
-		"division_name": {Field: "division_name", Query: " LIKE ?"},
-		"object_code":   {Field: "object_code", Query: " LIKE ?"},
-		"timezone_set":  {Field: "timezone_set", Query: " LIKE ?"},
+		"company_code":  {Field: "company_code", Query: " ILIKE ?"},
+		"division_code": {Field: "division_code", Query: " ILIKE ?"},
+		"division_name": {Field: "division_name", Query: " ILIKE ?"},
+		"object_code":   {Field: "object_code", Query: " ILIKE ?"},
+		"timezone_set":  {Field: "timezone_set", Query: " ILIKE ?"},
 	}
 
 	err := utils.GetQueryBase(queryParams, modelDb, &result.TotalRecord, &result.TotalPage, &allowedDynamicList).Find(&result.Data).Error

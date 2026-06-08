@@ -9,6 +9,9 @@ import (
 type LeaveBalance struct {
 	LeaveBalanceId   uuid.UUID  `gorm:"column:leave_balance_id;type:uuid;primaryKey" json:"leave_balance_id"`
 	EmployeeNik      string     `gorm:"column:employee_nik" json:"employee_nik"`
+	LeaveTypeId      *uuid.UUID `gorm:"column:leave_type_id;type:uuid" json:"leave_type_id"`
+	LeaveTypeCode    string     `gorm:"column:leave_type_code" json:"leave_type_code,omitempty"`
+	LeaveTypeName    string     `gorm:"column:leave_type_name" json:"leave_type_name,omitempty"`
 	LeavePeriodStart time.Time  `gorm:"column:leave_period_start" json:"leave_period_start"`
 	LeavePeriodEnd   time.Time  `gorm:"column:leave_period_end" json:"leave_period_end"`
 	TotalLeave       int        `gorm:"column:total_leave" json:"total_leave"`

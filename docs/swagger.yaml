@@ -109,6 +109,27 @@ definitions:
       updated_by:
         type: string
     type: object
+  models.CreateLeaveTransactionRequest:
+    properties:
+      approvalheader_id:
+        type: string
+      created_by:
+        type: string
+      current_step:
+        type: integer
+      employee_nik:
+        type: string
+      leave_end:
+        type: string
+      leave_start:
+        type: string
+      leave_type_id:
+        type: string
+      location:
+        type: string
+      remarks:
+        type: string
+    type: object
   models.Customer:
     properties:
       created_at:
@@ -140,8 +161,6 @@ definitions:
     type: object
   models.Department:
     properties:
-      branch_code:
-        type: string
       company_code:
         type: string
       created_at:
@@ -158,8 +177,6 @@ definitions:
         type: string
       object_code:
         type: string
-      office_code:
-        type: string
       timezone_set:
         type: string
       updated_at:
@@ -169,8 +186,6 @@ definitions:
     type: object
   models.Division:
     properties:
-      branch_code:
-        type: string
       company_code:
         type: string
       created_at:
@@ -185,10 +200,84 @@ definitions:
         type: string
       object_code:
         type: string
-      office_code:
-        type: string
       timezone_set:
         type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.LeaveBalance:
+    properties:
+      carry_forward:
+        type: integer
+      created_at:
+        type: string
+      created_by:
+        type: string
+      employee_nik:
+        type: string
+      leave_balance_id:
+        type: string
+      leave_period_end:
+        type: string
+      leave_period_start:
+        type: string
+      leave_remaining:
+        type: integer
+      leave_type_code:
+        type: string
+      leave_type_id:
+        type: string
+      leave_type_name:
+        type: string
+      leave_used:
+        type: integer
+      object_code:
+        type: string
+      total_leave:
+        type: integer
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.LeaveHistory:
+    properties:
+      approvalheader_id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      current_step:
+        type: integer
+      employee_nik:
+        type: string
+      leave_date:
+        type: string
+      leave_end:
+        type: string
+      leave_history_id:
+        type: string
+      leave_start:
+        type: string
+      leave_type:
+        type: string
+      leave_type_id:
+        type: string
+      leave_year:
+        type: integer
+      location:
+        type: string
+      object_code:
+        type: string
+      remarks:
+        type: string
+      status:
+        type: string
+      total_days:
+        type: integer
       updated_at:
         type: string
       updated_by:
@@ -292,10 +381,43 @@ definitions:
       updated_by:
         type: string
     type: object
+  models.Site:
+    properties:
+      company_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      max_radius:
+        type: integer
+      object_code:
+        type: string
+      site_address:
+        type: string
+      site_code:
+        type: string
+      site_id:
+        type: string
+      site_latitude:
+        type: string
+      site_longitude:
+        type: string
+      site_name:
+        type: string
+      site_phone:
+        type: string
+      site_type:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
   models.Title:
     properties:
-      branch_code:
-        type: string
       company_code:
         type: string
       created_at:
@@ -307,8 +429,6 @@ definitions:
       division_code:
         type: string
       object_code:
-        type: string
-      office_code:
         type: string
       timezone_set:
         type: string
@@ -325,8 +445,6 @@ definitions:
     type: object
   models.User:
     properties:
-      branch_code:
-        type: string
       company_code:
         type: string
       created_at:
@@ -359,8 +477,6 @@ definitions:
         type: string
       object_code:
         type: string
-      office_code:
-        type: string
       password:
         type: string
       password_exp_date:
@@ -379,15 +495,19 @@ definitions:
         items:
           $ref: '#/definitions/models.UserCompany'
         type: array
-      user_customer:
-        items:
-          $ref: '#/definitions/models.UserCustomer'
-        type: array
       user_id:
         type: string
-      user_office:
+      user_leave_balance:
         items:
-          $ref: '#/definitions/models.UserOffice'
+          $ref: '#/definitions/models.LeaveBalance'
+        type: array
+      user_shift:
+        items:
+          $ref: '#/definitions/models.UserShiftMapping'
+        type: array
+      user_site:
+        items:
+          $ref: '#/definitions/models.UserSite'
         type: array
       usergroup_id:
         type: string
@@ -510,6 +630,78 @@ definitions:
       updated_by:
         type: string
       user_office_id:
+        type: string
+    type: object
+  models.UserShiftMapping:
+    properties:
+      employee_nik:
+        type: string
+      end_time:
+        type: string
+      event_code:
+        type: string
+      event_name:
+        type: string
+      is_active:
+        type: string
+      shift_date:
+        type: string
+      shift_name:
+        type: string
+      start_time:
+        type: string
+      tolarance_after:
+        type: integer
+      tolerance_before:
+        type: integer
+      week_end_date:
+        type: string
+      week_start_date:
+        type: string
+      weekday_id:
+        type: integer
+      weekday_name:
+        type: string
+      working_hours_type:
+        type: string
+    type: object
+  models.UserSite:
+    properties:
+      company_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      employee_nik:
+        type: string
+      max_radius:
+        type: integer
+      object_code:
+        type: string
+      site_address:
+        type: string
+      site_code:
+        type: string
+      site_id:
+        type: string
+      site_latitude:
+        type: string
+      site_longitude:
+        type: string
+      site_name:
+        type: string
+      site_phone:
+        type: string
+      site_type:
+        type: string
+      timezone_set:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+      user_site_id:
         type: string
     type: object
   receipt.CreateReceiptDetailDto:
@@ -970,14 +1162,14 @@ paths:
         in: formData
         name: company_code
         type: string
-      - description: Office code
+      - description: 'Site type: BRANCH/OFFICE/CUSTOMER'
         in: formData
-        name: office_code
-        required: true
+        name: site_type
         type: string
-      - description: Customer code
+      - description: Site code
         in: formData
-        name: customer_code
+        name: site_code
+        required: true
         type: string
       - description: Log time (YYYY-MM-DD HH:mm:ss or RFC3339)
         in: formData
@@ -1629,6 +1821,240 @@ paths:
       summary: Delete division
       tags:
       - Division
+  /api/leave-type:
+    get:
+      consumes:
+      - application/json
+      description: Search tipe cuti aktif untuk transaksi cuti dynamic
+      parameters:
+      - description: Company Code
+        in: query
+        name: company_code
+        type: string
+      - description: Search code/name
+        in: query
+        name: search
+        type: string
+      - description: true/false
+        in: query
+        name: deduct_leave_balance
+        type: string
+      - description: true/false
+        in: query
+        name: is_active
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Search leave type
+      tags:
+      - Leave Type
+  /api/leave/balance/{employee_nik}:
+    get:
+      consumes:
+      - application/json
+      description: Get sisa cuti berdasarkan NIK karyawan dan optional leave_type_id
+      parameters:
+      - description: Employee NIK
+        in: path
+        name: employee_nik
+        required: true
+        type: string
+      - description: Leave Type ID
+        in: query
+        name: leave_type_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Sisa cuti karyawan
+      tags:
+      - Leave
+  /api/leave/cuti:
+    get:
+      consumes:
+      - application/json
+      description: Get cuti by filter
+      parameters:
+      - description: Leave History ID
+        in: query
+        name: leave_history_id
+        type: string
+      - description: Employee NIK
+        in: query
+        name: employee_nik
+        type: string
+      - description: Leave Type ID
+        in: query
+        name: leave_type_id
+        type: string
+      - description: Leave Type
+        in: query
+        name: leave_type
+        type: string
+      - description: Start date YYYY-MM-DD untuk range overlap cuti
+        in: query
+        name: start_date
+        type: string
+      - description: End date YYYY-MM-DD untuk range overlap cuti
+        in: query
+        name: end_date
+        type: string
+      - description: Leave date exact date YYYY-MM-DD
+        in: query
+        name: leave_date
+        type: string
+      - description: Leave start exact date YYYY-MM-DD
+        in: query
+        name: leave_start
+        type: string
+      - description: Leave end exact date YYYY-MM-DD
+        in: query
+        name: leave_end
+        type: string
+      - description: Total Days
+        in: query
+        name: total_days
+        type: integer
+      - description: Remarks
+        in: query
+        name: remarks
+        type: string
+      - description: Location
+        in: query
+        name: location
+        type: string
+      - description: Leave Year
+        in: query
+        name: leave_year
+        type: integer
+      - description: Status
+        in: query
+        name: status
+        type: string
+      - description: Current Step
+        in: query
+        name: current_step
+        type: integer
+      - description: Approval Header ID
+        in: query
+        name: approvalheader_id
+        type: string
+      - description: Object Code
+        in: query
+        name: object_code
+        type: string
+      - description: Created at exact date YYYY-MM-DD
+        in: query
+        name: created_at
+        type: string
+      - description: Updated at exact date YYYY-MM-DD
+        in: query
+        name: updated_at
+        type: string
+      - description: Created By
+        in: query
+        name: created_by
+        type: string
+      - description: Updated By
+        in: query
+        name: updated_by
+        type: string
+      - description: Created at start YYYY-MM-DD
+        in: query
+        name: created_at_start
+        type: string
+      - description: Created at end YYYY-MM-DD
+        in: query
+        name: created_at_end
+        type: string
+      - description: Updated at start YYYY-MM-DD
+        in: query
+        name: updated_at_start
+        type: string
+      - description: Updated at end YYYY-MM-DD
+        in: query
+        name: updated_at_end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get cuti
+      tags:
+      - Leave
+    post:
+      consumes:
+      - application/json
+      description: Add cuti / leave history
+      parameters:
+      - description: Leave data
+        in: body
+        name: request
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.LeaveHistory'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add cuti
+      tags:
+      - Leave
+  /api/leave/transactions:
+    post:
+      consumes:
+      - application/json
+      description: Insert transaksi cuti berdasarkan leave_type_id. Range tanggal
+        akan dipecah menjadi transaksi per tanggal.
+      parameters:
+      - description: Leave transaction request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateLeaveTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Insert transaksi cuti dynamic
+      tags:
+      - Leave
   /api/login:
     post:
       consumes:
@@ -2577,6 +3003,151 @@ paths:
       summary: Initialize admin
       tags:
       - Setup
+  /api/site:
+    get:
+      consumes:
+      - application/json
+      description: Get list of sites with pagination. Use search/site_type/company_code/site_code/site_name
+        query for lookup.
+      parameters:
+      - description: Sort order (asc/desc)
+        in: query
+        name: sort_order
+        type: string
+      - description: Sort by column
+        in: query
+        name: sort_by
+        type: string
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Field name for dynamic search
+        in: query
+        name: field_search
+        type: string
+      - description: Filter by company code
+        in: query
+        name: company_code
+        type: string
+      - description: Filter by site type
+        in: query
+        name: site_type
+        type: string
+      - description: Filter by site code
+        in: query
+        name: site_code
+        type: string
+      - description: Filter by site name
+        in: query
+        name: site_name
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all sites
+      tags:
+      - Site
+    post:
+      consumes:
+      - application/json
+      description: Create new site. site_type can be BRANCH, OFFICE, or CUSTOMER.
+      parameters:
+      - description: Site data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Site'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create site
+      tags:
+      - Site
+    put:
+      consumes:
+      - application/json
+      description: Update existing site
+      parameters:
+      - description: Site data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Site'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update site
+      tags:
+      - Site
+  /api/site/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete site by ID
+      parameters:
+      - description: Site ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete site
+      tags:
+      - Site
+  /api/site/search:
+    get:
+      consumes:
+      - application/json
+      description: Alias endpoint for site lookup/search.
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Search sites
+      tags:
+      - Site
   /api/title:
     get:
       consumes:
@@ -3037,6 +3608,96 @@ paths:
       summary: Delete user office
       tags:
       - User Office
+  /api/user-site:
+    get:
+      consumes:
+      - application/json
+      description: Get list of user site mappings with pagination
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all user site mappings
+      tags:
+      - User Site
+    post:
+      consumes:
+      - application/json
+      description: Create mapping between employee and site
+      parameters:
+      - description: User Site data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserSite'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create user site mapping
+      tags:
+      - User Site
+    put:
+      consumes:
+      - application/json
+      description: Update existing user site mapping
+      parameters:
+      - description: User Site data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserSite'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user site mapping
+      tags:
+      - User Site
+  /api/user-site/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user site mapping by ID
+      parameters:
+      - description: User Site ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete user site mapping
+      tags:
+      - User Site
   /api/usergroup:
     get:
       consumes:
@@ -3262,6 +3923,35 @@ paths:
       security:
       - BearerAuth: []
       summary: Update user profile picture
+      tags:
+      - Users
+  /api/users/verify-face:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Verify face image without saving user profile picture or attendance
+      parameters:
+      - description: Face image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: Employee NIK. If filled, image will be matched against registered
+          face data.
+        in: formData
+        name: nik
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Verify face image
       tags:
       - Users
 securityDefinitions:

@@ -9,10 +9,12 @@ import (
 type LeaveHistory struct {
 	LeaveHistoryId uuid.UUID `gorm:"column:leave_history_id;type:uuid;default:uuid_generate_v4();primaryKey" json:"leave_history_id" form:"leave_history_id"`
 
-	EmployeeNik string    `gorm:"column:employee_nik;type:varchar(100);not null" json:"employee_nik" form:"employee_nik"`
-	LeaveType   string    `gorm:"column:leave_type;type:varchar(50);not null" json:"leave_type" form:"leave_type"`
-	LeaveStart  time.Time `gorm:"column:leave_start;type:timestamp" json:"leave_start" form:"leave_start"`
-	LeaveEnd    time.Time `gorm:"column:leave_end;type:timestamp" json:"leave_end" form:"leave_end"`
+	EmployeeNik string     `gorm:"column:employee_nik;type:varchar(100);not null" json:"employee_nik" form:"employee_nik"`
+	LeaveTypeId *uuid.UUID `gorm:"column:leave_type_id;type:uuid" json:"leave_type_id" form:"leave_type_id"`
+	LeaveType   string     `gorm:"column:leave_type;type:varchar(50);not null" json:"leave_type" form:"leave_type"`
+	LeaveDate   time.Time  `gorm:"column:leave_date;type:date" json:"leave_date" form:"leave_date"`
+	LeaveStart  time.Time  `gorm:"column:leave_start;type:timestamp" json:"leave_start" form:"leave_start"`
+	LeaveEnd    time.Time  `gorm:"column:leave_end;type:timestamp" json:"leave_end" form:"leave_end"`
 
 	TotalDays int     `gorm:"column:total_days;type:int" json:"total_days" form:"total_days"`
 	Remarks   *string `gorm:"column:remarks;type:text" json:"remarks" form:"remarks"`
@@ -37,13 +39,15 @@ type LeaveHistoryFilter struct {
 	LeaveHistoryId string `json:"leave_history_id" query:"leave_history_id" form:"leave_history_id"`
 
 	EmployeeNik string `json:"employee_nik" query:"employee_nik" form:"employee_nik"`
+	LeaveTypeId string `json:"leave_type_id" query:"leave_type_id" form:"leave_type_id"`
 	LeaveType   string `json:"leave_type" query:"leave_type" form:"leave_type"`
 
 	// Filter overlap cuti berdasarkan range tanggal
 	StartDate string `json:"start_date" query:"start_date" form:"start_date"`
 	EndDate   string `json:"end_date" query:"end_date" form:"end_date"`
 
-	// Filter tanggal exact dari kolom leave_start dan leave_end
+	// Filter tanggal exact dari kolom leave_date, leave_start, dan leave_end
+	LeaveDate  string `json:"leave_date" query:"leave_date" form:"leave_date"`
 	LeaveStart string `json:"leave_start" query:"leave_start" form:"leave_start"`
 	LeaveEnd   string `json:"leave_end" query:"leave_end" form:"leave_end"`
 

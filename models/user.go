@@ -10,8 +10,6 @@ type User struct {
 	UserId          uuid.UUID  `gorm:"column:user_id;type:uuid;default:uuid_generate_v4();primaryKey" json:"user_id"`
 	UserGroupId     *uuid.UUID `gorm:"column:usergroup_id;type:uuid" json:"usergroup_id"`
 	CompanyCode     *string    `gorm:"column:company_code;type:varchar(100)" json:"company_code"`
-	BranchCode      *string    `gorm:"column:branch_code;type:varchar(100)" json:"branch_code"`
-	OfficeCode      *string    `gorm:"column:office_code;type:varchar(100)" json:"office_code"`
 	DivisionCode    *string    `gorm:"column:division_code;type:varchar(100)" json:"division_code"`
 	DepartmentCode  *string    `gorm:"column:department_code;type:varchar(100)" json:"department_code"`
 	TitleCode       *string    `gorm:"column:title_code;type:varchar(100)" json:"title_code"`
@@ -32,8 +30,7 @@ type User struct {
 	Role string `gorm:"-" json:"role,omitempty"`
 
 	UserCompany      []UserCompany      `gorm:"-" json:"user_company,omitempty"`
-	UserOffice       []UserOffice       `gorm:"-" json:"user_office,omitempty"`
-	UserCustomer     []UserCustomer     `gorm:"-" json:"user_customer,omitempty"`
+	UserSite         []UserSite         `gorm:"-" json:"user_site,omitempty"`
 	UserShift        []UserShiftMapping `gorm:"-" json:"user_shift"`
 	UserLeaveBalance []LeaveBalance     `gorm:"-" json:"user_leave_balance"`
 

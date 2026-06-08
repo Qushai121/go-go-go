@@ -5,13 +5,17 @@ type PostAttandanceDto struct {
 	UserId       string `json:"user_id" form:"user_id"`
 
 	CompanyCode  string `json:"company_code" form:"company_code"`
-	BranchCode   string `json:"branch_code" form:"branch_code"`
-	OfficeCode   string `json:"office_code" form:"office_code"`
-	CustomerCode string `json:"customer_code" form:"customer_code"`
+	SiteType     string `json:"site_type" form:"site_type"`
+	SiteCode     string `json:"site_code" form:"site_code"`
 	LogTime      string `json:"logtime" form:"logtime"`
 	FunctionNo   int    `json:"functionno" form:"functionno"`
 	ActivityType string `json:"activity_type" form:"activity_type"`
 	ActionType   string `json:"action_type" form:"action_type"`
+
+	// Legacy aliases. Dipakai hanya supaya mobile/frontend lama yang masih kirim
+	// office_code atau customer_code tidak langsung error.
+	OfficeCode   string `json:"office_code" form:"office_code"`
+	CustomerCode string `json:"customer_code" form:"customer_code"`
 
 	Latitude            string `json:"latitude" form:"latitude"`
 	Longitude           string `json:"longitude" form:"longitude"`

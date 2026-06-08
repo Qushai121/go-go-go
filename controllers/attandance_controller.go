@@ -29,8 +29,8 @@ func NewAttendanceController(repo repositories.AttendanceRepository) *Attendance
 // @Produce json
 // @Param user_id formData string false "User ID (UUID). If empty, taken from auth token."
 // @Param company_code formData string false "Company code"
-// @Param office_code formData string true "Office code"
-// @Param customer_code formData string false "Customer code"
+// @Param site_type formData string false "Site type: BRANCH/OFFICE/CUSTOMER"
+// @Param site_code formData string true "Site code"
 // @Param logtime formData string true "Log time (YYYY-MM-DD HH:mm:ss or RFC3339)"
 // @Param functionno formData int true "Function number"
 // @Param action_type formData string false "Action type"
@@ -100,11 +100,11 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	if data.OfficeCode == "" {
+	if data.SiteCode == "" {
 		if fileUrl != nil {
 			_ = utils.RemoveFileFromPath(*fileUrl)
 		}
-		return utils.Error(ctx, 400, "office_code is required")
+		return utils.Error(ctx, 400, "site_code is required")
 	}
 	if data.FunctionNo <= 0 {
 		if fileUrl != nil {
@@ -128,7 +128,8 @@ func parseAttendanceFormData(ctx fiber.Ctx) (attandance.PostAttandanceDto, error
 		AttendanceId:        ctx.FormValue("attendance_id"),
 		UserId:              ctx.FormValue("user_id"),
 		CompanyCode:         ctx.FormValue("company_code"),
-		BranchCode:          ctx.FormValue("branch_code"),
+		SiteType:            strings.ToUpper(strings.TrimSpace(ctx.FormValue("site_type"))),
+		SiteCode:            strings.TrimSpace(ctx.FormValue("site_code")),
 		OfficeCode:          ctx.FormValue("office_code"),
 		CustomerCode:        ctx.FormValue("customer_code"),
 		LogTime:             ctx.FormValue("logtime"),
@@ -148,6 +149,16 @@ func parseAttendanceFormData(ctx fiber.Ctx) (attandance.PostAttandanceDto, error
 		UpdatedAt:           ctx.FormValue("updated_at"),
 		CreatedBy:           ctx.FormValue("created_by"),
 		UpdatedBy:           ctx.FormValue("updated_by"),
+	}
+
+	if request.SiteCode == "" {
+		if legacyCustomerCode := strings.TrimSpace(request.CustomerCode); legacyCustomerCode != "" {
+			request.SiteType = "CUSTOMER"
+			request.SiteCode = legacyCustomerCode
+		} else if legacyOfficeCode := strings.TrimSpace(request.OfficeCode); legacyOfficeCode != "" {
+			request.SiteType = "OFFICE"
+			request.SiteCode = legacyOfficeCode
+		}
 	}
 
 	functionNo := ctx.FormValue("functionno")

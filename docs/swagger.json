@@ -634,16 +634,16 @@
                     },
                     {
                         "type": "string",
-                        "description": "Office code",
-                        "name": "office_code",
-                        "in": "formData",
-                        "required": true
+                        "description": "Site type: BRANCH/OFFICE/CUSTOMER",
+                        "name": "site_type",
+                        "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Customer code",
-                        "name": "customer_code",
-                        "in": "formData"
+                        "description": "Site code",
+                        "name": "site_code",
+                        "in": "formData",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -1641,6 +1641,367 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/leave-type": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Search tipe cuti aktif untuk transaksi cuti dynamic",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Leave Type"
+                ],
+                "summary": "Search leave type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company Code",
+                        "name": "company_code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search code/name",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "true/false",
+                        "name": "deduct_leave_balance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "true/false",
+                        "name": "is_active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/leave/balance/{employee_nik}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get sisa cuti berdasarkan NIK karyawan dan optional leave_type_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Leave"
+                ],
+                "summary": "Sisa cuti karyawan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Employee NIK",
+                        "name": "employee_nik",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Leave Type ID",
+                        "name": "leave_type_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/leave/cuti": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get cuti by filter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Leave"
+                ],
+                "summary": "Get cuti",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Leave History ID",
+                        "name": "leave_history_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Employee NIK",
+                        "name": "employee_nik",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Leave Type ID",
+                        "name": "leave_type_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Leave Type",
+                        "name": "leave_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date YYYY-MM-DD untuk range overlap cuti",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date YYYY-MM-DD untuk range overlap cuti",
+                        "name": "end_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Leave date exact date YYYY-MM-DD",
+                        "name": "leave_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Leave start exact date YYYY-MM-DD",
+                        "name": "leave_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Leave end exact date YYYY-MM-DD",
+                        "name": "leave_end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Total Days",
+                        "name": "total_days",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Remarks",
+                        "name": "remarks",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Location",
+                        "name": "location",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Leave Year",
+                        "name": "leave_year",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Current Step",
+                        "name": "current_step",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Approval Header ID",
+                        "name": "approvalheader_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Object Code",
+                        "name": "object_code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Created at exact date YYYY-MM-DD",
+                        "name": "created_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Updated at exact date YYYY-MM-DD",
+                        "name": "updated_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Created By",
+                        "name": "created_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Updated By",
+                        "name": "updated_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Created at start YYYY-MM-DD",
+                        "name": "created_at_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Created at end YYYY-MM-DD",
+                        "name": "created_at_end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Updated at start YYYY-MM-DD",
+                        "name": "updated_at_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Updated at end YYYY-MM-DD",
+                        "name": "updated_at_end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Add cuti / leave history",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Leave"
+                ],
+                "summary": "Add cuti",
+                "parameters": [
+                    {
+                        "description": "Leave data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.LeaveHistory"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/leave/transactions": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Insert transaksi cuti berdasarkan leave_type_id. Range tanggal akan dipecah menjadi transaksi per tanggal.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Leave"
+                ],
+                "summary": "Insert transaksi cuti dynamic",
+                "parameters": [
+                    {
+                        "description": "Leave transaction request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateLeaveTransactionRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -3132,6 +3493,232 @@
                 }
             }
         },
+        "/api/site": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of sites with pagination. Use search/site_type/company_code/site_code/site_name query for lookup.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site"
+                ],
+                "summary": "Get all sites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc/desc)",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by column",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field name for dynamic search",
+                        "name": "field_search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by company code",
+                        "name": "company_code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by site type",
+                        "name": "site_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by site code",
+                        "name": "site_code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by site name",
+                        "name": "site_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site"
+                ],
+                "summary": "Update site",
+                "parameters": [
+                    {
+                        "description": "Site data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Site"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new site. site_type can be BRANCH, OFFICE, or CUSTOMER.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site"
+                ],
+                "summary": "Create site",
+                "parameters": [
+                    {
+                        "description": "Site data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Site"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Alias endpoint for site lookup/search.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site"
+                ],
+                "summary": "Search sites",
+                "responses": {}
+            }
+        },
+        "/api/site/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete site by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site"
+                ],
+                "summary": "Delete site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/title": {
             "get": {
                 "security": [
@@ -3856,6 +4443,149 @@
                 }
             }
         },
+        "/api/user-site": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of user site mappings with pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Site"
+                ],
+                "summary": "Get all user site mappings",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update existing user site mapping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Site"
+                ],
+                "summary": "Update user site mapping",
+                "parameters": [
+                    {
+                        "description": "User Site data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserSite"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create mapping between employee and site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Site"
+                ],
+                "summary": "Create user site mapping",
+                "parameters": [
+                    {
+                        "description": "User Site data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserSite"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user-site/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete user site mapping by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Site"
+                ],
+                "summary": "Delete user site mapping",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Site ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/usergroup": {
             "get": {
                 "security": [
@@ -4212,6 +4942,50 @@
                     }
                 }
             }
+        },
+        "/api/users/verify-face": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Verify face image without saving user profile picture or attendance",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Verify face image",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Face image file",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Employee NIK. If filled, image will be matched against registered face data.",
+                        "name": "nik",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -4382,6 +5156,38 @@
                 }
             }
         },
+        "models.CreateLeaveTransactionRequest": {
+            "type": "object",
+            "properties": {
+                "approvalheader_id": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "current_step": {
+                    "type": "integer"
+                },
+                "employee_nik": {
+                    "type": "string"
+                },
+                "leave_end": {
+                    "type": "string"
+                },
+                "leave_start": {
+                    "type": "string"
+                },
+                "leave_type_id": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "remarks": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Customer": {
             "type": "object",
             "properties": {
@@ -4429,9 +5235,6 @@
         "models.Department": {
             "type": "object",
             "properties": {
-                "branch_code": {
-                    "type": "string"
-                },
                 "company_code": {
                     "type": "string"
                 },
@@ -4456,9 +5259,6 @@
                 "object_code": {
                     "type": "string"
                 },
-                "office_code": {
-                    "type": "string"
-                },
                 "timezone_set": {
                     "type": "string"
                 },
@@ -4473,9 +5273,6 @@
         "models.Division": {
             "type": "object",
             "properties": {
-                "branch_code": {
-                    "type": "string"
-                },
                 "company_code": {
                     "type": "string"
                 },
@@ -4497,11 +5294,123 @@
                 "object_code": {
                     "type": "string"
                 },
-                "office_code": {
-                    "type": "string"
-                },
                 "timezone_set": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LeaveBalance": {
+            "type": "object",
+            "properties": {
+                "carry_forward": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "employee_nik": {
+                    "type": "string"
+                },
+                "leave_balance_id": {
+                    "type": "string"
+                },
+                "leave_period_end": {
+                    "type": "string"
+                },
+                "leave_period_start": {
+                    "type": "string"
+                },
+                "leave_remaining": {
+                    "type": "integer"
+                },
+                "leave_type_code": {
+                    "type": "string"
+                },
+                "leave_type_id": {
+                    "type": "string"
+                },
+                "leave_type_name": {
+                    "type": "string"
+                },
+                "leave_used": {
+                    "type": "integer"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "total_leave": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LeaveHistory": {
+            "type": "object",
+            "properties": {
+                "approvalheader_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "current_step": {
+                    "type": "integer"
+                },
+                "employee_nik": {
+                    "type": "string"
+                },
+                "leave_date": {
+                    "type": "string"
+                },
+                "leave_end": {
+                    "type": "string"
+                },
+                "leave_history_id": {
+                    "type": "string"
+                },
+                "leave_start": {
+                    "type": "string"
+                },
+                "leave_type": {
+                    "type": "string"
+                },
+                "leave_type_id": {
+                    "type": "string"
+                },
+                "leave_year": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "remarks": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_days": {
+                    "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
@@ -4660,12 +5569,62 @@
                 }
             }
         },
+        "models.Site": {
+            "type": "object",
+            "properties": {
+                "company_code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "max_radius": {
+                    "type": "integer"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "site_address": {
+                    "type": "string"
+                },
+                "site_code": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "string"
+                },
+                "site_latitude": {
+                    "type": "string"
+                },
+                "site_longitude": {
+                    "type": "string"
+                },
+                "site_name": {
+                    "type": "string"
+                },
+                "site_phone": {
+                    "type": "string"
+                },
+                "site_type": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Title": {
             "type": "object",
             "properties": {
-                "branch_code": {
-                    "type": "string"
-                },
                 "company_code": {
                     "type": "string"
                 },
@@ -4682,9 +5641,6 @@
                     "type": "string"
                 },
                 "object_code": {
-                    "type": "string"
-                },
-                "office_code": {
                     "type": "string"
                 },
                 "timezone_set": {
@@ -4710,9 +5666,6 @@
         "models.User": {
             "type": "object",
             "properties": {
-                "branch_code": {
-                    "type": "string"
-                },
                 "company_code": {
                     "type": "string"
                 },
@@ -4761,9 +5714,6 @@
                 "object_code": {
                     "type": "string"
                 },
-                "office_code": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string"
                 },
@@ -4791,19 +5741,25 @@
                         "$ref": "#/definitions/models.UserCompany"
                     }
                 },
-                "user_customer": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.UserCustomer"
-                    }
-                },
                 "user_id": {
                     "type": "string"
                 },
-                "user_office": {
+                "user_leave_balance": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.UserOffice"
+                        "$ref": "#/definitions/models.LeaveBalance"
+                    }
+                },
+                "user_shift": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserShiftMapping"
+                    }
+                },
+                "user_site": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserSite"
                     }
                 },
                 "usergroup_id": {
@@ -4989,6 +5945,115 @@
                     "type": "string"
                 },
                 "user_office_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserShiftMapping": {
+            "type": "object",
+            "properties": {
+                "employee_nik": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "event_code": {
+                    "type": "string"
+                },
+                "event_name": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "string"
+                },
+                "shift_date": {
+                    "type": "string"
+                },
+                "shift_name": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "tolarance_after": {
+                    "type": "integer"
+                },
+                "tolerance_before": {
+                    "type": "integer"
+                },
+                "week_end_date": {
+                    "type": "string"
+                },
+                "week_start_date": {
+                    "type": "string"
+                },
+                "weekday_id": {
+                    "type": "integer"
+                },
+                "weekday_name": {
+                    "type": "string"
+                },
+                "working_hours_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserSite": {
+            "type": "object",
+            "properties": {
+                "company_code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "employee_nik": {
+                    "type": "string"
+                },
+                "max_radius": {
+                    "type": "integer"
+                },
+                "object_code": {
+                    "type": "string"
+                },
+                "site_address": {
+                    "type": "string"
+                },
+                "site_code": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "string"
+                },
+                "site_latitude": {
+                    "type": "string"
+                },
+                "site_longitude": {
+                    "type": "string"
+                },
+                "site_name": {
+                    "type": "string"
+                },
+                "site_phone": {
+                    "type": "string"
+                },
+                "site_type": {
+                    "type": "string"
+                },
+                "timezone_set": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                },
+                "user_site_id": {
                     "type": "string"
                 }
             }

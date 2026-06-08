@@ -9,7 +9,7 @@ import (
 type ApprovalTemplateDetail struct {
 	ApprovalTemplateDetailId uuid.UUID `gorm:"column:approval_template_detail_id;type:uuid;default:uuid_generate_v4();primaryKey"`
 
-	ApprovalTemplateHeaderId uuid.UUID               `gorm:"column:approval_template_header_id;type:uuid"`
+	ApprovalTemplateHeaderId uuid.UUID `gorm:"column:approval_template_header_id;type:uuid"`
 
 	ApproverBy uuid.UUID `gorm:"column:approver_by;type:uuid"`
 	Approver   User      `gorm:"foreignKey:ApproverBy;references:UserId"`

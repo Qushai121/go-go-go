@@ -72,8 +72,6 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 			fullname LIKE ? OR
 			email LIKE ? OR
 			company_code LIKE ? OR
-			branch_code LIKE ? OR
-			office_code LIKE ? OR
 			division_code LIKE ? OR
 			department_code LIKE ? OR
 			title_code LIKE ? OR
@@ -82,7 +80,7 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 			created_at::text LIKE ? OR
 			updated_at::text LIKE ?
 		`,
-			search, search, search, search, search, search, search,
+			search, search, search, search, search, search,
 			search, search, search, search, search, search,
 		)
 	}
@@ -106,14 +104,6 @@ func (r *userRepository) FindAll(queryParams *dto.PaginateFieldDto) (response.Pa
 		},
 		"company_code": {
 			Field: "company_code",
-			Query: " LIKE ?",
-		},
-		"branch_code": {
-			Field: "branch_code",
-			Query: " LIKE ?",
-		},
-		"office_code": {
-			Field: "office_code",
 			Query: " LIKE ?",
 		},
 		"division_code": {
@@ -178,41 +168,26 @@ func (r *userRepository) loadUserMappings(user *models.User) error {
 		return err
 	}
 
-	if err := r.db.Table("hrms_user_office uo").
+	if err := r.db.Table("hrms_user_site us").
 		Select(`
-			uo.*,
-			o.office_id AS office_id,
-			o.office_name AS office_name,
-			o.office_phone AS office_phone,
-			o.office_address AS office_address,
-			o.office_latitude AS office_latitude,
-			o.office_longitude AS office_longitude,
-			o.max_radius AS max_radius
+			us.*,
+			s.site_id AS site_id,
+			s.site_name AS site_name,
+			s.site_phone AS site_phone,
+			s.site_address AS site_address,
+			s.site_latitude AS site_latitude,
+			s.site_longitude AS site_longitude,
+			s.max_radius AS max_radius
 		`).
 		Joins(`
-			LEFT JOIN hrms_office o
-				ON o.company_code = uo.company_code
-				AND o.branch_code = uo.branch_code
-				AND o.office_code = uo.office_code
+			LEFT JOIN hrms_site s
+				ON s.company_code = us.company_code
+				AND s.site_type = us.site_type
+				AND s.site_code = us.site_code
 		`).
-		Where("uo.employee_nik = ?", user.EmployeeNIK).
-		Find(&user.UserOffice).Error; err != nil {
-		return err
-	}
-
-	if err := r.db.Table("hrms_user_customer uc").
-		Select(`
-			uc.*,
-			c.customer_id AS customer_id,
-			c.customer_name AS customer_name,
-			c.customer_address AS customer_address,
-			c.customer_latitude AS customer_latitude,
-			c.customer_longitude AS customer_longitude,
-			c.max_radius AS max_radius
-		`).
-		Joins("LEFT JOIN hrms_customer c ON c.customer_code = uc.customer_code").
-		Where("uc.employee_nik = ?", user.EmployeeNIK).
-		Find(&user.UserCustomer).Error; err != nil {
+		Where("us.employee_nik = ?", user.EmployeeNIK).
+		Order("us.site_type ASC, s.site_name ASC").
+		Find(&user.UserSite).Error; err != nil {
 		return err
 	}
 

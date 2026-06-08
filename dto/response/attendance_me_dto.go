@@ -6,12 +6,13 @@ type AttendanceMeResponseDto struct {
 	AttendanceId        string     `gorm:"column:attendance_id" json:"attendance_id"`
 	UserId              string     `gorm:"column:user_id" json:"user_id"`
 	CompanyCode         string     `gorm:"column:company_code" json:"company_code"`
-	BranchCode          string     `gorm:"column:branch_code" json:"branch_code"`
-	BranchName          string     `gorm:"column:branch_name" json:"branch_name"`
-	OfficeCode          string     `gorm:"column:office_code" json:"office_code"`
-	OfficeName          string     `gorm:"column:office_name" json:"office_name"`
-	CustomerCode        string     `gorm:"column:customer_code" json:"customer_code"`
-	CustomerName        string     `gorm:"column:customer_name" json:"customer_name"`
+	SiteType            string     `gorm:"column:site_type" json:"site_type"`
+	SiteCode            string     `gorm:"column:site_code" json:"site_code"`
+	SiteName            string     `gorm:"column:site_name" json:"site_name"`
+	SitePhone           string     `gorm:"column:site_phone" json:"site_phone"`
+	SiteAddress         string     `gorm:"column:site_address" json:"site_address"`
+	SiteLatitude        string     `gorm:"column:site_latitude" json:"site_latitude"`
+	SiteLongitude       string     `gorm:"column:site_longitude" json:"site_longitude"`
 	LogTime             *time.Time `gorm:"column:logtime" json:"logtime"`
 	FunctionNo          int        `gorm:"column:functionno" json:"functionno"`
 	ActivityType        string     `gorm:"column:activity_type" json:"activity_type"`

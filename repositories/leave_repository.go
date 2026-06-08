@@ -16,6 +16,8 @@ import (
 type LeaveRepository interface {
 	AddCuti(data models.LeaveHistory) error
 	FindCuti(filter models.LeaveHistoryFilter) ([]models.LeaveHistory, error)
+	GetBalance(employeeNik string, leaveTypeId *uuid.UUID) (*models.LeaveBalanceResponse, error)
+	CreateTransaction(request models.CreateLeaveTransactionRequest) (*models.CreateLeaveTransactionResponse, error)
 }
 
 type leaveRepository struct {
@@ -29,6 +31,30 @@ func NewLeaveRepository(db *gorm.DB) LeaveRepository {
 }
 
 func (r *leaveRepository) AddCuti(item models.LeaveHistory) error {
+	// Support logic cuti dynamic tanpa memutus endpoint lama /api/leave/cuti.
+	// Jika request sudah membawa leave_type_id, prosesnya dialihkan ke CreateTransaction
+	// sehingga range tanggal tetap dipecah menjadi transaksi per tanggal.
+	if item.LeaveTypeId != nil && *item.LeaveTypeId != uuid.Nil {
+		createdBy := strings.TrimSpace(item.CreatedBy)
+		if createdBy == "" {
+			createdBy = item.EmployeeNik
+		}
+
+		_, err := r.CreateTransaction(models.CreateLeaveTransactionRequest{
+			EmployeeNik:      item.EmployeeNik,
+			LeaveTypeId:      item.LeaveTypeId.String(),
+			LeaveStart:       item.LeaveStart.Format("2006-01-02"),
+			LeaveEnd:         item.LeaveEnd.Format("2006-01-02"),
+			Remarks:          stringValue(item.Remarks),
+			Location:         stringValue(item.Location),
+			CurrentStep:      item.CurrentStep,
+			ApprovalHeaderId: uuidValue(item.ApprovalHeaderId),
+			CreatedBy:        createdBy,
+		})
+
+		return err
+	}
+
 	tx := r.db.Begin()
 	if tx.Error != nil {
 		return fmt.Errorf("Failed to add cuti. %w", tx.Error)
@@ -114,6 +140,7 @@ func (r *leaveRepository) AddCuti(item models.LeaveHistory) error {
 		LeaveHistoryId:   uuid.New(),
 		EmployeeNik:      employeeNik,
 		LeaveType:        leaveType,
+		LeaveDate:        dateOnly(item.LeaveStart),
 		LeaveStart:       item.LeaveStart,
 		LeaveEnd:         item.LeaveEnd,
 		TotalDays:        totalDays,
@@ -255,9 +282,11 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 
 	filter.LeaveHistoryId = trim(filter.LeaveHistoryId)
 	filter.EmployeeNik = trim(filter.EmployeeNik)
+	filter.LeaveTypeId = trim(filter.LeaveTypeId)
 	filter.LeaveType = trim(filter.LeaveType)
 	filter.StartDate = trim(filter.StartDate)
 	filter.EndDate = trim(filter.EndDate)
+	filter.LeaveDate = trim(filter.LeaveDate)
 	filter.LeaveStart = trim(filter.LeaveStart)
 	filter.LeaveEnd = trim(filter.LeaveEnd)
 	filter.TotalDays = trim(filter.TotalDays)
@@ -288,6 +317,15 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 
 	if filter.EmployeeNik != "" {
 		query = query.Where("employee_nik = ?", filter.EmployeeNik)
+	}
+
+	if filter.LeaveTypeId != "" {
+		leaveTypeId, err := uuid.Parse(filter.LeaveTypeId)
+		if err != nil {
+			return nil, errors.New("leave_type_id tidak valid")
+		}
+
+		query = query.Where("leave_type_id = ?", leaveTypeId)
 	}
 
 	if filter.LeaveType != "" {
@@ -328,6 +366,14 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 		}
 
 		query = query.Where("CAST(leave_start AS date) <= CAST(? AS date)", filter.EndDate)
+	}
+
+	if filter.LeaveDate != "" {
+		if err := parseDate(filter.LeaveDate, "leave_date"); err != nil {
+			return nil, err
+		}
+
+		query = query.Where("COALESCE(leave_date::date, leave_start::date) = CAST(? AS date)", filter.LeaveDate)
 	}
 
 	if filter.LeaveStart != "" {
@@ -461,4 +507,446 @@ func (r *leaveRepository) FindCuti(filter models.LeaveHistoryFilter) ([]models.L
 	}
 
 	return data, nil
+}
+
+func (r *leaveRepository) GetBalance(employeeNik string, leaveTypeId *uuid.UUID) (*models.LeaveBalanceResponse, error) {
+	employeeNik = strings.TrimSpace(employeeNik)
+	if employeeNik == "" {
+		return nil, errors.New("NIK karyawan wajib diisi")
+	}
+
+	query := r.db.Table("hrms_leave_balance b").
+		Select(`
+			b.leave_balance_id,
+			b.employee_nik,
+			b.leave_type_id,
+			lt.leave_type_code,
+			lt.leave_type_name,
+			b.leave_period_start,
+			b.leave_period_end,
+			COALESCE(b.total_leave, 0)::int AS total_leave,
+			COALESCE(b.leave_used, 0)::int AS leave_used,
+			COALESCE(b.carry_forward, 0)::int AS carry_forward,
+			(
+				COALESCE(b.total_leave, 0)
+				+ COALESCE(b.carry_forward, 0)
+				- COALESCE(b.leave_used, 0)
+			)::int AS leave_remaining,
+			b.object_code,
+			b.created_at,
+			b.updated_at,
+			b.created_by,
+			b.updated_by
+		`).
+		Joins("LEFT JOIN hrms_leave_type lt ON lt.leave_type_id = b.leave_type_id").
+		Where("b.employee_nik = ?", employeeNik).
+		Where("CURRENT_DATE BETWEEN b.leave_period_start::date AND b.leave_period_end::date")
+
+	if leaveTypeId != nil {
+		query = query.Where("b.leave_type_id = ?", *leaveTypeId)
+	}
+
+	var balances []models.LeaveBalance
+	if err := query.Order("lt.sort_order ASC, b.leave_period_start DESC").Find(&balances).Error; err != nil {
+		return nil, err
+	}
+
+	result := &models.LeaveBalanceResponse{
+		EmployeeNik: employeeNik,
+		Balances:    balances,
+	}
+
+	for _, item := range balances {
+		result.TotalRemaining += item.LeaveRemaining
+
+		periodStart := item.LeavePeriodStart.Format("2006-01-02")
+		periodEnd := item.LeavePeriodEnd.Format("2006-01-02")
+
+		if result.PeriodStart == "" || periodStart < result.PeriodStart {
+			result.PeriodStart = periodStart
+		}
+
+		if result.PeriodEnd == "" || periodEnd > result.PeriodEnd {
+			result.PeriodEnd = periodEnd
+		}
+	}
+
+	return result, nil
+}
+
+func (r *leaveRepository) CreateTransaction(request models.CreateLeaveTransactionRequest) (*models.CreateLeaveTransactionResponse, error) {
+	request.EmployeeNik = strings.TrimSpace(request.EmployeeNik)
+	request.LeaveTypeId = strings.TrimSpace(request.LeaveTypeId)
+	request.CreatedBy = strings.TrimSpace(request.CreatedBy)
+	request.ApprovalHeaderId = strings.TrimSpace(request.ApprovalHeaderId)
+
+	if request.EmployeeNik == "" {
+		return nil, errors.New("NIK karyawan wajib diisi")
+	}
+
+	leaveTypeId, err := uuid.Parse(request.LeaveTypeId)
+	if err != nil {
+		return nil, errors.New("leave_type_id tidak valid")
+	}
+
+	leaveStart, err := parseLeaveRequestDate(request.LeaveStart, "leave_start")
+	if err != nil {
+		return nil, err
+	}
+
+	leaveEnd, err := parseLeaveRequestDate(request.LeaveEnd, "leave_end")
+	if err != nil {
+		return nil, err
+	}
+
+	if leaveEnd.Before(leaveStart) {
+		return nil, errors.New("leave_end tidak boleh lebih kecil dari leave_start")
+	}
+
+	createdBy := request.CreatedBy
+	if createdBy == "" {
+		createdBy = request.EmployeeNik
+	}
+
+	var result *models.CreateLeaveTransactionResponse
+
+	err = r.db.Transaction(func(tx *gorm.DB) error {
+		if err := ensureEmployeeExists(tx, request.EmployeeNik); err != nil {
+			return err
+		}
+
+		leaveType, err := getLeaveTypeByID(tx, leaveTypeId)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("tipe cuti tidak ditemukan")
+			}
+			return err
+		}
+
+		if !leaveType.IsActive {
+			return errors.New("tipe cuti tidak aktif")
+		}
+
+		if leaveType.MinNoticeDays > 0 {
+			minDate := dateOnly(jakartaNow()).AddDate(0, 0, leaveType.MinNoticeDays)
+			if leaveStart.Before(minDate) {
+				return fmt.Errorf("pengajuan %s minimal H-%d", leaveType.LeaveTypeName, leaveType.MinNoticeDays)
+			}
+		}
+
+		leaveDates, err := getDynamicLeaveDates(tx, request.EmployeeNik, leaveStart, leaveEnd, leaveType.UseWorkingDay)
+		if err != nil {
+			return err
+		}
+
+		if len(leaveDates) == 0 {
+			return errors.New("tidak ada tanggal cuti yang valid pada range tersebut")
+		}
+
+		if leaveType.MaxDaysPerRequest != nil && *leaveType.MaxDaysPerRequest > 0 && len(leaveDates) > *leaveType.MaxDaysPerRequest {
+			return fmt.Errorf("maksimal pengajuan %s adalah %d hari", leaveType.LeaveTypeName, *leaveType.MaxDaysPerRequest)
+		}
+
+		if err := ensureNoDuplicateLeave(tx, request.EmployeeNik, leaveDates); err != nil {
+			return err
+		}
+
+		deductedDays := 0
+		if leaveType.DeductLeaveBalance {
+			if err := deductDynamicLeaveBalance(tx, request.EmployeeNik, leaveTypeId, len(leaveDates), createdBy); err != nil {
+				return err
+			}
+			deductedDays = len(leaveDates)
+		}
+
+		approvalHeaderId, err := parseOptionalUUID(request.ApprovalHeaderId, "approvalheader_id")
+		if err != nil {
+			return err
+		}
+
+		remarks := nullableString(request.Remarks)
+		location := nullableString(request.Location)
+		currentStep := request.CurrentStep
+		if currentStep <= 0 {
+			currentStep = 1
+		}
+
+		createdAt := jakartaNow()
+		leaveTypeIdCopy := leaveTypeId
+		transactions := make([]models.LeaveHistory, 0, len(leaveDates))
+		insertedDates := make([]string, 0, len(leaveDates))
+
+		for _, leaveDate := range leaveDates {
+			leaveDate = dateOnly(leaveDate)
+			transactions = append(transactions, models.LeaveHistory{
+				LeaveHistoryId:   uuid.New(),
+				EmployeeNik:      request.EmployeeNik,
+				LeaveTypeId:      &leaveTypeIdCopy,
+				LeaveType:        leaveType.LeaveTypeCode,
+				LeaveDate:        leaveDate,
+				LeaveStart:       leaveDate,
+				LeaveEnd:         leaveDate,
+				TotalDays:        1,
+				Remarks:          remarks,
+				Location:         location,
+				LeaveYear:        leaveDate.Year(),
+				Status:           "A",
+				CurrentStep:      currentStep,
+				ApprovalHeaderId: approvalHeaderId,
+				ObjectCode:       "LEAVE_HISTORY",
+				CreatedAt:        createdAt,
+				CreatedBy:        createdBy,
+			})
+
+			insertedDates = append(insertedDates, leaveDate.Format("2006-01-02"))
+		}
+
+		if err := tx.Create(&transactions).Error; err != nil {
+			return fmt.Errorf("gagal insert transaksi cuti: %w", err)
+		}
+
+		result = &models.CreateLeaveTransactionResponse{
+			EmployeeNik:       request.EmployeeNik,
+			LeaveTypeId:       leaveTypeId.String(),
+			LeaveTypeCode:     leaveType.LeaveTypeCode,
+			LeaveTypeName:     leaveType.LeaveTypeName,
+			LeaveStart:        leaveStart.Format("2006-01-02"),
+			LeaveEnd:          leaveEnd.Format("2006-01-02"),
+			InsertedDays:      len(transactions),
+			DeductedDays:      deductedDays,
+			InsertedDates:     insertedDates,
+			LeaveTransactions: transactions,
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func ensureEmployeeExists(tx *gorm.DB, employeeNik string) error {
+	var total int64
+	if err := tx.Table("hrms_users").Where("employee_nik = ?", employeeNik).Count(&total).Error; err != nil {
+		return err
+	}
+
+	if total == 0 {
+		return errors.New("karyawan tidak ditemukan")
+	}
+
+	return nil
+}
+
+func getLeaveTypeByID(tx *gorm.DB, leaveTypeId uuid.UUID) (*models.LeaveType, error) {
+	var data models.LeaveType
+	err := tx.Where("leave_type_id = ?", leaveTypeId).First(&data).Error
+	return &data, err
+}
+
+type dynamicLeaveDateRow struct {
+	LeaveDate time.Time `gorm:"column:leave_date"`
+}
+
+func getDynamicLeaveDates(tx *gorm.DB, employeeNik string, leaveStart time.Time, leaveEnd time.Time, useWorkingDay bool) ([]time.Time, error) {
+	var rows []dynamicLeaveDateRow
+
+	err := tx.Raw(`
+		SELECT d.leave_day::date AS leave_date
+		FROM generate_series(CAST(? AS date), CAST(? AS date), interval '1 day') AS d(leave_day)
+		WHERE
+		(
+			CAST(? AS boolean) = false
+			OR COALESCE((
+				SELECT w.is_working_day
+				FROM hrms_wkcal w
+				WHERE w.date_id::date = d.leave_day::date
+				LIMIT 1
+			), false) = true
+		)
+		AND
+		(
+			CAST(? AS boolean) = false
+			OR EXISTS
+			(
+				SELECT 1
+				FROM hrms_employee_shift es
+				INNER JOIN hrms_employee_shift_period esp
+					ON esp.weekly_id = es.weekly_id
+				WHERE es.employee_nik = ?
+				  AND es.weekday_id = EXTRACT(ISODOW FROM d.leave_day)::int
+				  AND d.leave_day::date BETWEEN esp.week_start_date::date AND esp.week_end_date::date
+			)
+		)
+		ORDER BY d.leave_day::date ASC
+	`,
+		leaveStart.Format("2006-01-02"),
+		leaveEnd.Format("2006-01-02"),
+		useWorkingDay,
+		useWorkingDay,
+		employeeNik,
+	).Scan(&rows).Error
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]time.Time, 0, len(rows))
+	for _, row := range rows {
+		result = append(result, dateOnly(row.LeaveDate))
+	}
+
+	return result, nil
+}
+
+func ensureNoDuplicateLeave(tx *gorm.DB, employeeNik string, dates []time.Time) error {
+	if len(dates) == 0 {
+		return nil
+	}
+
+	dateStrings := make([]string, 0, len(dates))
+	for _, date := range dates {
+		dateStrings = append(dateStrings, dateOnly(date).Format("2006-01-02"))
+	}
+
+	var total int64
+	if err := tx.Table("hrms_leave_history").
+		Where("employee_nik = ?", employeeNik).
+		Where("COALESCE(status, '') NOT IN ('C', 'R')").
+		Where(`
+			COALESCE(leave_date::date, leave_start::date) IN ?
+			OR EXISTS (
+				SELECT 1
+				FROM generate_series(leave_start::date, leave_end::date, interval '1 day') AS x(dt)
+				WHERE x.dt::date IN ?
+			)
+		`, dateStrings, dateStrings).
+		Count(&total).Error; err != nil {
+		return err
+	}
+
+	if total > 0 {
+		return errors.New("sudah ada transaksi cuti pada salah satu tanggal tersebut")
+	}
+
+	return nil
+}
+
+func deductDynamicLeaveBalance(tx *gorm.DB, employeeNik string, leaveTypeId uuid.UUID, deductDays int, updatedBy string) error {
+	var balance models.LeaveBalance
+
+	err := tx.Raw(`
+		SELECT
+			leave_balance_id,
+			employee_nik,
+			leave_type_id,
+			leave_period_start,
+			leave_period_end,
+			COALESCE(total_leave, 0)::int AS total_leave,
+			COALESCE(leave_used, 0)::int AS leave_used,
+			COALESCE(carry_forward, 0)::int AS carry_forward,
+			(
+				COALESCE(total_leave, 0)
+				+ COALESCE(carry_forward, 0)
+				- COALESCE(leave_used, 0)
+			)::int AS leave_remaining
+		FROM hrms_leave_balance
+		WHERE employee_nik = ?
+		  AND leave_type_id = ?
+		  AND CURRENT_DATE BETWEEN leave_period_start::date AND leave_period_end::date
+		ORDER BY leave_period_start DESC
+		LIMIT 1
+		FOR UPDATE
+	`, employeeNik, leaveTypeId).Scan(&balance).Error
+	if err != nil {
+		return err
+	}
+
+	if balance.LeaveBalanceId == uuid.Nil {
+		return errors.New("saldo cuti tidak ditemukan untuk tipe cuti ini")
+	}
+
+	if balance.LeaveRemaining < deductDays {
+		return fmt.Errorf("saldo cuti tidak mencukupi. Sisa saldo: %d, kebutuhan: %d", balance.LeaveRemaining, deductDays)
+	}
+
+	if err := tx.Model(&models.LeaveBalance{}).
+		Where("leave_balance_id = ?", balance.LeaveBalanceId).
+		Updates(map[string]interface{}{
+			"leave_used": gorm.Expr("COALESCE(leave_used, 0) + ?", deductDays),
+			"updated_by": updatedBy,
+			"updated_at": jakartaNow(),
+		}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func parseLeaveRequestDate(value string, fieldName string) (time.Time, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return time.Time{}, fmt.Errorf("%s wajib diisi", fieldName)
+	}
+
+	parsed, err := time.ParseInLocation("2006-01-02", value, jakartaLocation())
+	if err != nil {
+		return time.Time{}, fmt.Errorf("format %s harus YYYY-MM-DD", fieldName)
+	}
+
+	return dateOnly(parsed), nil
+}
+
+func parseOptionalUUID(value string, fieldName string) (*uuid.UUID, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return nil, nil
+	}
+
+	parsed, err := uuid.Parse(value)
+	if err != nil {
+		return nil, fmt.Errorf("%s tidak valid", fieldName)
+	}
+
+	return &parsed, nil
+}
+
+func nullableString(value string) *string {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return nil
+	}
+
+	return &value
+}
+
+func stringValue(value *string) string {
+	if value == nil {
+		return ""
+	}
+
+	return strings.TrimSpace(*value)
+}
+
+func uuidValue(value *uuid.UUID) string {
+	if value == nil || *value == uuid.Nil {
+		return ""
+	}
+
+	return value.String()
+}
+
+func jakartaNow() time.Time {
+	return time.Now().In(jakartaLocation())
+}
+
+func jakartaLocation() *time.Location {
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		return time.FixedZone("Asia/Jakarta", 7*60*60)
+	}
+
+	return loc
 }
