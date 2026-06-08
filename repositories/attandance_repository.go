@@ -187,7 +187,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 				AND s.site_code = a.site_code
 		`).
 		Joins(`
-			LEFT JOIN hrms_param p
+			LEFT JOIN hrms_par p
 				ON p.paramgroup_code = 'EVENT_CODE'
 				AND p.company_code = a.company_code
 				AND (
