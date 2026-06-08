@@ -163,6 +163,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 			COALESCE(s.site_longitude, '') AS site_longitude,
 			a.logtime AS logtime,
 			a.functionno AS functionno,
+			COALESCE(p.param_name, '') AS event_name,
 			COALESCE(a.activity_type, '') AS activity_type,
 			COALESCE(a.latitude, '') AS latitude,
 			COALESCE(a.longitude, '') AS longitude,
@@ -184,6 +185,12 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 				ON s.company_code = a.company_code
 				AND s.site_type = a.site_type
 				AND s.site_code = a.site_code
+		`).
+		Joins(`
+			LEFT JOIN hrms_param p
+				ON p.paramgroup_code = 'EVENT_CODE'
+				ON P.company_code = a.company_code
+				AND UPPER(TRIM(p.param_code)) = UPPER(TRIM(a.functionno::text))
 		`).
 		Where("a.user_id = ?", userId)
 
@@ -208,6 +215,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 			a.site_type ILIKE ? OR
 			a.site_code ILIKE ? OR
 			s.site_name ILIKE ? OR
+			p.param_name ILIKE ? OR
 			a.logtime::text ILIKE ? OR
 			a.functionno::text ILIKE ? OR
 			a.activity_type ILIKE ? OR
@@ -221,7 +229,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 			a.object_code ILIKE ? OR
 			a.created_by ILIKE ? OR
 			a.updated_by ILIKE ?
-		`, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search)
+		`, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search)
 	}
 
 	allowedDynamicList := attendanceMeDynamicSearchFields()
@@ -240,8 +248,9 @@ func attendanceMeDynamicSearchFields() map[string]dto.DynamicSearchDto {
 		"site_type":     {Field: "a.site_type", Query: " ILIKE ?"},
 		"site_code":     {Field: "a.site_code", Query: " ILIKE ?"},
 		"site_name":     {Field: "s.site_name", Query: " ILIKE ?"},
-		"logtime":       {Field: "a.logtime", Query: " >= ?"},
 		"functionno":    {Field: "a.functionno", Query: " = ?"},
+		"event_name":    {Field: "p.param_name", Query: " ILIKE ?"},
+		"logtime":       {Field: "a.logtime", Query: " >= ?"},
 		"activity_type": {Field: "a.activity_type", Query: " ILIKE ?"},
 		"action_type":   {Field: "a.action_type", Query: " ILIKE ?"},
 	}
