@@ -14,7 +14,7 @@ type AttendanceMeResponseDto struct {
 	SiteLatitude        string     `gorm:"column:site_latitude" json:"site_latitude"`
 	SiteLongitude       string     `gorm:"column:site_longitude" json:"site_longitude"`
 	LogTime             *time.Time `gorm:"column:logtime" json:"logtime"`
-	FunctionNo          int        `gorm:"column:functionno" json:"functionno"`
+	FunctionNo          string     `json:"functionno" gorm:"column:functionno"`
 	EventName           string     `json:"event_name" gorm:"column:event_name"`
 	ActivityType        string     `gorm:"column:activity_type" json:"activity_type"`
 	ActionType          string     `gorm:"column:action_type" json:"action_type"`

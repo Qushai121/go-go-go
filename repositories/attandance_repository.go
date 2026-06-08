@@ -29,8 +29,20 @@ func (r *attendanceRepository) Create(attendance *models.Attendance) error {
 		return err
 	}
 
+	attendance.FunctionNo = normalizeFunctionNo(attendance.FunctionNo)
+	if attendance.FunctionNo == "" {
+		return fmt.Errorf("functionno is required")
+	}
+
 	err := r.db.Model(&models.Attendance{}).
-		Where("user_id = ? AND company_code = ? AND site_type = ? AND site_code = ? AND logtime = ? AND functionno = ?",
+		Where(`
+			user_id = ?
+			AND company_code = ?
+			AND site_type = ?
+			AND site_code = ?
+			AND logtime = ?
+			AND functionno = ?
+		`,
 			attendance.UserId,
 			attendance.CompanyCode,
 			attendance.SiteType,
@@ -49,6 +61,20 @@ func (r *attendanceRepository) Create(attendance *models.Attendance) error {
 	return r.db.Create(attendance).Error
 }
 
+func normalizeFunctionNo(functionNo string) string {
+	functionNo = strings.ToUpper(strings.TrimSpace(functionNo))
+
+	if functionNo == "" {
+		return ""
+	}
+
+	if strings.HasPrefix(functionNo, "F") {
+		return functionNo
+	}
+
+	return "F" + functionNo
+}
+
 func (r *attendanceRepository) normalizeAndValidateSite(attendance *models.Attendance) error {
 	attendance.SiteType = strings.ToUpper(strings.TrimSpace(attendance.SiteType))
 	attendance.SiteCode = strings.TrimSpace(attendance.SiteCode)
@@ -58,10 +84,13 @@ func (r *attendanceRepository) normalizeAndValidateSite(attendance *models.Atten
 		return fmt.Errorf("site_code is required")
 	}
 
-	query := r.db.Model(&models.Site{}).Where("site_code = ?", attendance.SiteCode)
+	query := r.db.Model(&models.Site{}).
+		Where("site_code = ?", attendance.SiteCode)
+
 	if attendance.CompanyCode != "" {
 		query = query.Where("company_code = ?", attendance.CompanyCode)
 	}
+
 	if attendance.SiteType != "" {
 		query = query.Where("site_type = ?", attendance.SiteType)
 	}
@@ -74,9 +103,11 @@ func (r *attendanceRepository) normalizeAndValidateSite(attendance *models.Atten
 	if attendance.CompanyCode == "" {
 		attendance.CompanyCode = site.CompanyCode
 	}
+
 	if attendance.SiteType == "" {
 		attendance.SiteType = site.SiteType
 	}
+
 	if attendance.MaxRadius == nil && site.MaxRadius > 0 {
 		attendance.MaxRadius = &site.MaxRadius
 	}
@@ -116,7 +147,7 @@ func (r *attendanceRepository) FindAll(queryParams *dto.PaginateFieldDto) (respo
 			site_type ILIKE ? OR
 			site_code ILIKE ? OR
 			logtime::text ILIKE ? OR
-			functionno::text ILIKE ? OR
+			functionno ILIKE ? OR
 			activity_type ILIKE ? OR
 			latitude ILIKE ? OR
 			longitude ILIKE ? OR
@@ -162,7 +193,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 			COALESCE(s.site_latitude, '') AS site_latitude,
 			COALESCE(s.site_longitude, '') AS site_longitude,
 			a.logtime AS logtime,
-			a.functionno AS functionno,
+			COALESCE(a.functionno, '') AS functionno,
 			COALESCE(p.param_name, '') AS event_name,
 			COALESCE(a.activity_type, '') AS activity_type,
 			COALESCE(a.latitude, '') AS latitude,
@@ -194,10 +225,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 		Joins(`
 			LEFT JOIN hrms_par p
 				ON p.paramgroup_id = pg.paramgroup_id
-				AND (
-					UPPER(TRIM(p.param_code)) = UPPER(TRIM(a.functionno::text))
-					OR UPPER(TRIM(p.param_code)) = UPPER(CONCAT('F', TRIM(a.functionno::text)))
-				)
+				AND UPPER(TRIM(p.param_code)) = UPPER(TRIM(a.functionno))
 		`).
 		Where("a.user_id = ?", userId)
 
@@ -224,7 +252,7 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 			s.site_name ILIKE ? OR
 			p.param_name ILIKE ? OR
 			a.logtime::text ILIKE ? OR
-			a.functionno::text ILIKE ? OR
+			a.functionno ILIKE ? OR
 			a.activity_type ILIKE ? OR
 			a.latitude ILIKE ? OR
 			a.longitude ILIKE ? OR
@@ -236,7 +264,28 @@ func (r *attendanceRepository) FindByUser(userId string, queryParams *dto.Pagina
 			a.object_code ILIKE ? OR
 			a.created_by ILIKE ? OR
 			a.updated_by ILIKE ?
-		`, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search, search)
+		`,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+			search,
+		)
 	}
 
 	allowedDynamicList := attendanceMeDynamicSearchFields()
@@ -255,7 +304,7 @@ func attendanceMeDynamicSearchFields() map[string]dto.DynamicSearchDto {
 		"site_type":     {Field: "a.site_type", Query: " ILIKE ?"},
 		"site_code":     {Field: "a.site_code", Query: " ILIKE ?"},
 		"site_name":     {Field: "s.site_name", Query: " ILIKE ?"},
-		"functionno":    {Field: "a.functionno", Query: " = ?"},
+		"functionno":    {Field: "a.functionno", Query: " ILIKE ?"},
 		"event_name":    {Field: "p.param_name", Query: " ILIKE ?"},
 		"logtime":       {Field: "a.logtime", Query: " >= ?"},
 		"activity_type": {Field: "a.activity_type", Query: " ILIKE ?"},
@@ -271,7 +320,7 @@ func attendanceDynamicSearchFields() map[string]dto.DynamicSearchDto {
 		"site_type":            {Field: "site_type", Query: " ILIKE ?"},
 		"site_code":            {Field: "site_code", Query: " ILIKE ?"},
 		"logtime":              {Field: "logtime", Query: " >= ?"},
-		"functionno":           {Field: "functionno", Query: " = ?"},
+		"functionno":           {Field: "functionno", Query: " ILIKE ?"},
 		"activity_type":        {Field: "activity_type", Query: " ILIKE ?"},
 		"latitude":             {Field: "latitude", Query: " ILIKE ?"},
 		"longitude":            {Field: "longitude", Query: " ILIKE ?"},
