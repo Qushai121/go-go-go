@@ -12,7 +12,7 @@ type LeaveHistory struct {
 	EmployeeNik   string     `gorm:"column:employee_nik;type:varchar(100);not null" json:"employee_nik" form:"employee_nik"`
 	LeaveTypeId   *uuid.UUID `gorm:"column:leave_type_id;type:uuid" json:"leave_type_id" form:"leave_type_id"`
 	LeaveType     string     `gorm:"column:leave_type;type:varchar(50);not null" json:"leave_type" form:"leave_type"`
-	LeaveTypeName string     `gorm:"column:leave_type_name" json:"leave_type_name"`
+	LeaveTypeName string     `gorm:"column:leave_type_name;->" json:"leave_type_name"`
 	LeaveDate     time.Time  `gorm:"column:leave_date;type:date" json:"leave_date" form:"leave_date"`
 	LeaveStart    time.Time  `gorm:"column:leave_start;type:timestamp" json:"leave_start" form:"leave_start"`
 	LeaveEnd      time.Time  `gorm:"column:leave_end;type:timestamp" json:"leave_end" form:"leave_end"`
