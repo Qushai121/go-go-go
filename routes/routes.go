@@ -166,6 +166,7 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	leave.Get("/cuti", leaveController.FindCuti)
 	leave.Get("/balance/:employee_nik", leaveController.Balance)
 	leave.Get("/balance", leaveController.Balance)
+	leave.Post("/estimate", leaveController.EstimateLeave)
 	leave.Post("/transactions", leaveController.CreateTransaction)
 
 	leaveType := api.Group("/leave-type", middlewares.JWTProtected())

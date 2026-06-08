@@ -17,6 +17,7 @@ type LeaveRepository interface {
 	AddCuti(data models.LeaveHistory) error
 	FindCuti(filter models.LeaveHistoryFilter) ([]models.LeaveHistory, error)
 	GetBalance(employeeNik string, leaveTypeId *uuid.UUID) (*models.LeaveBalanceResponse, error)
+	EstimateLeave(request models.EstimateLeaveRequest) (*models.EstimateLeaveResponse, error)
 	CreateTransaction(request models.CreateLeaveTransactionRequest) (*models.CreateLeaveTransactionResponse, error)
 }
 
@@ -728,6 +729,126 @@ func (r *leaveRepository) CreateTransaction(request models.CreateLeaveTransactio
 	return result, nil
 }
 
+func (r *leaveRepository) EstimateLeave(request models.EstimateLeaveRequest) (*models.EstimateLeaveResponse, error) {
+	request.EmployeeNik = strings.TrimSpace(request.EmployeeNik)
+	request.LeaveTypeId = strings.TrimSpace(request.LeaveTypeId)
+
+	if request.EmployeeNik == "" {
+		return nil, errors.New("NIK karyawan wajib diisi")
+	}
+
+	leaveTypeId, err := uuid.Parse(request.LeaveTypeId)
+	if err != nil {
+		return nil, errors.New("leave_type_id tidak valid")
+	}
+
+	leaveStart, err := parseLeaveRequestDate(request.LeaveStart, "leave_start")
+	if err != nil {
+		return nil, err
+	}
+
+	leaveEnd, err := parseLeaveRequestDate(request.LeaveEnd, "leave_end")
+	if err != nil {
+		return nil, err
+	}
+
+	if leaveEnd.Before(leaveStart) {
+		return nil, errors.New("leave_end tidak boleh lebih kecil dari leave_start")
+	}
+
+	if err := ensureEmployeeExists(r.db, request.EmployeeNik); err != nil {
+		return nil, err
+	}
+
+	leaveType, err := getLeaveTypeByID(r.db, leaveTypeId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("tipe cuti tidak ditemukan")
+		}
+		return nil, err
+	}
+
+	if !leaveType.IsActive {
+		return nil, errors.New("tipe cuti tidak aktif")
+	}
+
+	leaveDates, err := getDynamicLeaveDates(r.db, request.EmployeeNik, leaveStart, leaveEnd, leaveType.UseWorkingDay)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(leaveDates) == 0 {
+		return nil, errors.New("tidak ada tanggal cuti yang valid pada range tersebut")
+	}
+
+	if leaveType.MaxDaysPerRequest != nil && *leaveType.MaxDaysPerRequest > 0 && len(leaveDates) > *leaveType.MaxDaysPerRequest {
+		return nil, fmt.Errorf("maksimal pengajuan %s adalah %d hari", leaveType.LeaveTypeName, *leaveType.MaxDaysPerRequest)
+	}
+
+	balance, err := getCurrentLeaveBalance(r.db, request.EmployeeNik, leaveTypeId)
+	if err != nil {
+		return nil, err
+	}
+
+	remainingBefore := 0
+	periodStart := ""
+	periodEnd := ""
+	if balance != nil {
+		remainingBefore = balance.LeaveRemaining
+		periodStart = balance.LeavePeriodStart.Format("2006-01-02")
+		periodEnd = balance.LeavePeriodEnd.Format("2006-01-02")
+	}
+
+	if leaveType.DeductLeaveBalance && balance == nil {
+		return nil, errors.New("saldo cuti tidak ditemukan untuk tipe cuti ini")
+	}
+
+	deductedDays := 0
+	if leaveType.DeductLeaveBalance {
+		deductedDays = len(leaveDates)
+	}
+
+	remainingAfter := remainingBefore - deductedDays
+	shortageDays := 0
+	if remainingAfter < 0 {
+		shortageDays = -remainingAfter
+	}
+
+	estimatedDates := make([]string, 0, len(leaveDates))
+	for _, date := range leaveDates {
+		estimatedDates = append(estimatedDates, dateOnly(date).Format("2006-01-02"))
+	}
+
+	isEnoughBalance := true
+	message := "Estimasi berhasil. Data belum disimpan dan saldo belum dipotong."
+	if leaveType.DeductLeaveBalance && remainingBefore < deductedDays {
+		isEnoughBalance = false
+		message = fmt.Sprintf("Saldo tidak cukup. Sisa saldo: %d, kebutuhan: %d.", remainingBefore, deductedDays)
+	}
+
+	return &models.EstimateLeaveResponse{
+		EmployeeNik:        request.EmployeeNik,
+		LeaveTypeId:        leaveTypeId.String(),
+		LeaveTypeCode:      leaveType.LeaveTypeCode,
+		LeaveTypeName:      leaveType.LeaveTypeName,
+		LeaveStart:         leaveStart.Format("2006-01-02"),
+		LeaveEnd:           leaveEnd.Format("2006-01-02"),
+		UseWorkingDay:      leaveType.UseWorkingDay,
+		DeductLeaveBalance: leaveType.DeductLeaveBalance,
+		TotalRangeDays:     calculateCalendarDays(leaveStart, leaveEnd),
+		TotalTakenDays:     len(leaveDates),
+		DeductedDays:       deductedDays,
+		RemainingBefore:    remainingBefore,
+		RemainingAfter:     remainingAfter,
+		ShortageDays:       shortageDays,
+		IsEnoughBalance:    isEnoughBalance,
+		PeriodStart:        periodStart,
+		PeriodEnd:          periodEnd,
+		EstimatedDates:     estimatedDates,
+		Message:            message,
+	}, nil
+}
+
 func ensureEmployeeExists(tx *gorm.DB, employeeNik string) error {
 	var total int64
 	if err := tx.Table("hrms_users").Where("employee_nik = ?", employeeNik).Count(&total).Error; err != nil {
@@ -832,6 +953,42 @@ func ensureNoDuplicateLeave(tx *gorm.DB, employeeNik string, dates []time.Time) 
 	}
 
 	return nil
+}
+
+func getCurrentLeaveBalance(db *gorm.DB, employeeNik string, leaveTypeId uuid.UUID) (*models.LeaveBalance, error) {
+	var balance models.LeaveBalance
+
+	err := db.Raw(`
+		SELECT
+			leave_balance_id,
+			employee_nik,
+			leave_type_id,
+			leave_period_start,
+			leave_period_end,
+			COALESCE(total_leave, 0)::int AS total_leave,
+			COALESCE(leave_used, 0)::int AS leave_used,
+			COALESCE(carry_forward, 0)::int AS carry_forward,
+			(
+				COALESCE(total_leave, 0)
+				+ COALESCE(carry_forward, 0)
+				- COALESCE(leave_used, 0)
+			)::int AS leave_remaining
+		FROM hrms_leave_balance
+		WHERE employee_nik = ?
+		  AND leave_type_id = ?
+		  AND CURRENT_DATE BETWEEN leave_period_start::date AND leave_period_end::date
+		ORDER BY leave_period_start DESC
+		LIMIT 1
+	`, employeeNik, leaveTypeId).Scan(&balance).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if balance.LeaveBalanceId == uuid.Nil {
+		return nil, nil
+	}
+
+	return &balance, nil
 }
 
 func deductDynamicLeaveBalance(tx *gorm.DB, employeeNik string, leaveTypeId uuid.UUID, deductDays int, updatedBy string) error {

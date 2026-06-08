@@ -227,6 +227,35 @@ func (c *LeaveController) Balance(ctx fiber.Ctx) error {
 	return utils.Success(ctx, data)
 }
 
+// EstimateLeave godoc
+// @Summary Estimasi cuti
+// @Description Estimasi sisa cuti dan total hari yang akan diambil berdasarkan employee_nik, leave_type_id, dan range tanggal. Endpoint ini tidak insert transaksi dan tidak update saldo.
+// @Tags Leave
+// @Accept json
+// @Produce json
+// @Param request body models.EstimateLeaveRequest true "Estimate leave request"
+// @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
+// @Router /api/leave/estimate [post]
+func (c *LeaveController) EstimateLeave(ctx fiber.Ctx) error {
+	var request models.EstimateLeaveRequest
+	if err := ctx.Bind().Body(&request); err != nil {
+		return utils.Error(ctx, 400, "request body tidak valid")
+	}
+
+	employeeNik := strings.TrimSpace(fmt.Sprint(ctx.Locals("employee_nik")))
+	if employeeNik != "" && employeeNik != "<nil>" && strings.TrimSpace(request.EmployeeNik) == "" {
+		request.EmployeeNik = employeeNik
+	}
+
+	data, err := c.repo.EstimateLeave(request)
+	if err != nil {
+		return utils.Error(ctx, 400, err.Error())
+	}
+
+	return utils.Success(ctx, data)
+}
+
 // CreateTransaction godoc
 // @Summary Insert transaksi cuti dynamic
 // @Description Insert transaksi cuti berdasarkan leave_type_id. Range tanggal akan dipecah menjadi transaksi per tanggal.
