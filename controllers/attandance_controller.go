@@ -7,7 +7,6 @@ import (
 	mappers "hrms_go/mapper"
 	"hrms_go/repositories"
 	"hrms_go/utils"
-	"strconv"
 	"strings"
 
 	"github.com/gofiber/fiber/v3"
@@ -32,7 +31,7 @@ func NewAttendanceController(repo repositories.AttendanceRepository) *Attendance
 // @Param site_type formData string false "Site type: BRANCH/OFFICE/CUSTOMER"
 // @Param site_code formData string true "Site code"
 // @Param logtime formData string true "Log time (YYYY-MM-DD HH:mm:ss or RFC3339)"
-// @Param functionno formData int true "Function number"
+// @Param functionno formData string true "Function code: F1/F2/F3/F4"
 // @Param action_type formData string false "Action type"
 // @Param latitude formData string false "Latitude"
 // @Param longitude formData string false "Longitude"
@@ -76,12 +75,14 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 	if employeeNIK == "" || employeeNIK == "<nil>" {
 		return utils.Error(ctx, 400, "employee_nik is missing from token")
 	}
+
 	request.CreatedBy = employeeNIK
 
 	faceResult, err := utils.VerifyFaceByNIK(file, employeeNIK)
 	if err != nil {
 		return utils.Error(ctx, 422, err.Error())
 	}
+
 	if similarity := utils.FaceSimilarityPercentage(faceResult); similarity != "" {
 		request.PresentaseKemiripan = similarity
 	}
@@ -90,6 +91,7 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
 	}
+
 	request.ImagePath = *fileUrl
 
 	data, err := mappers.ToAttendanceModel(request)
@@ -100,17 +102,19 @@ func (c *AttendanceController) Create(ctx fiber.Ctx) error {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	if data.SiteCode == "" {
+	if strings.TrimSpace(data.SiteCode) == "" {
 		if fileUrl != nil {
 			_ = utils.RemoveFileFromPath(*fileUrl)
 		}
 		return utils.Error(ctx, 400, "site_code is required")
 	}
-	if data.FunctionNo <= 0 {
+
+	data.FunctionNo = normalizeFunctionNoInput(data.FunctionNo)
+	if strings.TrimSpace(data.FunctionNo) == "" {
 		if fileUrl != nil {
 			_ = utils.RemoveFileFromPath(*fileUrl)
 		}
-		return utils.Error(ctx, 400, "functionno must be greater than 0")
+		return utils.Error(ctx, 400, "functionno is required")
 	}
 
 	if err := c.repo.Create(&data); err != nil {
@@ -161,19 +165,28 @@ func parseAttendanceFormData(ctx fiber.Ctx) (attandance.PostAttandanceDto, error
 		}
 	}
 
-	functionNo := ctx.FormValue("functionno")
+	functionNo := strings.TrimSpace(ctx.FormValue("functionno"))
 	if functionNo == "" {
 		return request, fmt.Errorf("functionno is required")
 	}
 
-	parsedFunctionNo, err := strconv.Atoi(functionNo)
-	if err != nil {
-		return request, fmt.Errorf("invalid functionno")
-	}
-
-	request.FunctionNo = parsedFunctionNo
+	request.FunctionNo = normalizeFunctionNoInput(functionNo)
 
 	return request, nil
+}
+
+func normalizeFunctionNoInput(functionNo string) string {
+	functionNo = strings.ToUpper(strings.TrimSpace(functionNo))
+
+	if functionNo == "" {
+		return ""
+	}
+
+	if strings.HasPrefix(functionNo, "F") {
+		return functionNo
+	}
+
+	return "F" + functionNo
 }
 
 func firstFilledFormValue(ctx fiber.Ctx, keys ...string) string {
@@ -238,11 +251,21 @@ func (c *AttendanceController) FindAll(ctx fiber.Ctx) error {
 // @Router /api/attendance/me [get]
 func (c *AttendanceController) FindByUser(ctx fiber.Ctx) error {
 	queryParams := dto.PaginateFieldDto{}
+
 	if err := utils.BindPaginationParams(ctx, &queryParams); err != nil {
 		return utils.Error(ctx, 400, err.Error())
 	}
 
-	userId := ctx.Locals("user_id").(string)
+	userIDLocal := ctx.Locals("user_id")
+	if userIDLocal == nil {
+		return utils.Error(ctx, 401, "user_id is missing from token")
+	}
+
+	userId := fmt.Sprint(userIDLocal)
+	if strings.TrimSpace(userId) == "" || userId == "<nil>" {
+		return utils.Error(ctx, 401, "user_id is missing from token")
+	}
+
 	data, err := c.repo.FindByUser(userId, &queryParams)
 	if err != nil {
 		return utils.Error(ctx, 500, err.Error())
